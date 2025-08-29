@@ -45,18 +45,12 @@ class Auth {
 
         $password = password_hash($password, PASSWORD_DEFAULT);
         
-        try {
-            $stment->execute([$email, $name, $password]);
-            $lastId = $this->db->lastInsertId();
+        $stment->execute([$email, $name, $password]);
+        $lastId = $this->db->lastInsertId();
 
-            $this->message = "Signup successful";
-            $this->data = ['id' => $lastId, 'email' => $email, 'name' => $name];
-            return true;
-
-        } catch (PDOException $e){
-            $this->message = $e->getMessage();
-            return false;
-        }
+        $this->message = "Signup successful";
+        $this->data = ['id' => $lastId, 'email' => $email, 'name' => $name];
+        return true;
     }
 
     public function logout(){
@@ -70,13 +64,9 @@ class Auth {
         if(isset($new_data['name'])){
             $q = "UPDATE users SET name = ? WHERE id = ?";
             $stment = $this->db->prepare($q);
-            try {
-                $stment->execute([$new_data['name'], $_SESSION['id']]);
-                return true;
-            } catch (PDOException $e) {
-                $this->message = $e->getMessage();
-                return false;
-            }
+
+            $stment->execute([$new_data['name'], $_SESSION['id']]);
+            return true;
         }
     }
 }

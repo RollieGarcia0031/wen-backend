@@ -1,9 +1,7 @@
 <?php
 
 class Response {
-    public static function create(bool $success, string $message, $data = null, int $code = 400) {
-        $code = $success ? 200 : $code;
-        http_response_code($code);
+    public static function create(bool $success, string $message, $data = null) {
         return json_encode([
             'success' => $success,
             'message' => $message,
