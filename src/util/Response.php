@@ -6,6 +6,6 @@ class Response {
             'success' => $success,
             'message' => $message,
             'data' => $data
-        ], true);
+        ]);
     }
 }
