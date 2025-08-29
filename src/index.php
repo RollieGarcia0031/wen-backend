@@ -35,14 +35,15 @@ switch ($uri){
         $name = $data['name'];
         $email = $data['email'];
         $password = $data['password'];
+        $role = $data['role'];
 
-        echo $auth->signup($name, $email, $password);
+        echo $auth->signup($name, $email, $password, $role);
         break;
 
     case "/auth/logout":
         echo $auth->logout(); 
         break;
-        
+
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

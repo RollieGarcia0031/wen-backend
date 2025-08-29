@@ -3,7 +3,7 @@
 function connection(){
     $user = 'postgres';
     $password = '123456';
-    $db = 'postgres';
+    $db = 'apt_dev';
     $host = 'localhost';
     $port = '5433';
 

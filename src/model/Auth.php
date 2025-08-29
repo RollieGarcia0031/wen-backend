@@ -39,13 +39,13 @@ class Auth {
         return false;
     }
 
-    public function signup($email, $name, $password){
-        $query = "INSERT INTO users (email, name, password) VALUES (?, ?, ?)";
+    public function signup($email, $name, $password, $role){
+        $query = "INSERT INTO users (email, name, password, role) VALUES (?, ?, ?, ?)";
         $stment = $this->db->prepare($query);
 
         $password = password_hash($password, PASSWORD_DEFAULT);
         
-        $stment->execute([$email, $name, $password]);
+        $stment->execute([$email, $name, $password, $role]);
         $lastId = $this->db->lastInsertId();
 
         $this->message = "Signup successful";

@@ -28,9 +28,9 @@ class AuthController {
         }    
     }
 
-    public function signup($name, $email, $password) {
+    public function signup($name, $email, $password, $role) {
         try {
-            $signup = $this->auth->signup($email, $name, $password);
+            $signup = $this->auth->signup($email, $name, $password, $role);
             if ($signup) {
                 $data = $this->auth->data;
                 $message = $this->auth->message;
@@ -40,7 +40,7 @@ class AuthController {
             }
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, "Signup failed", null);
+            return Response::create(false, "Signup failed", $e->getMessage());
             exit();
         }
     }
