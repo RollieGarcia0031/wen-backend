@@ -1,0 +1,21 @@
+/auth/
+	/login {email, password}
+	/signup {email,password}
+	/logout 
+	/update {name,email, password}
+
+/appointment
+	/send {prof_id, time_stamp}
+	/unsend {apt_id}
+	/edit {apt_id, time, day}
+	/accept {apt_id}
+	/reject {apt_id}
+	/list - shows sent apt for students, show recieved apt for teachers
+
+/search
+	/professor {name, day, time, deparment}
+	/professor/sched {prof_id}
+	/appointments {prof_id} - for students to see their sent apointments
+
+/profile
+	/{id | prof_id}
