@@ -15,7 +15,6 @@ class Auth {
         $query = "SELECT * FROM users WHERE email = :email";
         $stment = $this->db->prepare($query);
         $stment->bindParam(':email', $email);
-        $stment->execute();
         
         $row = $stment->fetch(PDO::FETCH_ASSOC);
 
@@ -38,5 +37,24 @@ class Auth {
         
         $this-> message = "Password incorrect";
         return false;
+    }
+
+    public function signup($email, $name, $password){
+        $query = "INSERT INTO users (email, name, password) VALUES (?, ?, ?)";
+        $stment = $this->db->prepare($query);
+        
+        try {
+            $stment->execute([$email, $name, $password]);
+            $lastId = $this->db->lastInsertId();
+
+            $this->message = "Signup successful";
+            $this->data = ['id' => $lastId, 'email' => $email, 'name' => $name];
+            return true;
+
+        } catch (PDOException $e){
+            $this->message = $e->getMessage();
+            return false;
+        }
+
     }
 }
