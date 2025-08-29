@@ -34,6 +34,8 @@ class Auth {
 
             $row['password'] = null;
             $this->data = $row;
+
+            $_SESSION['uid'] = $row['id'];
             
             return true;
         }
