@@ -11,20 +11,24 @@ class AuthController {
     }
 
     public function login($email, $password){
+        $login = $this->auth->login($email, $password);
+
         try {
-            $login = $this->auth->login($email, $password);
+            
             if ($login) {
                 $data = $this->auth->data;
                 $message = $this->auth->message;
-
+                
                 http_response_code(200);
                 return Response::create(true, $message, $data);
             }
 
+            http_response_code(401);
+            return Response::create(false, $this->auth->message, null);
+
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, "Login failed", null);
-            exit();
+            return Response::create(false, "Login failed", $e->getMessage());
         }    
     }
 
@@ -41,7 +45,6 @@ class AuthController {
         } catch (PDOException $e){
             http_response_code(500);
             return Response::create(false, "Signup failed", $e->getMessage());
-            exit();
         }
     }
 

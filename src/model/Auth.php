@@ -14,10 +14,13 @@ class Auth {
     public function login($email, $password){
         $query = "SELECT * FROM users WHERE email = :email";
         $stment = $this->db->prepare($query);
-        $stment->bindParam(':email', $email);
-        
-        $row = $stment->fetch(PDO::FETCH_ASSOC);
 
+        $stment->bindParam(':email', $email);
+        $stment->execute();
+
+        $row = $stment->fetch(PDO::FETCH_ASSOC);
+        
+        
         if(!$row){
             $this->message = "Email not found";
             return false;
