@@ -57,6 +57,26 @@ class Auth {
             $this->message = $e->getMessage();
             return false;
         }
+    }
 
+    public function logout(){
+        session_destroy();
+        $this->message = "Logout successful";
+        return true;
+    }
+
+    public function update(array $new_data){
+        
+        if(isset($new_data['name'])){
+            $q = "UPDATE users SET name = ? WHERE id = ?";
+            $stment = $this->db->prepare($q);
+            try {
+                $stment->execute([$new_data['name'], $_SESSION['id']]);
+                return true;
+            } catch (PDOException $e) {
+                $this->message = $e->getMessage();
+                return false;
+            }
+        }
     }
 }
