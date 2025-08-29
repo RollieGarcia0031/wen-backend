@@ -42,6 +42,8 @@ class Auth {
     public function signup($email, $name, $password){
         $query = "INSERT INTO users (email, name, password) VALUES (?, ?, ?)";
         $stment = $this->db->prepare($query);
+
+        $password = password_hash($password, PASSWORD_DEFAULT);
         
         try {
             $stment->execute([$email, $name, $password]);
