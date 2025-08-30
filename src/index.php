@@ -71,6 +71,19 @@ switch ($uri){
         }
     break;
 
+    case "/search/professor":
+        $data = json_decode( file_get_contents('php://input'), true );
+        
+        $name = $data['name'] ?? null;
+        $day = $data['day'] ?? null;
+        $time_start = $data['time_start'] ?? null;
+        $time_end = $data['time_end'] ?? null;
+        $department = $data['department'] ?? null;
+        $year = $data['year'] ?? null;
+
+        echo $professor->search($name, $day, $time_start, $time_end, $department, $year);
+    break;
+
     case "/search/availability":
         $data = json_decode( file_get_contents('php://input'), true );
         ['id'=>$id] = $data;

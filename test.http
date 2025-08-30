@@ -50,3 +50,13 @@ Content-Type: application/json
 {
     "id":6
 }
+
+### search for professors
+
+POST http://localhost:8080/search/professor
+Content-Type: application/json
+
+{
+    "name":"test",
+    "department":"CAS"
+}
