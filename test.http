@@ -3,9 +3,9 @@ Content-Type: application/json
 
 {
     "name": "test",
-	"email": "test2@example.com",
+	"email": "teacher2@example.com",
 	"password": "109726",
-    "role":"student"
+    "role":"professor"
 }
 
 ### auth login
@@ -14,8 +14,8 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
-    "password":"123456"
+    "email": "teacher2@example.com",
+    "password":"109726"
 }
 
 ### create professor profile
