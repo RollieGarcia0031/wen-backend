@@ -13,6 +13,12 @@ class Professor extends AppModel {
     }
 
     public function addProfile(int $year, string $department, int $id) {
+        if (!$this->isVerified()){
+            $this->code = 401;
+            $this->message = "User is not a professor";
+            return false;
+        }
+
         $sql = "INSERT INTO professors (user_id, year, department) VALUES (?, ?, ?)";
 
         $stment = $this->db->prepare($sql);
