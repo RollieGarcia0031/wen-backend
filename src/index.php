@@ -98,6 +98,10 @@ switch ($uri){
 
         echo $appointment->send($prof_id, $time_stamp);
     break;
+
+    case "/appointment/list":
+        echo $appointment->getList();   
+    break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

@@ -34,4 +34,42 @@ class Appointment extends AppModel{
         $this->data = ['id' => $this->db->lastInsertId()];
         return true;
     }
+
+    public function getList($user_id){
+        $query = "SELECT role FROM users WHERE id = ?";
+        
+        $stment = $this->db->prepare($query);
+        $stment->execute([$user_id]);
+
+        $userRole = $stment->fetch(PDO::FETCH_ASSOC)['role'];
+
+        $query2 = null;
+
+        if ($userRole === 'professor'){
+            $query2 = "SELECT * FROM appointments WHERE professor_id = ?";           
+        } else if ($userRole === 'student'){
+            $query2 = "SELECT * FROM appointments WHERE student_id = ?";
+        } else {
+            $this->message = "Role not Found";
+            $this->code = 401;
+            return false;
+        }
+        $stment = $this->db->prepare($query2);
+        $execute = $stment->execute([$user_id]);
+        $result = $stment->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$execute){
+            $this->message = "Execution Failed";
+            $this->code = 400;
+            return false;
+        }
+
+        $this->data = [
+            "role" =>  $userRole,
+            "appointments" => $result
+        ];
+        $this->message = "Query Sucess";
+        $this->code = 200;
+        return true;
+    }
 }

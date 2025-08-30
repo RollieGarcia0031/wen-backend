@@ -14,8 +14,8 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
-    "password":"123456"
+    "email": "teacher2@example.com",
+    "password":"109726"
 }
 
 ### create professor profile
@@ -69,3 +69,7 @@ Content-Type: application/json
     "prof_id":16,
     "time_stamp":"2025-08-30T10:30:00.000Z"
 }
+
+### getting appointment
+GET http://localhost:8080/appointment/list
+Content-Type: application/json
