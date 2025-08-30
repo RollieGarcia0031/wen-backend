@@ -22,6 +22,15 @@ class Professor extends AppModel {
     }
 
     public function addAvailability($userId, $day, $start, $end){
+        $stment = $this->db->prepare("SELECT role from users WHERE id = ?");
+        $stment->execute([$userId]);
+        $role = $stment->fetch(PDO::FETCH_ASSOC)['role'];
+        if($role !== 'professor') {
+            $this->code = 403;
+            $this->message = "You must be a professor to add availability";
+            return false;
+        }
+
         $query = "INSERT INTO availability (user_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)";
         $stment = $this->db->prepare($query);
 
