@@ -57,6 +57,16 @@ switch ($uri){
                 break;
         }
         break;
+
+    case "/professor/availability":
+        switch ($method) {
+            case "POST":
+                $data = json_decode( file_get_contents('php://input'), true );
+                ['day'=>$day, 'start'=>$start, 'end'=>$end] = $data;
+                echo $professor->addAvailability($day, $start, $end);
+            break;       
+        }
+        break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

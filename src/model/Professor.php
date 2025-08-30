@@ -20,4 +20,22 @@ class Professor extends AppModel {
         $this->data = ['id' => $this->db->lastInsertId()];
         return true;
     }
+
+    public function addAvailability($userId, $day, $start, $end){
+        $query = "INSERT INTO availability (user_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)";
+        $stment = $this->db->prepare($query);
+
+        $stment->execute([$userId, $day, $start, $end]);
+
+        if (!$stment) {
+            $this->code = 500;
+            $this->message = "Error adding availability";
+            return false;
+        }
+        
+        $this->code = 200;
+        $this->message = "Availability added successfully";
+        $this->data = ['id' => $this->db->lastInsertId()];
+        return true;
+    }
 }

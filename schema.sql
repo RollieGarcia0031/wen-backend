@@ -33,14 +33,16 @@ CREATE TABLE professors (
 
 [source,sql]
 ----
+CREATE TYPE day_of_week AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+
 CREATE TABLE availability (
     id SERIAL PRIMARY KEY,
-    professor_id INT REFERENCES users(id) ON DELETE CASCADE,
-    day_of_week ENUM('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') NOT NULL,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    day_of_week day_of_week NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ----
 
