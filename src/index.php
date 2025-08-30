@@ -23,9 +23,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($uri){
     case "/auth/login":
         $data = json_decode(file_get_contents('php://input'), true);
-
-        $email = $data['email'];
-        $password = $data['password'];
+        
+        ['email'=>$email, 'password'=>$password] = $data;
 
         echo $auth->login($email, $password);
 
@@ -33,10 +32,12 @@ switch ($uri){
     case "/auth/signup":
         $data = json_decode(file_get_contents('php://input'), true);
 
-        $name = $data['name'];
-        $email = $data['email'];
-        $password = $data['password'];
-        $role = $data['role'];
+        [
+            'name'=>$name,
+            'email'=>$email,
+            'password'=>$password,
+            'role'=>$role
+        ] = $data;
 
         echo $auth->signup($name, $email, $password, $role);
         break;
