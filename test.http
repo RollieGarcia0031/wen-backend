@@ -3,8 +3,8 @@ Content-Type: application/json
 
 {
     "name": "test",
-	"email": "test@example.com",
-	"password": "123456",
+	"email": "test2@example.com",
+	"password": "109726",
     "role":"student"
 }
 
@@ -14,6 +14,6 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
-    "password":"123456"
+    "email": "test2@example.com",
+    "password":"109726"
 }

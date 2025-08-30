@@ -5,7 +5,8 @@ require_once __DIR__ . '/../config/db.php';
 class Auth {
     private $db;
     public string $message;
-    public array $data;
+    public array $data = [];
+    public int $code = 200;
 
     public function __construct() {
         $this->db = connection();
@@ -20,9 +21,9 @@ class Auth {
 
         $row = $stment->fetch(PDO::FETCH_ASSOC);
         
-        
         if(!$row){
             $this->message = "Email not found";
+            $this->code = 404;
             return false;
         }
         
@@ -31,16 +32,18 @@ class Auth {
         
         if($verified){
             $this->message = "Login successful";
-
+            
             $row['password'] = null;
-            $this->data = $row;
-
             $_SESSION['uid'] = $row['id'];
+
+            $this->data = $row;
+            $this->code = 200;
             
             return true;
         }
         
-        $this-> message = "Password incorrect";
+        $this->message = "Password incorrect";
+        $this->code = 401;
         return false;
     }
 
@@ -54,6 +57,7 @@ class Auth {
         $lastId = $this->db->lastInsertId();
 
         $this->message = "Signup successful";
+        $this->code = 200;
         $this->data = ['id' => $lastId, 'email' => $email, 'name' => $name];
         return true;
     }
@@ -61,6 +65,8 @@ class Auth {
     public function logout(){
         session_destroy();
         $this->message = "Logout successful";
+        $this->code = 200;
+
         return true;
     }
 
