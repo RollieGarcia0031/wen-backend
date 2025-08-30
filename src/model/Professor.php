@@ -3,8 +3,12 @@
 require_once __DIR__ . '/AppModel.php';
 
 class Professor extends AppModel {
-    public function isVerified(){
-        $id = $_SESSION['uid'];
+    /**
+     * pass null if you want to check the current user if its professor
+     * pass id if you want to check another user
+     */
+    public function isVerified($uid=null){
+        $id = $uid ?? $_SESSION['uid'];
         $stment = $this->db->prepare("SELECT role from users WHERE id = ?");
         $stment->execute([$id]);
         $role = $stment->fetch(PDO::FETCH_ASSOC)['role'];
@@ -37,7 +41,7 @@ class Professor extends AppModel {
     }
 
     public function addAvailability($userId, $day, $start, $end){
-        if (!$this->isVerified()){
+        if (!$this->isVerified(null)){
             $this->code = 401;
             $this->message = "User is not a professor";
             return false;

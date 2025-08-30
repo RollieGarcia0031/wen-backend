@@ -8,6 +8,7 @@ header('Access-Control-Allow-Credentials: true');
 
 require_once __DIR__ . '/controller/AuthControler.php';
 require_once __DIR__ . '/controller/ProfessorController.php';
+require_once __DIR__ . '/controller/AppointmentController.php';
 
 session_start();
 
@@ -18,6 +19,7 @@ if($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $auth = new AuthController();
 $professor = new ProfessorController();
+$appointment = new AppointmentController();
 
 $uri = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
@@ -88,6 +90,13 @@ switch ($uri){
         $data = json_decode( file_get_contents('php://input'), true );
         ['id'=>$id] = $data;
         echo $professor->getAvailability($id);
+    break;
+
+    case "/appointment/send":
+        $data = json_decode( file_get_contents('php://input'), true );
+        ['prof_id'=>$prof_id, 'time_stamp'=>$time_stamp] = $data;
+
+        echo $appointment->send($prof_id, $time_stamp);
     break;
     default:
         http_response_code(404);

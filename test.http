@@ -59,3 +59,13 @@ Content-Type: application/json
 {
     "name":"es"
 }
+
+###sending appointment
+
+POST http://localhost:8080/appointment/send
+Content-Type: application/json
+
+{
+    "prof_id":16,
+    "time_stamp":"2025-08-30T10:30:00.000Z"
+}

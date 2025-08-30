@@ -50,14 +50,16 @@ CREATE TABLE availability (
 
 [source,sql]
 ----
+CREATE TYPE appointment_status AS ENUM ('pending', 'confirmed', 'canceled');
+
 CREATE TABLE appointments (
-    id SERIAL PRIMARY KEY,
-    student_id INT REFERENCES users(id) ON DELETE CASCADE,
-    professor_id INT REFERENCES users(id) ON DELETE CASCADE,
-    appointment_time TIMESTAMP NOT NULL,
-    status ENUM('pending','confirmed','canceled') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+id SERIAL PRIMARY KEY,
+student_id INT REFERENCES users(id) ON DELETE CASCADE,
+professor_id INT REFERENCES users(id) ON DELETE CASCADE,
+appointment_time TIMESTAMP NOT NULL,
+status appointment_status DEFAULT 'pending',
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ----
 
