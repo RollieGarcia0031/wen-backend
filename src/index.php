@@ -7,6 +7,7 @@ header('Access-Control-Allow-Headers: *');
 header('Access-Control-Allow-Credentials: true');
 
 require_once __DIR__ . '/controller/AuthControler.php';
+require_once __DIR__ . '/controller/ProfessorController.php';
 
 session_start();
 
@@ -16,6 +17,7 @@ if($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $auth = new AuthController();
+$professor = new ProfessorController();
 
 $uri = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
@@ -46,6 +48,15 @@ switch ($uri){
         echo $auth->logout(); 
         break;
 
+    case "/professor/profile":
+        switch ($method) {
+            case "POST":
+                $data = json_decode( file_get_contents('php://input'), true );
+                ['year'=>$year, 'department'=>$department] = $data;
+                echo $professor->addProfile($year, $department);
+                break;
+        }
+        break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);
