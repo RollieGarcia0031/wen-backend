@@ -1,16 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/AppModel.php';
 
-class Auth {
-    private $db;
-    public string $message;
-    public array $data = [];
-    public int $code = 200;
-
-    public function __construct() {
-        $this->db = connection();
-    }
+class Auth extends AppModel{
 
     public function login($email, $password){
         $query = "SELECT * FROM users WHERE email = :email";
