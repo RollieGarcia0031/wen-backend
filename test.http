@@ -57,6 +57,5 @@ POST http://localhost:8080/search/professor
 Content-Type: application/json
 
 {
-    "name":"test",
-    "department":"CAS"
+    "name":"es"
 }

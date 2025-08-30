@@ -126,9 +126,9 @@ class Professor extends AppModel {
         $result = $stment->fetchAll(PDO::FETCH_ASSOC);
         
         if(!$result){
-            $this->code = 500;
-            $this->message = "Error searching professors";
-            return false;
+            $this->code = 200;
+            $this->message = "no users found";
+            return true;
         }
 
         $this->code = 200;
