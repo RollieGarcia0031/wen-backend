@@ -38,7 +38,15 @@ Content-Type: application/json
     "end":"10:30:00"
 }
 
-### get availability
+### get availability of logged in professor
 GET http://localhost:8080/professor/availability
 Content-Type: application/json
 
+### get availability of certain professor
+
+POST http://localhost:8080/search/availability
+Content-Type: application/json
+
+{
+    "id":6
+}

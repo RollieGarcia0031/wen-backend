@@ -70,6 +70,12 @@ switch ($uri){
                 echo $professor->getAvailability(null);
         }
     break;
+
+    case "/search/availability":
+        $data = json_decode( file_get_contents('php://input'), true );
+        ['id'=>$id] = $data;
+        echo $professor->getAvailability($id);
+    break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);
