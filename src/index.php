@@ -30,7 +30,7 @@ switch ($uri){
 
         echo $auth->login($email, $password);
 
-        break;
+    break;
     case "/auth/signup":
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -42,11 +42,11 @@ switch ($uri){
         ] = $data;
 
         echo $auth->signup($name, $email, $password, $role);
-        break;
+    break;
 
     case "/auth/logout":
         echo $auth->logout(); 
-        break;
+    break;
 
     case "/professor/profile":
         switch ($method) {
@@ -54,9 +54,9 @@ switch ($uri){
                 $data = json_decode( file_get_contents('php://input'), true );
                 ['year'=>$year, 'department'=>$department] = $data;
                 echo $professor->addProfile($year, $department);
-                break;
+            break;
         }
-        break;
+    break;
 
     case "/professor/availability":
         switch ($method) {
@@ -64,9 +64,12 @@ switch ($uri){
                 $data = json_decode( file_get_contents('php://input'), true );
                 ['day'=>$day, 'start'=>$start, 'end'=>$end] = $data;
                 echo $professor->addAvailability($day, $start, $end);
-            break;       
+            break;
+            
+            case "GET":
+                echo $professor->getAvailability(null);
         }
-        break;
+    break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

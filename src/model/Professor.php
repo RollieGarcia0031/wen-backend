@@ -58,4 +58,22 @@ class Professor extends AppModel {
         $this->data = ['id' => $this->db->lastInsertId()];
         return true;
     }
+
+    public function getAvailability($id){
+        $query = "SELECT * FROM availability WHERE user_id = ?";
+        $stment = $this->db->prepare($query);
+        $stment->execute([$id]);
+
+        $result = $stment->fetchAll(PDO::FETCH_ASSOC);
+        
+        if(!$result){
+            $this->code = 500;
+            $this->message = "Error getting availability";
+            return false;
+        }
+        $this->code = 200;
+        $this->data = $result;
+        $this->message = "Availability fetched";
+        return true;
+    }
 }

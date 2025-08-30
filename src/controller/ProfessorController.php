@@ -24,11 +24,7 @@ class ProfessorController {
             $code = $this->professor->code;
             
             http_response_code($code);
-            if ($sucess) {
-                return Response::create($sucess, $message, $data);
-            } else {
-                return Response::create($sucess, $message, $data);
-            }
+            return Response::create($sucess, $message, $data);
         } catch (PDOException $e) {
             http_response_code(500);
             return Response::create(false, $e->getMessage(), null);
@@ -51,6 +47,32 @@ class ProfessorController {
 
             http_response_code($code);
             return Response::create($sucess, $message, $data);
+
+        } catch (PDOException $e){
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
+
+    /**
+     * Returns the availability of professor
+     * if no id is provided, it will return the availability
+     * of the logged in user which is dapat ay professor
+     * @param int|null $uid
+     */
+    public function getAvailability($uid = null){
+        $user_id = $uid ?? $_SESSION['uid'];
+
+        if(!$user_id) {
+            http_response_code(201);
+            return Response::create(false, "User not logged in", null);
+        }
+
+        try{
+            $sucess = $this->professor->getAvailability($user_id);
+
+            http_response_code($this->professor->code);
+            return Response::create($sucess, $this->professor->message, $this->professor->data);
 
         } catch (PDOException $e){
             http_response_code(500);
