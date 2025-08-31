@@ -73,3 +73,11 @@ Content-Type: application/json
 ### getting appointment
 GET http://localhost:8080/appointment/list
 Content-Type: application/json
+
+### accepting appointment
+GET http://localhost:8080/appointment/accept
+Content-Type: application/json
+
+{
+    "id":2
+}

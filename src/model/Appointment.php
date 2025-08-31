@@ -109,7 +109,33 @@ class Appointment extends AppModel{
         return true;
     }
 
-    public function accept($apt_id){
+    /**
+     * Accepts an appointement, only works if logged user is a professor
+     * @param int $appointement_id
+     * @param int $user_id id of logged professor
+     */
+    public function accept($appointement_id, $user_id){
+        $query1 = "UPDATE appointments SET status = 'confirmed'
+            WHERE id = ? AND professor_id = ?";
 
+        $stment = $this->db->prepare($query1);
+        $execute = $stment->execute([$appointement_id, $user_id]);
+
+        if (!$execute) {
+            $this->code = 500;
+            $this->message = "Error accepting appointment";
+            return false;
+        }
+
+        $result = $stment->rowCount();
+        if (!$result) {
+            $this->code = 404;
+            $this->message = "Appointment not found";
+            return false;
+        }
+        
+        $this->code = 200;
+        $this->message = "Appointment accepted successfully";
+        return true;
     }
 }

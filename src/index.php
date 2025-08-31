@@ -104,7 +104,9 @@ switch ($uri){
     break;
 
     case "/appointment/accept":
-        
+        $data = json_decode( file_get_contents('php://input'), true );
+        $appointment_id = $data['id'];
+        echo $appointment->accept($appointment_id);
     break;
     default:
         http_response_code(404);
