@@ -36,6 +36,7 @@ class Appointment extends AppModel{
     }
 
     public function getList($user_id){
+        //get user's role
         $query = "SELECT role FROM users WHERE id = ?";
         
         $stment = $this->db->prepare($query);
@@ -43,6 +44,7 @@ class Appointment extends AppModel{
 
         $userRole = $stment->fetch(PDO::FETCH_ASSOC)['role'];
 
+        // get appointments, merges with users and professors
         $query2 = "SELECT
             p.department as prof_department,
             p.year as prof_year,
@@ -56,6 +58,7 @@ class Appointment extends AppModel{
             JOIN professors p ON p.user_id = a.professor_id
             WHERE 1 = 1";
 
+        //adds conditions depending on user's role
         if ($userRole === 'professor'){
             $query2 .= " AND a.professor_id = ?";
         } else if ($userRole === 'student'){
@@ -66,6 +69,9 @@ class Appointment extends AppModel{
             return false;
         }
 
+        $query2 .= " ORDER BY a.appointment_time DESC";
+
+        
         $stment = $this->db->prepare($query2);
         $execute = $stment->execute([$user_id]);
         $appointements = $stment->fetchAll(PDO::FETCH_ASSOC);
@@ -73,12 +79,6 @@ class Appointment extends AppModel{
         if (!$execute){
             $this->message = "Execution Failed";
             $this->code = 400;
-            return false;
-        }
-
-        if (!$appointements){
-            $this->message = "No Appointments Found";
-            $this->code = 404;
             return false;
         }
 
