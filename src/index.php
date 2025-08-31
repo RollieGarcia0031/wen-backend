@@ -102,6 +102,10 @@ switch ($uri){
     case "/appointment/list":
         echo $appointment->getList();   
     break;
+
+    case "/appointment/accept":
+        
+    break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

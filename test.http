@@ -2,10 +2,10 @@ POST http://localhost:8080/auth/signup
 Content-Type: application/json
 
 {
-    "name": "test",
-	"email": "teacher2@example.com",
+    "name": "johnny",
+	"email": "johnny2@example.com",
 	"password": "109726",
-    "role":"professor"
+    "role":"student"
 }
 
 ### auth login
@@ -67,7 +67,7 @@ Content-Type: application/json
 
 {
     "prof_id":16,
-    "time_stamp":"2025-08-30T10:30:00.000Z"
+    "time_stamp":"2025-08-30T02:30:00.000Z"
 }
 
 ### getting appointment

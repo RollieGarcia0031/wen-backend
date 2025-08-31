@@ -43,20 +43,32 @@ class Appointment extends AppModel{
 
         $userRole = $stment->fetch(PDO::FETCH_ASSOC)['role'];
 
-        $query2 = null;
+        $query2 = "SELECT
+            p.department as prof_department,
+            p.year as prof_year,
+            a.id as apt_id,
+            a.professor_id as professor_id,
+            a.student_id as student_id,
+            a.appointment_time as appointment_time,
+            a.status as status
+
+            FROM appointments a
+            JOIN professors p ON p.user_id = a.professor_id
+            WHERE 1 = 1";
 
         if ($userRole === 'professor'){
-            $query2 = "SELECT * FROM appointments WHERE professor_id = ?";           
+            $query2 .= " AND a.professor_id = ?";
         } else if ($userRole === 'student'){
-            $query2 = "SELECT * FROM appointments WHERE student_id = ?";
+            $query2 .= " AND a.student_id = ?";
         } else {
             $this->message = "Role not Found";
             $this->code = 401;
             return false;
         }
+
         $stment = $this->db->prepare($query2);
         $execute = $stment->execute([$user_id]);
-        $result = $stment->fetchAll(PDO::FETCH_ASSOC);
+        $appointements = $stment->fetchAll(PDO::FETCH_ASSOC);
 
         if (!$execute){
             $this->message = "Execution Failed";
@@ -64,12 +76,40 @@ class Appointment extends AppModel{
             return false;
         }
 
+        if (!$appointements){
+            $this->message = "No Appointments Found";
+            $this->code = 404;
+            return false;
+        }
+
+        $viewer = null;
+        $names = [];
+        if ($userRole === 'professor'){
+            $viewer = 'student_id';
+        } else if ($userRole === 'student'){
+            $viewer = 'professor_id';
+        }
+
+        $names = [];
+        $viewer_ids = array_values( array_unique(  array_column($appointements, $viewer) ) );
+        
+        $placeholder = str_repeat('?, ', count($viewer_ids) - 1) . '?';
+        $query3 = "SELECT id, name FROM users WHERE id IN ($placeholder)";
+        $stment = $this->db->prepare($query3);
+        $stment->execute($viewer_ids);
+        $names = $stment->fetchAll(PDO::FETCH_ASSOC);
+
         $this->data = [
             "role" =>  $userRole,
-            "appointments" => $result
+            "appointments" => $appointements,
+            "names" => $names
         ];
         $this->message = "Query Sucess";
         $this->code = 200;
         return true;
+    }
+
+    public function accept($apt_id){
+
     }
 }
