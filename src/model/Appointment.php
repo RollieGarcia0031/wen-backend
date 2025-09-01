@@ -82,6 +82,12 @@ class Appointment extends AppModel{
             return false;
         }
 
+        if(!$appointements){
+            $this->message = "No appointments found";
+            $this->code = 200;
+            return true;
+        }
+
         $viewer = null;
         $names = [];
         if ($userRole === 'professor'){
