@@ -33,6 +33,11 @@ class AppointmentController {
         }
     }
 
+    /**
+     * Returns a list of appointments
+     * if logged session is a student, it responses with sent appointments
+     * if logged session is a professor, it responses with received appointments
+     */
     public function getList(){
         $user_id = $_SESSION['uid'];
 
