@@ -32,6 +32,10 @@ Content-Type: application/json
     "department":"CEN"
 }
 
+### get your own profile
+GET http://localhost:8080/professor/profile
+Content-Type: application/json
+
 ### add availability
 POST http://localhost:8080/professor/availability
 Content-Type: application/json

@@ -57,6 +57,10 @@ switch ($uri){
                 ['year'=>$year, 'department'=>$department] = $data;
                 echo $professor->addProfile($year, $department);
             break;
+
+            case "GET":
+                echo $professor->getProfile();
+            break;
         }
     break;
 
