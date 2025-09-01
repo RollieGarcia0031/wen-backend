@@ -14,9 +14,13 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "teacher2@example.com",
-    "password":"109726"
+    "email": "angelo@email.com",
+    "password":"123456"
 }
+
+### logout
+POST http://localhost:8080/auth/logout
+Content-Type: application/json
 
 ### create professor profile
 
@@ -25,7 +29,7 @@ Content-Type: application/json
 
 {
     "year":1,
-    "department":"CAM"
+    "department":"CEN"
 }
 
 ### add availability
