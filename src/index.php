@@ -90,6 +90,12 @@ switch ($uri){
         echo $professor->search($name, $day, $time_start, $time_end, $department, $year);
     break;
 
+    case "/search/professor/info":
+        $data = json_decode( file_get_contents('php://input'), true );
+        $id = $data['id'];
+        echo $professor->getInfo($id);
+    break;
+
     case "/search/availability":
         $data = json_decode( file_get_contents('php://input'), true );
         ['id'=>$id] = $data;
