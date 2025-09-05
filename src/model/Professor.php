@@ -158,4 +158,38 @@ class Professor extends AppModel {
         $this->message = "Profile fetched";
         return true;
     }
+
+    /**
+     * searches for professors information by ID
+     */
+    public function getInfo($prof_id){
+        $query = "SELECT
+            u.name,
+            ARRAY_AGG(DISTINCT u.email),
+            ARRAY_AGG(p.department),
+            ARRAY_AGG(p.year)
+        FROM users u
+        JOIN professors p ON u.id = p.user_id
+        WHERE u.id = ?
+        GROUP BY u.name
+    ";
+
+        $stment = $this->db->prepare($query);
+        $stment->execute([$prof_id]);
+
+        $result = $stment->fetchAll(PDO::FETCH_ASSOC);
+
+        if(!$result){
+            $this->code = 404;
+            $this->message = "Prof not Found";
+            return true;
+        }
+
+        $this->code = 200;
+        $this->data = $result;
+        $this->message = "Profile fetched";
+        return true;
+
+    }
+
 }
