@@ -6,7 +6,7 @@ require_once __DIR__ . '/Professor.php';
 class Appointment extends AppModel{
     private $professor;
 
-    public function send($prof_id, $student_id, $time_stamp){
+    public function send($prof_id, $student_id, $availability_id){
         $this->professor = new Professor();
         $is_professor = $this->professor->isVerified($prof_id);
 
@@ -16,12 +16,12 @@ class Appointment extends AppModel{
             return false;
         }
 
-        $query = "INSERT INTO appointments (professor_id, student_id, appointment_time)
+        $query = "INSERT INTO appointments (professor_id, student_id, availability_id)
             VALUES (?, ?, ?)";
 
         $stment = $this->db->prepare($query);
         
-        $execute = $stment->execute([$prof_id, $student_id, $time_stamp]);
+        $execute = $stment->execute([$prof_id, $student_id, $availability_id]);
 
         if (!$execute) {
             $this->code = 500;
