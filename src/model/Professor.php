@@ -71,8 +71,8 @@ class Professor extends AppModel {
         $result = $stment->fetchAll(PDO::FETCH_ASSOC);
         
         if(!$result){
-            $this->code = 500;
-            $this->message = "Error getting availability";
+            $this->code = 200;
+            $this->message = "No availability found";
             return false;
         }
         $this->code = 200;
