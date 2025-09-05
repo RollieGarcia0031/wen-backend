@@ -116,4 +116,24 @@ class ProfessorController {
             return Response::create(false, $e->getMessage(), null);
         }
     }
+
+    /**
+     * Returns the info of a professor
+     * this will be used by students to view information about a certain professor
+     * @param int $prof_id professor id to be searched
+     */
+    public function getInfo($prof_id){
+        try{
+            $sucess = $this->professor->getInfo($prof_id);
+            $message = $this->professor->message;
+            $data = $this->professor->data;
+            $code = $this->professor->code;
+
+            http_response_code($code);
+            return Response::create($sucess, $message, $data);
+        } catch (PDOException $e){
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
 }
