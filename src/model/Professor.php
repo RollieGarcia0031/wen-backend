@@ -161,6 +161,8 @@ class Professor extends AppModel {
 
     /**
      * searches for professors information by ID
+     * 
+     * @param int $prof_id professor ID to search
      */
     public function getInfo($prof_id){
         $query = "SELECT
