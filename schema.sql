@@ -56,7 +56,7 @@ CREATE TABLE appointments (
 id SERIAL PRIMARY KEY,
 student_id INT REFERENCES users(id) ON DELETE CASCADE,
 professor_id INT REFERENCES users(id) ON DELETE CASCADE,
-appointment_time TIMESTAMP NOT NULL,
+availability_id INT REFERENCES availability(id) ON DELETE CASCADE,
 status appointment_status DEFAULT 'pending',
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

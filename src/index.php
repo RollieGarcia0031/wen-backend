@@ -98,9 +98,9 @@ switch ($uri){
 
     case "/appointment/send":
         $data = json_decode( file_get_contents('php://input'), true );
-        ['prof_id'=>$prof_id, 'time_stamp'=>$time_stamp] = $data;
+        ['prof_id'=>$prof_id, 'availability_id'=>$availability_id] = $data;
 
-        echo $appointment->send($prof_id, $time_stamp);
+        echo $appointment->send($prof_id, $availability_id);
     break;
 
     case "/appointment/list":
