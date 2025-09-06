@@ -118,6 +118,15 @@ switch ($uri){
         $appointment_id = $data['id'];
         echo $appointment->accept($appointment_id);
     break;
+
+    case "/appointment/delete":
+        if ($method === 'DELETE') {
+            $data = json_decode( file_get_contents('php://input'), true );
+            $appointment_id = $data['id'];
+            echo $appointment->delete($appointment_id);
+        }
+    break;
+
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);
