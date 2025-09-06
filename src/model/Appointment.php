@@ -147,7 +147,7 @@ class Appointment extends AppModel{
     }
 
     public function delete($appointement_id){
-        $user_id = $_SESSION['user_id'];
+        $user_id = $_SESSION['uid'];
 
         $query1 = "DELETE FROM appointments
             WHERE id = ? AND (professor_id = ? OR student_id = ?)";

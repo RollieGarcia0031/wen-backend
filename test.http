@@ -97,3 +97,12 @@ Content-Type: application/json
 {
     "id":2
 }
+
+### deletes a specific appointment
+
+DELETE http://localhost:8080/appointment/delete
+Content-Type: application/json
+
+{
+    "id": 6
+}
