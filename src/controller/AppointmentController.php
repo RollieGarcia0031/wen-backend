@@ -81,4 +81,31 @@ class AppointmentController {
             return Response::create(false, $e->getMessage(), null);
         }
     }
+
+    /**
+     * deletes an appointment
+     * this only works for student who sent the appointment or
+     * professor who received the appointment
+     */
+    public function delete($appointment_id) {
+        $user_id = $_SESSION['uid'];
+
+        if (!$user_id) {
+            http_response_code(201);
+            return Response::create(false, "User not logged in", null);
+        }
+
+        try{
+            $sucess = $this->appointment->delete($appointment_id);
+            $message = $this->appointment->message;
+            $data = $this->appointment->data;
+            $code = $this->appointment->code;
+    
+            http_response_code($code);
+            return Response::create($sucess, $message, $data);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
 }
