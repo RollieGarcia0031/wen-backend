@@ -145,4 +145,28 @@ class Appointment extends AppModel{
         $this->message = "Appointment accepted successfully";
         return true;
     }
+
+    public function delete($appointement_id){
+        $query1 = "DELETE FROM appointments WHERE id = ?";
+
+        $stment = $this->db->prepare($query1);
+        $execute = $stment->execute([$appointement_id]);
+
+        if (!$execute) {
+            $this->code = 500;
+            $this->message = "Error deleting appointment";
+            return false;
+        }
+
+        $result = $stment->rowCount();
+        if (!$result) {
+            $this->code = 404;
+            $this->message = "Appointment not found";
+            return false;
+        }
+        
+        $this->code = 200;
+        $this->message = "Appointment deleted successfully";
+        return true;
+    }
 }
