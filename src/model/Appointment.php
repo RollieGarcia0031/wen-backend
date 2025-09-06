@@ -51,7 +51,7 @@ class Appointment extends AppModel{
             a.id as apt_id,
             a.professor_id as professor_id,
             a.student_id as student_id,
-            a.appointment_time as appointment_time,
+            a.availability_id as availability_id,
             a.status as status
 
             FROM appointments a
@@ -69,9 +69,6 @@ class Appointment extends AppModel{
             return false;
         }
 
-        $query2 .= " ORDER BY a.appointment_time DESC";
-
-        
         $stment = $this->db->prepare($query2);
         $execute = $stment->execute([$user_id]);
         $appointements = $stment->fetchAll(PDO::FETCH_ASSOC);

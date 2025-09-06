@@ -68,6 +68,14 @@ Content-Type: application/json
     "name":""
 }
 
+### search for prof info:
+POST http://localhost:8080/search/professor/info
+Content-Type: application/json
+
+{
+    "id":8
+}
+
 ###sending appointment
 
 POST http://localhost:8080/appointment/send
