@@ -147,10 +147,13 @@ class Appointment extends AppModel{
     }
 
     public function delete($appointement_id){
-        $query1 = "DELETE FROM appointments WHERE id = ?";
+        $user_id = $_SESSION['user_id'];
+
+        $query1 = "DELETE FROM appointments
+            WHERE id = ? AND (professor_id = ? OR student_id = ?)";
 
         $stment = $this->db->prepare($query1);
-        $execute = $stment->execute([$appointement_id]);
+        $execute = $stment->execute([$appointement_id, $user_id, $user_id]);
 
         if (!$execute) {
             $this->code = 500;
