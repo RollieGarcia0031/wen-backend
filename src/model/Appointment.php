@@ -46,28 +46,33 @@ class Appointment extends AppModel{
 
         // get appointments, merges with users and professors
         $query2 = "SELECT
-            p.department as prof_department,
-            p.year as prof_year,
-            a.id as apt_id,
-            a.professor_id as professor_id,
-            a.student_id as student_id,
-            a.availability_id as availability_id,
-            a.status as status
-
-            FROM appointments a
-            JOIN professors p ON p.user_id = a.professor_id
-            WHERE 1 = 1";
+            a.student_id,
+            a.professor_id,
+            a.status,
+            u.name,
+            av.day_of_week,
+            av.start_time,
+            av.end_time
+        FROM appointments a
+        LEFT JOIN availability av ON a.availability_id = av.id
+        ";
+        // LEFT JOIN users u ON u.id = a.professor_id
+        // WHERE a.student_id = 6
 
         //adds conditions depending on user's role
         if ($userRole === 'professor'){
-            $query2 .= " AND a.professor_id = ?";
+            $query2 .= "LEFT JOIN users u ON u.id = a.student_id
+            WHERE a.professor_id = ?";
         } else if ($userRole === 'student'){
-            $query2 .= " AND a.student_id = ?";
+            $query2 .= "LEFT JOIN users u ON u.id = a.professor_id
+            WHERE a.student_id = ?";
         } else {
             $this->message = "Role not Found";
             $this->code = 401;
             return false;
         }
+
+        $query2 .= " ORDER BY a.created_at DESC";
 
         $stment = $this->db->prepare($query2);
         $execute = $stment->execute([$user_id]);
