@@ -46,6 +46,7 @@ class Appointment extends AppModel{
 
         // get appointments, merges with users and professors
         $query2 = "SELECT
+            a.id as appointment_id,
             a.student_id,
             a.professor_id,
             a.status,
@@ -56,8 +57,6 @@ class Appointment extends AppModel{
         FROM appointments a
         LEFT JOIN availability av ON a.availability_id = av.id
         ";
-        // LEFT JOIN users u ON u.id = a.professor_id
-        // WHERE a.student_id = 6
 
         //adds conditions depending on user's role
         if ($userRole === 'professor'){
