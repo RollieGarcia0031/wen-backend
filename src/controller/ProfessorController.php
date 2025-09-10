@@ -117,6 +117,26 @@ class ProfessorController {
         }
     }
 
+    public function removeProfile($id){
+        if(!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            return Response::create(false, "User not logged in", null);
+        }
+
+        try{
+            $sucess = $this->professor->removeProfile($id, $_SESSION['uid']);
+            $message = $this->professor->message;
+            $data = $this->professor->data;
+            $code = $this->professor->code;
+
+            http_response_code($code);
+            return Response::create($sucess, $message, $data);
+        } catch (PDOException $e){
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
+
     /**
      * Returns the info of a professor
      * this will be used by students to view information about a certain professor
