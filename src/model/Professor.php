@@ -40,6 +40,31 @@ class Professor extends AppModel {
         return true;
     }
 
+    public function removeProfile(int $id, int $prof_id) {
+        if (!$this->isVerified()){
+            $this->code = 401;
+            $this->message = "User is not a professor";
+            return false;
+        }
+
+        $sql = "DELETE FROM professors WHERE user_id = ? AND id = ?";
+
+        $stment = $this->db->prepare($sql);
+        $stment->execute([$id, $prof_id]);
+
+        $affectedRows = $stment->rowCount();
+
+        if ($affectedRows === 0) {
+            $this->code = 404;
+            $this->message = "Profile not found";
+            return false;
+        }
+        
+        $this->code = 200;
+        $this->message = "Profile removed successfully";
+        return true;
+    }
+
     public function addAvailability($userId, $day, $start, $end){
         if (!$this->isVerified(null)){
             $this->code = 401;
@@ -174,7 +199,7 @@ class Professor extends AppModel {
         JOIN professors p ON u.id = p.user_id
         WHERE u.id = ?
         GROUP BY u.name
-    ";
+        ";
 
         $stment = $this->db->prepare($query);
         $stment->execute([$prof_id]);
