@@ -123,6 +123,11 @@ class ProfessorController {
             return Response::create(false, "User not logged in", null);
         }
 
+        if (!isset($id)) {
+            http_response_code(400);
+            return Response::create(false, "Id not provided", null);
+        }
+
         try{
             $sucess = $this->professor->removeProfile($id, $_SESSION['uid']);
             $message = $this->professor->message;
