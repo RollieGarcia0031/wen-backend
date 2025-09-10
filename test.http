@@ -14,7 +14,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "rollie@email.com",
+    "email": "angelo@email.com",
     "password":"123456"
 }
 
@@ -35,6 +35,14 @@ Content-Type: application/json
 ### get your own profile
 GET http://localhost:8080/professor/profile
 Content-Type: application/json
+
+### delete your own profile
+DELETE http://localhost:8080/professor/profile
+Content-Type: application/json
+
+{
+    "id":21
+}
 
 ### add availability
 POST http://localhost:8080/professor/availability

@@ -50,7 +50,7 @@ class Professor extends AppModel {
         $sql = "DELETE FROM professors WHERE user_id = ? AND id = ?";
 
         $stment = $this->db->prepare($sql);
-        $stment->execute([$id, $prof_id]);
+        $stment->execute([$prof_id, $id]);
 
         $affectedRows = $stment->rowCount();
 
