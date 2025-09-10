@@ -167,7 +167,7 @@ class Professor extends AppModel {
     }
 
     public function getProfile($user_id){
-        $query = "SELECT  department, year FROM professors WHERE user_id = ?";
+        $query = "SELECT  department, year, id FROM professors WHERE user_id = ?";
         $stment = $this->db->prepare($query);
         $stment->execute([$user_id]);
 
