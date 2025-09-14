@@ -80,6 +80,28 @@ class ProfessorController {
         }
     }
 
+    function removeAvailability($id) {
+        $user_id = $_SESSION['uid'];
+
+        if(!$user_id) {
+            http_response_code(401);
+            return Response::create(false, "User not logged in", null);
+        }
+
+        try{
+            $sucess = $this->professor->removeAvailability($id);
+            $message = $this->professor->message;
+            $data = $this->professor->data;
+            $code = $this->professor->code;
+            
+            http_response_code($code);
+            return Response::create($sucess, $message, $data);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
+
     public function search($name, $day, $time_start, $time_end, $department, $year) {
         try{
             $sucess = $this->professor->search($name, $day, $time_start, $time_end, $department, $year);

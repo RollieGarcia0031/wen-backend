@@ -80,6 +80,12 @@ switch ($uri){
             
             case "GET":
                 echo $professor->getAvailability(null);
+            break;
+
+            case "DELETE":
+                $data = json_decode( file_get_contents('php://input'), true );
+                $id = $data['id'] ?? null;
+                echo $professor->removeAvailability($id);
         }
     break;
 

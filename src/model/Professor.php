@@ -106,6 +106,24 @@ class Professor extends AppModel {
         return true;
     }
 
+    public function removeAvailability($id){
+        $query = "DELETE FROM availability WHERE id = ?";
+        $stment = $this->db->prepare($query);
+        $execute = $stment->execute([$id]);
+        $affectedRows = $stment->rowCount();
+
+        if(!$execute || $affectedRows === 0){
+            $this->code = 500;
+            $this->message = "Error removing availability";
+            return false;
+        }
+
+        $this->code = 200;
+        $this->message = "Availability removed successfully";
+        $this->data = ['id' => $id];
+        return true;
+    }
+
     public function search($name=null, $day=null, $time_start=null, $time_end=null, $department=null, $year=null){
 		$query = "SELECT
 			p.id as prof_id,
