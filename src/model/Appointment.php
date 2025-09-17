@@ -50,6 +50,8 @@ class Appointment extends AppModel{
             a.student_id,
             a.professor_id,
             a.status,
+            a.message,
+            a.time_stamp,
             u.name,
             av.day_of_week,
             av.start_time,

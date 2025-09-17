@@ -90,10 +90,10 @@ POST http://localhost:8080/appointment/send
 Content-Type: application/json
 
 {
-    "prof_id":8,
-    "availability_id":1,
+    "prof_id":33,
+    "availability_id":14,
     "message":"FROM CPE GE-II, for Emergency",
-    "time_stamp":"2025-09-17"
+    "time_stamp":"2025-9-17"
 }
 
 ### getting appointment
