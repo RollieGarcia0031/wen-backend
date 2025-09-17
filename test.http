@@ -3,9 +3,9 @@ Content-Type: application/json
 
 {
     "name": "johnny",
-	"email": "johnny2@example.com",
-	"password": "109726",
-    "role":"student"
+	"email": "samplep3@email.com",
+	"password": "123456",
+    "role":"professor"
 }
 
 ### auth login
@@ -14,7 +14,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "angelo@email.com",
+    "email": "rollie@email.com",
     "password":"123456"
 }
 
@@ -91,7 +91,9 @@ Content-Type: application/json
 
 {
     "prof_id":8,
-    "availability_id":1
+    "availability_id":1,
+    "message":"FROM CPE GE-II, for Emergency",
+    "time_stamp":"2025-09-17"
 }
 
 ### getting appointment

@@ -58,6 +58,8 @@ student_id INT REFERENCES users(id) ON DELETE CASCADE,
 professor_id INT REFERENCES users(id) ON DELETE CASCADE,
 availability_id INT REFERENCES availability(id) ON DELETE CASCADE,
 status appointment_status DEFAULT 'pending',
+message TEXT,
+time_stamp TIMESTAMP NOT NULL,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

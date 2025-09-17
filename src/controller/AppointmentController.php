@@ -11,7 +11,7 @@ class AppointmentController {
         $this->appointment = new Appointment();
     }
 
-    public function send($prof_id, $availability_id){
+    public function send($prof_id, $availability_id, $message_text, $time_stamp){
         $student_id = $_SESSION['uid'];
 
         if (!$student_id) {
@@ -20,7 +20,7 @@ class AppointmentController {
         }
 
         try {
-            $sucess = $this->appointment->send($prof_id, $student_id, $availability_id);
+            $sucess = $this->appointment->send($prof_id, $student_id, $availability_id, $message_text, $time_stamp);
             $message = $this->appointment->message;
             $data = $this->appointment->data;
             $code = $this->appointment->code;

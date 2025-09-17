@@ -116,9 +116,14 @@ switch ($uri){
 
     case "/appointment/send":
         $data = json_decode( file_get_contents('php://input'), true );
-        ['prof_id'=>$prof_id, 'availability_id'=>$availability_id] = $data;
+        [
+            'prof_id'=>$prof_id,
+            'availability_id'=>$availability_id,
+            'message'=>$message,
+            'time_stamp'=>$time_stamp
+        ] = $data;
 
-        echo $appointment->send($prof_id, $availability_id);
+        echo $appointment->send($prof_id, $availability_id, $message, $time_stamp);
     break;
 
     case "/appointment/list":
