@@ -174,4 +174,28 @@ class Appointment extends AppModel{
         $this->message = "Appointment deleted successfully";
         return true;
     }
+    
+    public function updateMessage($appointement_id, $new_message, $student_id){
+        $q = "UPDATE appointments SET message = ? WHERE id = ? AND student_id = ?";
+
+        $statement = $this->db->prepare($q);
+        $execute = $statement->execute([$new_message, $appointement_id, $student_id]);
+
+        if(!$execute) {
+            $this->code = 500;
+            $this->message = "Error updating message";
+            return false;
+        }
+
+        $rowCount = $statement->rowCount();
+        if (!$rowCount) {
+            $this->code = 404;
+            $this->message = "Appointment not found";
+            return false;
+        }
+        
+        $this->code = 200;
+        $this->message = "Message updated successfully";
+        return true;
+    }
 }
