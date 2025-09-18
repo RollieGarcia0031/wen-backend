@@ -174,7 +174,7 @@ class Appointment extends AppModel{
         $this->message = "Appointment deleted successfully";
         return true;
     }
-    
+
     public function updateMessage($appointement_id, $new_message, $student_id){
         $q = "UPDATE appointments SET message = ? WHERE id = ? AND student_id = ?";
 
@@ -191,6 +191,7 @@ class Appointment extends AppModel{
         if (!$rowCount) {
             $this->code = 404;
             $this->message = "Appointment not found";
+            $this->data = ['id' => $appointement_id];
             return false;
         }
         

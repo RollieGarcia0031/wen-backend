@@ -108,6 +108,15 @@ Content-Type: application/json
     "id":2
 }
 
+### update message field of an appointment
+POST http://localhost:8080/appointment/update/message
+Content-Type: application/json
+
+{
+    "id":13,
+    "message":"Hello"
+}
+
 ### deletes a specific appointment
 
 DELETE http://localhost:8080/appointment/delete

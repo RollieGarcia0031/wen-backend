@@ -136,8 +136,8 @@ switch ($uri){
         echo $appointment->accept($appointment_id);
     break;
 
-    case "appointment/update/message":
-        $data = json_encode( file_get_contents('php://input'), true );
+    case "/appointment/update/message":
+        $data = json_decode( file_get_contents('php://input'), true );
         $appointment_id = $data['id'] ?? null;
         $message = $data['message'] ?? '';
         echo $appointment->updateMessage($appointment_id, $message);
