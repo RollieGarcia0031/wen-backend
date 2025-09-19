@@ -1,11 +1,15 @@
 <?php
 
+require __DIR__ . '/../../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load();
+
 function connection(){
-    $user = 'postgres';
-    $password = '123456';
-    $db = 'apt_dev_ui';
-    $host = 'localhost';
-    $port = '5433';
+    $user = $_ENV['DB_USER'];
+    $password = $_ENV['DB_PASSWORD'];
+    $db = $_ENV['DB_NAME'];
+    $host = $_ENV['DB_HOST'];
+    $port = $_ENV['DB_PORT'];
 
     try{
         $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$db", $user, $password);
