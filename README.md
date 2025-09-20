@@ -1,4 +1,4 @@
-# Appointment Booking API
+# Student-Porfessor Booking API
 
 This document outlines the available API endpoints for the Appointment Booking system. All responses are in JSON format.
 

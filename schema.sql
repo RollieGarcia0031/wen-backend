@@ -1,9 +1,4 @@
-= Appointment Scheduler Database Schema
-Rollie Garcia
-== Users Table
-
-[source,sql]
-----
+-- Users Table
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -13,12 +8,8 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-----
 
-== Professors Table
-
-[source,sql]
-----
+-- Professors Table
 CREATE TABLE professors (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -27,12 +18,8 @@ CREATE TABLE professors (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-----
 
-== Availability Table
-
-[source,sql]
-----
+-- Availability Table
 CREATE TYPE day_of_week AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
 
 CREATE TABLE availability (
@@ -44,12 +31,8 @@ CREATE TABLE availability (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-----
+-- Appointments Table
 
-== Appointments Table
-
-[source,sql]
-----
 CREATE TYPE appointment_status AS ENUM ('pending', 'confirmed', 'canceled');
 
 CREATE TABLE appointments (
@@ -65,16 +48,13 @@ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ----
 
-== Refresh Tokens Table
-
-[source,sql]
+-- Refresh Tokens Table
+-- not sure baka later ko gawin
+-- CREATE TABLE refresh_tokens (
+--     id SERIAL PRIMARY KEY,
+--     user_id INT REFERENCES users(id) ON DELETE CASCADE,
+--     token VARCHAR(255) NOT NULL,
+--     expires_at TIMESTAMP NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
 ----
-CREATE TABLE refresh_tokens (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    token VARCHAR(255) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-----
-
