@@ -36,21 +36,42 @@ Error responses will typically look like this:
 
 ### 1. User Authentication
 
-#### `POST /auth/login`
+#### `POST /auth/signup`
 
 Authenticates a user and logs them in.
 
 *   **Method**: `POST`
 *   **Body**:
     ```json
-    {
-      "email": "user@example.com",
-      "password": "yourpassword"
-    }
+      {
+        "name": "rollie",
+        "email": "rollie@email.com",
+        "password": "123456",
+        "role":"professor | student"
+      }
     ```
 *   **Response (Inferred)**:
-    *   Success: `{"success": true, "message": "Login successful", "data": {"user_id": 123, "email": "user@example.com", ...}}`
-    *   Failure: `{"success": false, "message": "Invalid credentials", "data": null}`
+*   **Sucess**:
+    ```json
+      {
+        "success": true,
+        "message": "Signup successful",
+        "data": {
+          "id": "1",
+          "email": "rollie@email.com",
+          "name": "rollie"
+        }
+      }
+    ```
+*  **Fail**
+    ```json
+    {
+      "success": false,
+      "message": "Signup failed",
+      "data":
+        "SQLSTATE[23505]: Unique violation: 7 ERROR:  duplicate key value violates unique constraint \"users_email_key\"\nDETAIL:  Key (email)=(rollie@email.com) already exists."
+    }
+    ```
 
 #### `POST /auth/signup`
 
