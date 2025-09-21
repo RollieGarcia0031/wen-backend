@@ -199,4 +199,29 @@ class Appointment extends AppModel{
         $this->message = "Message updated successfully";
         return true;
     }
+
+    function getCurrentDayBooked($user_id){
+        $current_time = date('Y-m-d');
+
+        $query = "SELECT * FROM appointments
+            WHERE (student_id = ? OR professor_id = ?)
+            AND status = 'confirmed'
+            AND DATE(time_stamp) = ?
+            ";
+
+        $statement = $this->db->prepare($query);
+        $execute = $statement->execute([$user_id, $user_id, $current_time]);
+
+        if(!$execute) {
+            $this->code = 500;
+            $this->message = "Error getting appointments";
+            return false;
+        }
+
+        $appointements = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $this->data = $appointements;
+        $this->code = 200;
+        $this->message = "Success";
+        return true;
+    }
 }

@@ -157,6 +157,10 @@ switch ($uri){
         }
     break;
 
+    case "/appointment/currentDayBooked":
+        echo $appointment->getCurrentDayBooked();
+    break;
+
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

@@ -125,3 +125,7 @@ Content-Type: application/json
 {
     "id": 6
 }
+
+### get the appointment booked for the current day
+GET http://localhost:8080/appointment/currentDayBooked
+Content-Type: application/json

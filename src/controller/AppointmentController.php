@@ -130,4 +130,24 @@ class AppointmentController {
             return Response::create(false, $e->getMessage(), null);
         }
     }
+
+    function getCurrentDayBooked(){
+        if(!isset($_SESSION['uid'])) {
+            http_response_code(201);
+            return Response::create(false, "User not logged in", null);
+        }
+        
+        try {
+            $sucess = $this->appointment->getCurrentDayBooked($_SESSION['uid']);
+            $message = $this->appointment->message;
+            $data = $this->appointment->data;
+            $code = $this->appointment->code;
+    
+            http_response_code($code);
+            return Response::create($sucess, $message, $data);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
 }
