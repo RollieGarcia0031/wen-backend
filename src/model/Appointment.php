@@ -73,7 +73,7 @@ class Appointment extends AppModel{
             return false;
         }
 
-        $query2 .= " ORDER BY a.created_at DESC";
+        $query2 .= " ORDER BY a.time_stamp ASC";
 
         $stment = $this->db->prepare($query2);
         $execute = $stment->execute([$user_id]);
