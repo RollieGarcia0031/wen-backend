@@ -73,7 +73,7 @@ Authenticates a user and logs them in.
     }
     ```
 
-#### `POST /auth/signup`
+#### `POST auth/login`
 
 Registers a new user.
 
@@ -81,15 +81,27 @@ Registers a new user.
 *   **Body**:
     ```json
     {
-      "name": "John Doe",
-      "email": "john.doe@example.com",
-      "password": "newpassword",
-      "role": "student" // or "professor"
+      "email": "rollie@email.com",
+      "password":"123456"
     }
     ```
 *   **Response (Inferred)**:
-    *   Success: `{"success": true, "message": "User registered successfully", "data": {"user_id": 124, "email": "john.doe@example.com", ...}}`
-    *   Failure: `{"success": false, "message": "Email already exists", "data": null}`
+    *   Success:
+    ```json
+      {
+        "success": true,
+        "message": "Login successful",
+        "data": {
+          "id": 1,
+          "name": "rollie",
+          "email": "rollie@email.com",
+          "password": null,
+          "role": "professor",
+          "created_at": "2025-09-20 18:49:26.692636",
+          "updated_at": "2025-09-20 18:49:26.692636"
+        }
+      }
+    ```
 
 #### `GET /auth/logout`
 
@@ -118,7 +130,15 @@ Adds or updates a professor's profile details. This endpoint is likely for profe
     }
     ```
 *   **Response (Inferred)**:
-    *   Success: `{"success": true, "message": "Profile updated", "data": null}`
+    *   Success:
+    ```json
+    {
+      "success": true,
+      "message": "Profile added successfully",
+      "data": {
+        "id": "1"
+      }
+    }````
     *   Failure: `{"success": false, "message": "Error updating profile", "data": null}`
 
 #### `POST /professor/availability`
@@ -130,12 +150,21 @@ Adds a new availability slot for a professor.
     ```json
     {
       "day": "Monday",
-      "start": "09:00",
-      "end": "10:00"
+      "start": "09:00:00",
+      "end": "10:00:00"
     }
     ```
 *   **Response (Inferred)**:
-    *   Success: `{"success": true, "message": "Availability added", "data": null}`
+    *   Success: 
+    ```json
+    {
+      "success": true,
+      "message": "Availability added successfully",
+      "data": {
+        "id": "1"
+      }
+    }
+    ```
     *   Failure: `{"success": false, "message": "Error adding availability", "data": null}`
 
 #### `GET /professor/availability`
@@ -145,7 +174,24 @@ Retrieves the availability of the currently logged-in professor.
 *   **Method**: `GET`
 *   **Body**: None
 *   **Response (Inferred)**:
-    *   Success: `{"success": true, "message": "Availability retrieved", "data": [{"day": "Monday", "start": "09:00", "end": "10:00"}, ...]}`
+    *   Success:
+    ```json
+    {
+      "success": true,
+      "message": "Availability fetched",
+      "data": [
+        {
+          "id": 1,
+          "user_id": 1,
+          "day_of_week": "Monday",
+          "start_time": "09:00:00",
+          "end_time": "10:30:00",
+          "created_at": "2025-09-21 17:48:18.143076",
+          "updated_at": "2025-09-21 17:48:18.143076"
+        }
+      ]
+    }
+    ```
     *   Failure: `{"success": false, "message": "Not authorized or no availability found", "data": null}`
 
 ---
@@ -169,7 +215,26 @@ Searches for professors based on various criteria.
     }
     ```
 *   **Response (Inferred)**:
-    *   Success: `{"success": true, "message": "Professors found", "data": [{"id": 1, "name": "Dr. Smith", "department": "Physics", ...}, ...]}`
+    *   Success:
+    ```json
+    {
+      "success": true,
+      "message": "Professors found",
+      "data": [
+        {
+          "prof_id": 1,
+          "department": "CEN",
+          "year": 1,
+          "user_id": 1,
+          "name": "rollie",
+          "email": "rollie@email.com",
+          "day_of_week": "Monday",
+          "start_time": "09:00:00",
+          "end_time": "10:30:00"
+        }
+      ]
+    }
+    ```
     *   Failure: `{"success": false, "message": "No professors found matching criteria", "data": null}`
 
 #### `POST /search/availability`
@@ -214,7 +279,36 @@ Lists all appointments for the current user (student or professor).
 *   **Method**: `GET`
 *   **Body**: None
 *   **Response (Inferred)**:
-    *   Success: `{"success": true, "message": "Appointments retrieved", "data": [{"id": 1, "prof_id": 123, "student_id": 456, "time": "2025-09-01 10:00:00", "status": "pending"}, ...]}`
+    *   Success:
+    ```json
+    {
+      "success": true,
+      "message": "Query Sucess",
+      "data": {
+        "role": "professor",
+        "appointments": [
+          {
+            "appointment_id": 2,
+            "student_id": 1,
+            "professor_id": 1,
+            "status": "pending",
+            "message": "FROM CPE GE-II, for Emergency",
+            "time_stamp": "2025-09-17 00:00:00",
+            "name": "rollie",
+            "day_of_week": "Monday",
+            "start_time": "09:00:00",
+            "end_time": "10:30:00"
+          }
+        ],
+        "names": [
+          {
+            "id": 1,
+            "name": "rollie"
+          }
+        ]
+      }
+    }
+    ```
     *   Failure: `{"success": false, "message": "No appointments found", "data": null}`
 
 #### `POST /appointment/accept`
