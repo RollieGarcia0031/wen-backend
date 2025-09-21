@@ -203,14 +203,46 @@ class Appointment extends AppModel{
     function getCurrentDayBooked($user_id){
         $current_time = date('Y-m-d');
 
-        $query = "SELECT * FROM appointments
-            WHERE (student_id = ? OR professor_id = ?)
-            AND status = 'confirmed'
-            AND DATE(time_stamp) = ?
-            ";
+        $q1 = "SELECT role FROM users WHERE id = ?";
+        $stment = $this->db->prepare($q1);
+        $stment->execute([$user_id]);
+
+        $userRole = $stment->fetch(PDO::FETCH_ASSOC);
+        if($userRole === null){
+            $this->code = 404;
+            $this->message = "User not found";
+            return false;
+        }
+
+        if($userRole['role'] == 'professor'){
+            $query = "SELECT
+                a.*,
+                u.name
+            FROM appointments a
+            INNER JOIN users u
+                ON (a.student_id = u.id)
+            WHERE
+                a.professor_id = ?
+                AND a.status = 'confirmed'
+                AND DATE(a.time_stamp) = ?    
+            ";   
+        } else {
+            $query = "SELECT
+                    a.*,
+                    u.name
+                FROM appointments a
+                INNER JOIN users u
+                    ON (a.professor_id = u.id)
+                WHERE
+                    a.student_id = ?
+                    AND a.status = 'confirmed'
+                    AND DATE(a.time_stamp) = ?
+                ORDER BY a.time_stamp DESC
+                ";
+        }
 
         $statement = $this->db->prepare($query);
-        $execute = $statement->execute([$user_id, $user_id, $current_time]);
+        $execute = $statement->execute([$user_id, $current_time]);
 
         if(!$execute) {
             $this->code = 500;
