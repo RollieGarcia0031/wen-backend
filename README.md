@@ -328,7 +328,33 @@ Accepts a pending appointment request. This is likely for professors.
 
 ---
 
-### 5. Error Handling
+### 5. Get Currently Approved Appointment for Current Day
+### GET /appointment/currentDayBooked
+* **Method** `GET`
+
+* **Response**:
+  * Sucess:
+  ```json
+  {
+    "success": true,
+    "message": "Success",
+    "data": [
+      {
+        "id": 4,
+        "student_id": 1,
+        "professor_id": 2,
+        "availability_id": 3,
+        "status": "confirmed",
+        "message": "Eat",
+        "time_stamp": "2025-09-21 00:00:00",
+        "created_at": "2025-09-21 20:03:52.188579",
+        "updated_at": "2025-09-21 20:03:52.188579"
+      }
+    ]
+  }
+  ```
+
+### 6. Error Handling
 
 #### Default (404 Not Found)
 
