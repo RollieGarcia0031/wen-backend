@@ -72,4 +72,21 @@ class Auth extends AppModel{
             return true;
         }
     }
+
+    public function me($uid){
+        $query = "SELECT
+            id, name, email
+            FROM users WHERE id = ?";
+            
+        $stment = $this->db->prepare($query);
+        $stment->execute([$uid]);
+        
+        $user = $stment->fetch(PDO::FETCH_ASSOC);
+
+        $this->data = $user;
+        $this->message = "User found";
+        $this->code = 200;
+        
+        return true;
+    }
 }

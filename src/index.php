@@ -161,6 +161,13 @@ switch ($uri){
         echo $appointment->getCurrentDayBooked();
     break;
 
+    case "/user/me":
+        if($method === 'GET'){
+            echo $auth->me();
+            exit;
+        }
+    break;
+
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

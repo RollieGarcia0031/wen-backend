@@ -48,4 +48,24 @@ class AuthController {
         http_response_code(200);
         return Response::create($success, "Logout successful", null);
     }
+
+    public function me(){
+        if(!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            return Response::create(false, "User not logged in", null);
+        }
+
+        try {
+            $sucess = $this->auth->me($_SESSION['uid']);
+            $message = $this->auth->message;
+            $data = $this->auth->data;
+            $code = $this->auth->code;
+
+            http_response_code($code);
+            return Response::create($sucess, $message, $data);
+        } catch (PDOException $e){
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
 }

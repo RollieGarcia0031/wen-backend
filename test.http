@@ -129,3 +129,7 @@ Content-Type: application/json
 ### get the appointment booked for the current day
 GET http://localhost:8080/appointment/currentDayBooked
 Content-Type: application/json
+
+### get currently logged user info
+GET http://localhost:8080/user/me
+Content-Type: application/json
