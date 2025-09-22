@@ -217,27 +217,34 @@ class Appointment extends AppModel{
         if($userRole['role'] == 'professor'){
             $query = "SELECT
                 a.*,
-                u.name
+                u.name,
+                av.start_time
             FROM appointments a
             INNER JOIN users u
                 ON (a.student_id = u.id)
+            INNER JOIN availability av
+                ON a.availability_id = av.id
             WHERE
                 a.professor_id = ?
                 AND a.status = 'confirmed'
-                AND DATE(a.time_stamp) = ?    
+                AND DATE(a.time_stamp) = ?
+            ORDER BY av.start_time ASC
             ";   
         } else {
             $query = "SELECT
                     a.*,
-                    u.name
+                    u.name,
+                    av.start_time
                 FROM appointments a
                 INNER JOIN users u
                     ON (a.professor_id = u.id)
+                INNER JOIN availability av
+                    ON a.availability_id = av.id
                 WHERE
                     a.student_id = ?
                     AND a.status = 'confirmed'
                     AND DATE(a.time_stamp) = ?
-                ORDER BY a.time_stamp DESC
+                ORDER BY av.start_time ASC
                 ";
         }
 
