@@ -18,6 +18,17 @@ Content-Type: application/json
     "password":"123456"
 }
 
+### change logged user info
+PUT http://localhost:8080/auth/update
+Content-Type: application/json
+
+{
+    "email": "angelo@email.com",
+    "name": "Sir Angelo Garcia",
+    "old_password": "123456",
+    "new_password": "12345678"
+}
+
 ### logout
 POST http://localhost:8080/auth/logout
 Content-Type: application/json

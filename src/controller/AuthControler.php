@@ -68,4 +68,27 @@ class AuthController {
             return Response::create(false, $e->getMessage(), null);
         }
     }
+
+    public function update($email, $name, $old_password, $new_password){
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            return Response::create(false, "User not logged in", null);
+        }
+
+        try {
+            $success = $this->auth->updateInfos(
+                $email, $name, $old_password, $new_password, $_SESSION['uid']
+            );
+
+            $message = $this->auth->message;
+            $data = $this->auth->data;
+            $code = $this->auth->code;
+
+            http_response_code($code);
+            return Response::create($success, $message, $data);
+        } catch (PDOException $e){
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
 }

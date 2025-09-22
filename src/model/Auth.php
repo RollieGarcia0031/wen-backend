@@ -89,4 +89,61 @@ class Auth extends AppModel{
         
         return true;
     }
+
+    /**
+     * updates information on logged user
+     */
+    public function updateInfos($email, $name, $old_password, $new_password, $user_id){
+        try {
+            $this->db->beginTransaction();
+
+            if(isset($email) && $email !== null){
+                $q = "UPDATE users SET email = ? WHERE id = ?";
+                $stment = $this->db->prepare($q);
+
+                $stment->execute([$email, $user_id]);
+            }
+
+            if (isset($name) && $name !== null) {
+                $q = "UPDATE users SET name = ? WHERE id = ?";
+                $stment = $this->db->prepare($q);
+
+                $stment->execute([$name, $user_id]);
+            }
+
+            if (isset($new_password) && $new_password !== null){
+                //fetch the old password from database
+                $query1 = "SELECT password FROM users WHERE id = $user_id";
+                $fetched_old_password = $this->db->query($query1)->fetch(PDO::FETCH_ASSOC)['password'];
+
+                //compare it to old password from api request
+                $password_is_correct = password_verify($old_password, $fetched_old_password);
+
+                if ($password_is_correct) {
+                    $q = "UPDATE users SET password = ? WHERE id = ?";
+                    $stment = $this->db->prepare($q);
+                    
+                    //hash the new password
+                    $new_password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+                    //execute to update database
+                    $stment->execute([$new_password_hash, $user_id]);
+                } else {
+                    throw new PDOException("Old password is incorrect");
+                }
+            }
+
+            $this->db->commit();
+
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+
+            $this->code = 500;
+            $this->message = $e->getMessage();
+            return false;
+        }
+
+        $this->code = 200;
+        $this->message = "Infos updated";
+        return true;
+    }
 }
