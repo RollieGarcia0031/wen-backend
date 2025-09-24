@@ -292,6 +292,16 @@ class Appointment extends AppModel{
     
     }
 
+    /**
+     * Returns the number of appointments for the logged user
+     * - if status is provided, returns the number of appointments
+     * that matching status
+     * - if time_range is provided, returns the number of appointments
+     * that matching time_range
+     * @param int $user_id
+     * @param string $status = { confirmed | pending }
+     * @param string $time_range - { today | tomorrow | future | past }
+     */
     public function getAppointmentsCount($user_id, $status, $time_range){
         $current_time = date('Y-m-d');
         $params = [$user_id, $user_id];
