@@ -6,6 +6,14 @@ require_once __DIR__ . '/Professor.php';
 class Appointment extends AppModel{
     private $professor;
 
+    /**
+     * sends an appointment to a professor
+     * @param int $prof_id id of the professor (reciever)
+     * @param int $student_id id of the student (sender)
+     * @param int $availability_id id of the availability (to get the day and time)
+     * @param string $message_text text of the message
+     * @param string $time_stamp timestamp
+     */
     public function send($prof_id, $student_id, $availability_id, $message_text, $time_stamp){
         $this->professor = new Professor();
         $is_professor = $this->professor->isVerified($prof_id);
@@ -35,6 +43,13 @@ class Appointment extends AppModel{
         return true;
     }
 
+    /**
+     * Fetches a list of Appointments
+     * if logged user is a student, it shows sent appointments
+     * if logged user is a professor, it shows received appointments
+     * 
+     * @param int $user_id id of logged user
+     */
     public function getList($user_id){
         //get user's role
         $query = "SELECT role FROM users WHERE id = ?";
@@ -73,6 +88,7 @@ class Appointment extends AppModel{
             return false;
         }
 
+        // order from old to new
         $query2 .= " ORDER BY a.time_stamp ASC";
 
         $stment = $this->db->prepare($query2);
@@ -99,6 +115,7 @@ class Appointment extends AppModel{
             $viewer = 'professor_id';
         }
 
+        // fetch the names, instead of using join statements
         $names = [];
         $viewer_ids = array_values( array_unique(  array_column($appointements, $viewer) ) );
         
@@ -175,6 +192,12 @@ class Appointment extends AppModel{
         return true;
     }
 
+    /**
+     * Updates the message of an appointement
+     * @param int $appointement_id
+     * @param string $new_message
+     * @param int $student_id used to confirm it student owns the message to be edited
+     */
     public function updateMessage($appointement_id, $new_message, $student_id){
         $q = "UPDATE appointments SET message = ? WHERE id = ? AND student_id = ?";
 
@@ -200,6 +223,10 @@ class Appointment extends AppModel{
         return true;
     }
 
+    /**
+     * Returns all the appointments for the current day for the logged user
+     * @param int $user_id
+     */
     function getCurrentDayBooked($user_id){
         $current_time = date('Y-m-d');
 

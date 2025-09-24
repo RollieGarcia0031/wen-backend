@@ -2,8 +2,8 @@ POST http://localhost:8080/auth/signup
 Content-Type: application/json
 
 {
-    "name": "rollie",
-	"email": "angelo@email.com",
+    "name": "sample 2",
+	"email": "sample2@email.com",
 	"password": "123456",
     "role":"professor"
 }
@@ -14,7 +14,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "angelo@email.com",
+    "email": "sample2@email.com",
     "password":"123456"
 }
 
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 {
     "year":1,
-    "department":"CEN"
+    "department":"CAm"
 }
 
 ### get your own profile
@@ -61,8 +61,8 @@ Content-Type: application/json
 
 {
     "day":"Monday",
-    "start": "09:00:00",
-    "end":"10:30:00"
+    "start": "12:00:00",
+    "end":"13:30:00"
 }
 
 ### get availability of logged in professor
