@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
     "email": "rollie@email.com",
-    "password": "109726"
+    "password": "123456"
 }
 
 ### change logged user info
@@ -156,4 +156,10 @@ Content-Type: application/json
     "time_range": "today"
 }
 
-###
+### count appointments grouped by status category
+POST http://localhost:8080/appointments/groupedCount
+Content-Type: application/json
+
+{
+    "time_range": "future"
+}

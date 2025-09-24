@@ -175,4 +175,29 @@ class AppointmentController {
             return Response::create(false, $e->getMessage(), null);
         }
     }
+
+    public function getGroupedAppointmentsCount($time_range){
+        if (!isset( $_SESSION['uid'] )){
+            http_response_code(401);
+            return Response::create(false, "User not logged in");
+        }
+
+        $user_id = $_SESSION['uid'];
+
+        try {
+           $sucess = $this->appointment->getGroupedAppointmentsCount($user_id, $time_range);
+           
+           http_response_code($this->appointment->code);
+
+           return Response::create(
+            $sucess,
+            $this->appointment->message,
+            $this->appointment->data
+           );
+
+        } catch (PDOException $e) {
+            http_response_code(500);
+            return Response::create(false, $e->getMessage(), null);
+        }
+    }
 }

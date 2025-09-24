@@ -191,6 +191,16 @@ switch ($uri){
             echo $appointment->getCurrentAppointmentsCount($status, $time_stamp);
             exit;
         }
+    break;
+
+    case "/appointments/groupedCount":
+        if($method === 'POST'){
+            $data = json_decode( file_get_contents('php://input'), true );
+            $time_range = $data["time_range"] ?? null;
+
+            echo $appointment->getGroupedAppointmentsCount($time_range);
+        }
+    break;
 
     default:
         http_response_code(404);

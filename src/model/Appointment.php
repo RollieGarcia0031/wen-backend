@@ -5,6 +5,7 @@ require_once __DIR__ . '/Professor.php';
 
 class Appointment extends AppModel{
     private $professor;
+    private $timeRangesList = ['today', 'tomorrow', 'future', 'past'];
 
     /**
      * sends an appointment to a professor
@@ -311,10 +312,8 @@ class Appointment extends AppModel{
             WHERE
                 (professor_id = ? OR student_id = ?)";
 
-        $timeRangesList = ['today', 'tomorrow', 'future', 'past'];
-
         if ($time_range !== null) {
-            if (!in_array($time_range, $timeRangesList)){
+            if (!in_array($time_range, $this->timeRangesList)){
                 $this->code = 400;
                 $this->message = "Invalid Time Range";
                 return false;
@@ -344,6 +343,62 @@ class Appointment extends AppModel{
             $params[] = $status;
         }
                 
+        $statement = $this->db->prepare($q);
+        $execute = $statement->execute($params);
+
+        if (!$execute) throw new PDOException("Error During Execution");
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->code = 200;
+        $this->message = "Fetched Appointments Count Sucessfully";
+        $this->data = $rows;
+        return true;
+    }
+
+    /**
+     * fetches the number of appointments for the logged user
+     * it results to a table of appointments conts separated by the status
+     * @param int $user_id
+     * @param string $time_range
+     */
+    public function getGroupedAppointmentsCount($user_id, $time_range){
+        $params = [$user_id, $user_id];
+        $q = "SELECT
+            count(status), status
+            FROM appointments
+            WHERE
+            (professor_id = ? OR student_id = ?)"
+        ;
+
+        // include status to query and param if provided
+        if(isset($time_range)){
+            if (!in_array($time_range, $this->timeRangesList)){
+                $this->code = 400;
+                $this->message = "Invalid Time Range";
+                return false;
+            }
+
+            if( $time_range == 'today' ) {
+                $time_range = date('Y-m-d');
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'tomorrow' ) {
+                $time_range = date('Y-m-d', strtotime('+1 day'));
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'future' ){
+                $time_range = date('Y-m-d');
+                $q .= "AND DATE(time_stamp) > ?";
+            } else if ( $time_range == 'past' ){
+                $time_range = date('Y-m-d');
+                $q .= "AND DATE(time_stamp) < ?";
+            }
+
+            $params[] = $time_range;
+        }
+        
+        // group the result by status category
+        $q .= " GROUP BY status";
+
         $statement = $this->db->prepare($q);
         $execute = $statement->execute($params);
 
