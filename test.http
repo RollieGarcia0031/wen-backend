@@ -147,7 +147,7 @@ Content-Type: application/json
 
 
 ### count all of total appointments
-### time ranges : past, now, tomorrow, future
+### time ranges : past, today, tomorrow, future
 POST http://localhost:8080/appointments/count
 Content-Type: application/json
 
@@ -161,5 +161,5 @@ POST http://localhost:8080/appointments/groupedCount
 Content-Type: application/json
 
 {
-    "time_range": "future"
+    "time_range": "past"
 }

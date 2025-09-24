@@ -355,7 +355,66 @@ Accepts a pending appointment request. This is likely for professors.
   }
   ```
 
-### 6. Error Handling
+
+### 6. Counting Appointments
+This is useful for loading counts of appointments in the dashboard
+### GET /appointments/count
+count of all of the appointments, that can be restricted by certain
+status or time range.
+
+  * **METHOD** `POST`
+  * **BODY**:
+  ```json
+  {
+    "status": "confirmed | pending", //optional, leave it blank to count the total of all
+    "time_range": "past | today | tommorow | future|" //optional
+  }
+  ```
+
+  * **RESPONSE**:
+    * Sucess:
+    ```json
+    {
+      "success": true,
+      "message": "Fetched Appointments Count Sucessfully",
+      "data": [
+        {
+          "total_appointments": 0
+        }
+      ]
+    }
+    ```
+
+### POST /appointments/groupedCount
+Returns a json containing count of appointments, restricted by a time range and grouped by category according to status
+
+  * **METHOD** `POST`
+  * **BODY**:
+  ```json
+  {
+    "time_range": "past | today | tommorow | future|"
+  }
+  ```
+  * **RESPONSE**:
+    * Sucess:
+    ```json
+    {
+      "success": true,
+      "message": "Fetched Appointments Count Sucessfully",
+      "data": [
+        {
+          "count": 1,
+          "status": "pending"
+        },
+        {
+          "count": 3,
+          "status": "confirmed"
+        }
+      ]
+    }
+    ```
+
+### 7. Error Handling
 
 #### Default (404 Not Found)
 
