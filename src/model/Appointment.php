@@ -289,5 +289,61 @@ class Appointment extends AppModel{
         $this->code = 200;
         $this->message = "Success";
         return true;
+    
+    }
+
+    public function getAppointmentsCount($user_id, $status, $time_range){
+        $current_time = date('Y-m-d');
+        $params = [$user_id, $user_id];
+
+        // create select statement with conditions in id and timestamp
+        $q = "SELECT COUNT(*) as total_appointments FROM appointments
+            WHERE
+                (professor_id = ? OR student_id = ?)";
+
+        $timeRangesList = ['today', 'tomorrow', 'future', 'past'];
+
+        if ($time_range !== null) {
+            if (!in_array($time_range, $timeRangesList)){
+                $this->code = 400;
+                $this->message = "Invalid Time Range";
+                return false;
+            }
+
+
+            if( $time_range == 'today' ) {
+                $time_range = $current_time;
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'tomorrow' ) {
+                $time_range = date('Y-m-d', strtotime('+1 day'));
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'future' ){
+                $time_range = $current_time;
+                $q .= "AND DATE(time_stamp) > ?";
+            } else if ( $time_range == 'past' ){
+                $time_range = $current_time;
+                $q .= "AND DATE(time_stamp) < ?";
+            }
+            
+            $params[] = $time_range;
+        }
+
+        // include status to query and param if provided
+        if(isset($status)){
+            $q .= " AND status = ?";
+            $params[] = $status;
+        }
+                
+        $statement = $this->db->prepare($q);
+        $execute = $statement->execute($params);
+
+        if (!$execute) throw new PDOException("Error During Execution");
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->code = 200;
+        $this->message = "Fetched Appointments Count Sucessfully";
+        $this->data = $rows;
+        return true;
     }
 }

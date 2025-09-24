@@ -182,6 +182,16 @@ switch ($uri){
         }
     break;
 
+    case "/appointments/count":
+        if($method === 'POST'){
+            $data = json_decode( file_get_contents('php://input'), true );
+            $status = $data["status"] ?? null;
+            $time_stamp = $data["time_range"] ?? null;
+
+            echo $appointment->getCurrentAppointmentsCount($status, $time_stamp);
+            exit;
+        }
+
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);

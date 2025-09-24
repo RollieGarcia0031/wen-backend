@@ -14,8 +14,8 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "sample2@email.com",
-    "password":"123456"
+    "email": "rollie@email.com",
+    "password": "109726"
 }
 
 ### change logged user info
@@ -144,3 +144,16 @@ Content-Type: application/json
 ### get currently logged user info
 GET http://localhost:8080/user/me
 Content-Type: application/json
+
+
+### count all of total appointments
+### time ranges : past, now, tomorrow, future
+POST http://localhost:8080/appointments/count
+Content-Type: application/json
+
+{
+    "status": "confirmed",
+    "time_range": "today"
+}
+
+###
