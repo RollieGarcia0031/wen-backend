@@ -2,8 +2,8 @@ POST http://localhost:8080/auth/signup
 Content-Type: application/json
 
 {
-    "name": "rollie",
-	"email": "angelo@email.com",
+    "name": "sample 2",
+	"email": "sample2@email.com",
 	"password": "123456",
     "role":"professor"
 }
@@ -14,8 +14,8 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "angelo@email.com",
-    "password":"123456"
+    "email": "rollie@email.com",
+    "password": "123456"
 }
 
 ### change logged user info
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 {
     "year":1,
-    "department":"CEN"
+    "department":"CAm"
 }
 
 ### get your own profile
@@ -61,8 +61,8 @@ Content-Type: application/json
 
 {
     "day":"Monday",
-    "start": "09:00:00",
-    "end":"10:30:00"
+    "start": "12:00:00",
+    "end":"13:30:00"
 }
 
 ### get availability of logged in professor
@@ -144,3 +144,22 @@ Content-Type: application/json
 ### get currently logged user info
 GET http://localhost:8080/user/me
 Content-Type: application/json
+
+
+### count all of total appointments
+### time ranges : past, today, tomorrow, future
+POST http://localhost:8080/appointments/count
+Content-Type: application/json
+
+{
+    "status": "confirmed",
+    "time_range": "today"
+}
+
+### count appointments grouped by status category
+POST http://localhost:8080/appointments/groupedCount
+Content-Type: application/json
+
+{
+    "time_range": "past"
+}

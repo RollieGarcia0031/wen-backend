@@ -5,7 +5,16 @@ require_once __DIR__ . '/Professor.php';
 
 class Appointment extends AppModel{
     private $professor;
+    private $timeRangesList = ['today', 'tomorrow', 'future', 'past'];
 
+    /**
+     * sends an appointment to a professor
+     * @param int $prof_id id of the professor (reciever)
+     * @param int $student_id id of the student (sender)
+     * @param int $availability_id id of the availability (to get the day and time)
+     * @param string $message_text text of the message
+     * @param string $time_stamp timestamp
+     */
     public function send($prof_id, $student_id, $availability_id, $message_text, $time_stamp){
         $this->professor = new Professor();
         $is_professor = $this->professor->isVerified($prof_id);
@@ -35,6 +44,13 @@ class Appointment extends AppModel{
         return true;
     }
 
+    /**
+     * Fetches a list of Appointments
+     * if logged user is a student, it shows sent appointments
+     * if logged user is a professor, it shows received appointments
+     * 
+     * @param int $user_id id of logged user
+     */
     public function getList($user_id){
         //get user's role
         $query = "SELECT role FROM users WHERE id = ?";
@@ -73,6 +89,7 @@ class Appointment extends AppModel{
             return false;
         }
 
+        // order from old to new
         $query2 .= " ORDER BY a.time_stamp ASC";
 
         $stment = $this->db->prepare($query2);
@@ -99,6 +116,7 @@ class Appointment extends AppModel{
             $viewer = 'professor_id';
         }
 
+        // fetch the names, instead of using join statements
         $names = [];
         $viewer_ids = array_values( array_unique(  array_column($appointements, $viewer) ) );
         
@@ -175,6 +193,12 @@ class Appointment extends AppModel{
         return true;
     }
 
+    /**
+     * Updates the message of an appointement
+     * @param int $appointement_id
+     * @param string $new_message
+     * @param int $student_id used to confirm it student owns the message to be edited
+     */
     public function updateMessage($appointement_id, $new_message, $student_id){
         $q = "UPDATE appointments SET message = ? WHERE id = ? AND student_id = ?";
 
@@ -200,6 +224,10 @@ class Appointment extends AppModel{
         return true;
     }
 
+    /**
+     * Returns all the appointments for the current day for the logged user
+     * @param int $user_id
+     */
     function getCurrentDayBooked($user_id){
         $current_time = date('Y-m-d');
 
@@ -261,6 +289,126 @@ class Appointment extends AppModel{
         $this->data = $appointements;
         $this->code = 200;
         $this->message = "Success";
+        return true;
+    
+    }
+
+    /**
+     * Returns the number of appointments for the logged user
+     * - if status is provided, returns the number of appointments
+     * that matching status
+     * - if time_range is provided, returns the number of appointments
+     * that matching time_range
+     * @param int $user_id
+     * @param string $status = { confirmed | pending }
+     * @param string $time_range - { today | tomorrow | future | past }
+     */
+    public function getAppointmentsCount($user_id, $status, $time_range){
+        $current_time = date('Y-m-d');
+        $params = [$user_id, $user_id];
+
+        // create select statement with conditions in id and timestamp
+        $q = "SELECT COUNT(*) as total_appointments FROM appointments
+            WHERE
+                (professor_id = ? OR student_id = ?)";
+
+        if ($time_range !== null) {
+            if (!in_array($time_range, $this->timeRangesList)){
+                $this->code = 400;
+                $this->message = "Invalid Time Range";
+                return false;
+            }
+
+
+            if( $time_range == 'today' ) {
+                $time_range = $current_time;
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'tomorrow' ) {
+                $time_range = date('Y-m-d', strtotime('+1 day'));
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'future' ){
+                $time_range = $current_time;
+                $q .= "AND DATE(time_stamp) > ?";
+            } else if ( $time_range == 'past' ){
+                $time_range = $current_time;
+                $q .= "AND DATE(time_stamp) < ?";
+            }
+            
+            $params[] = $time_range;
+        }
+
+        // include status to query and param if provided
+        if(isset($status)){
+            $q .= " AND status = ?";
+            $params[] = $status;
+        }
+                
+        $statement = $this->db->prepare($q);
+        $execute = $statement->execute($params);
+
+        if (!$execute) throw new PDOException("Error During Execution");
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->code = 200;
+        $this->message = "Fetched Appointments Count Sucessfully";
+        $this->data = $rows;
+        return true;
+    }
+
+    /**
+     * fetches the number of appointments for the logged user
+     * it results to a table of appointments conts separated by the status
+     * @param int $user_id
+     * @param string $time_range
+     */
+    public function getGroupedAppointmentsCount($user_id, $time_range){
+        $params = [$user_id, $user_id];
+        $q = "SELECT
+            count(status), status
+            FROM appointments
+            WHERE
+            (professor_id = ? OR student_id = ?)"
+        ;
+
+        // include status to query and param if provided
+        if(isset($time_range)){
+            if (!in_array($time_range, $this->timeRangesList)){
+                $this->code = 400;
+                $this->message = "Invalid Time Range";
+                return false;
+            }
+
+            if( $time_range == 'today' ) {
+                $time_range = date('Y-m-d');
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'tomorrow' ) {
+                $time_range = date('Y-m-d', strtotime('+1 day'));
+                $q .= "AND DATE(time_stamp) = ?";
+            } else if ( $time_range == 'future' ){
+                $time_range = date('Y-m-d');
+                $q .= "AND DATE(time_stamp) > ?";
+            } else if ( $time_range == 'past' ){
+                $time_range = date('Y-m-d');
+                $q .= "AND DATE(time_stamp) < ?";
+            }
+
+            $params[] = $time_range;
+        }
+        
+        // group the result by status category
+        $q .= " GROUP BY status";
+
+        $statement = $this->db->prepare($q);
+        $execute = $statement->execute($params);
+
+        if (!$execute) throw new PDOException("Error During Execution");
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->code = 200;
+        $this->message = "Fetched Appointments Count Sucessfully";
+        $this->data = $rows;
         return true;
     }
 }
