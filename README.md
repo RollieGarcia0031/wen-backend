@@ -113,8 +113,6 @@ Logs out the current user.
     *   Success: `{"success": true, "message": "Logged out successfully", "data": null}`
     *   Failure: `{"success": false, "message": "Not logged in", "data": null}`
 
----
-
 ### 2. Professor Management
 
 #### `POST /professor/profile`
