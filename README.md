@@ -123,7 +123,7 @@ Adds or updates a professor's profile details. This endpoint is likely for profe
 *   **Body**:
     ```json
     {
-      "year": "2025",
+      "year": 1,
       "department": "Computer Science"
     }
     ```
