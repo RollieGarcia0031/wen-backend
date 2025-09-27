@@ -182,7 +182,7 @@ switch ($uri){
         }
     break;
 
-    case "/appointments/count":
+    case "/appointment/count":
         if($method === 'POST'){
             $data = json_decode( file_get_contents('php://input'), true );
             $status = $data["status"] ?? null;
@@ -193,7 +193,7 @@ switch ($uri){
         }
     break;
 
-    case "/appointments/groupedCount":
+    case "/appointment/groupedCount":
         if($method === 'POST'){
             $data = json_decode( file_get_contents('php://input'), true );
             $time_range = $data["time_range"] ?? null;
