@@ -126,19 +126,25 @@ class Professor extends AppModel {
 
     public function search($name=null, $day=null, $time_start=null, $time_end=null, $department=null, $year=null){
 		$query = "SELECT
-			p.id as prof_id,
-			p.department,
-			p.year,
-            u.id as user_id,
-			u.name,
-			u.email,
-            a.day_of_week,
-            a.start_time,
-            a.end_time
-		FROM professors p
-		JOIN users u ON u.id = p.user_id
-		LEFT JOIN availability a ON a.user_id = u.id
-		WHERE 1 = 1";
+            p_data.prof_ids,
+            p_data.departments,
+            p_data.years,
+            u.id AS user_id,
+            u.name,
+            u.email
+        FROM (
+            SELECT
+                p.user_id,
+                ARRAY_AGG(p.id) AS prof_ids,
+                ARRAY_AGG(p.department) AS departments,
+                ARRAY_AGG(p.year) AS years
+            FROM professors p
+            GROUP BY p.user_id
+        ) AS p_data
+        JOIN users u ON u.id = p_data.user_id
+        JOIN availability a ON a.user_id = u.id
+        WHERE 1 = 1
+        ";
 
         $params = [];
 
@@ -167,10 +173,25 @@ class Professor extends AppModel {
             $params[':year'] = $year;
         }
 
+        $query .= " GROUP BY u.id, p_data.prof_ids, p_data.departments, p_data.years
+            ORDER BY u.name ASC";
+
         $stment = $this->db->prepare($query);
         $stment->execute($params);
 
         $result = $stment->fetchAll(PDO::FETCH_ASSOC);
+
+        function pgArrayToPhpArray($pgArray) {
+            $pgArray = trim($pgArray, '{}');
+            if ($pgArray === '') return [];
+            return str_getcsv($pgArray);
+        }
+
+        foreach ($result as &$row) {
+            $row['prof_ids'] = pgArrayToPhpArray($row['prof_ids']);
+            $row['departments'] = pgArrayToPhpArray($row['departments']);
+            $row['years'] = pgArrayToPhpArray($row['years']);
+        }
         
         if(!$result){
             $this->code = 200;
