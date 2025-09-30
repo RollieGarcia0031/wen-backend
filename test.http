@@ -75,7 +75,7 @@ POST http://localhost:8080/search/availability
 Content-Type: application/json
 
 {
-    "id":8
+    "id":2
 }
 
 ### search for professors
@@ -92,7 +92,7 @@ POST http://localhost:8080/search/professor/info
 Content-Type: application/json
 
 {
-    "id":8
+    "id":2
 }
 
 ###sending appointment
