@@ -297,12 +297,6 @@ Lists all appointments for the current user (student or professor).
             "start_time": "09:00:00",
             "end_time": "10:30:00"
           }
-        ],
-        "names": [
-          {
-            "id": 1,
-            "name": "rollie"
-          }
         ]
       }
     }
