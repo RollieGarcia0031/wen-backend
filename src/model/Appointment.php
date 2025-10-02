@@ -108,28 +108,9 @@ class Appointment extends AppModel{
             return true;
         }
 
-        $viewer = null;
-        $names = [];
-        if ($userRole === 'professor'){
-            $viewer = 'student_id';
-        } else if ($userRole === 'student'){
-            $viewer = 'professor_id';
-        }
-
-        // fetch the names, instead of using join statements
-        $names = [];
-        $viewer_ids = array_values( array_unique(  array_column($appointements, $viewer) ) );
-        
-        $placeholder = str_repeat('?, ', count($viewer_ids) - 1) . '?';
-        $query3 = "SELECT id, name FROM users WHERE id IN ($placeholder)";
-        $stment = $this->db->prepare($query3);
-        $stment->execute($viewer_ids);
-        $names = $stment->fetchAll(PDO::FETCH_ASSOC);
-
         $this->data = [
             "role" =>  $userRole,
-            "appointments" => $appointements,
-            "names" => $names
+            "appointments" => $appointements
         ];
         $this->message = "Query Sucess";
         $this->code = 200;
