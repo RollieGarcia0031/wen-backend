@@ -74,26 +74,18 @@ switch ($uri){
 
     case "/search/professor":
         $professor->search();
-    break;
+        break;
 
     case "/search/professor/info":
         $professor->getInfo();
-    break;
+        break;
 
     case "/search/availability":
         $professor->getAvailability(false);
         break;
 
     case "/appointment/send":
-        $data = json_decode( file_get_contents('php://input'), true );
-        [
-            'prof_id'=>$prof_id,
-            'availability_id'=>$availability_id,
-            'message'=>$message,
-            'time_stamp'=>$time_stamp
-        ] = $data;
-
-        echo $appointment->send($prof_id, $availability_id, $message, $time_stamp);
+        $appointment->send();
     break;
 
     case "/appointment/list":
