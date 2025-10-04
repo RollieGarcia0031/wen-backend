@@ -79,13 +79,15 @@ class AppointmentController {
         }
     }
 
-    public function accept($appointment_id){
-        $user_id = $_SESSION['uid'];
-
-        if (!$user_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+    public function accept(){
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+
+        $user_id = $_SESSION['uid'];
+        $appointment_id = getRequestJson()['id'];
 
         try {
             $sucess = $this->appointment->accept($appointment_id, $user_id);
@@ -94,10 +96,12 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 

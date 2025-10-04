@@ -75,29 +75,21 @@ switch ($uri){
     case "/search/professor":
         $professor->search();
         break;
-
     case "/search/professor/info":
         $professor->getInfo();
         break;
-
     case "/search/availability":
         $professor->getAvailability(false);
         break;
-
     case "/appointment/send":
         $appointment->send();
-    break;
-
+        break;
     case "/appointment/list":
         $appointment->getList();   
-    break;
-
+        break;
     case "/appointment/accept":
-        $data = json_decode( file_get_contents('php://input'), true );
-        $appointment_id = $data['id'];
-        echo $appointment->accept($appointment_id);
-    break;
-
+        $appointment->accept($appointment_id);
+        break;
     case "/appointment/update/message":
         $data = json_decode( file_get_contents('php://input'), true );
         $appointment_id = $data['id'] ?? null;
