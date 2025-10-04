@@ -28,14 +28,23 @@ class AuthController {
                 $message,
                 $data
             );
+            exit;
 
         } catch (PDOException $e){
             http_response_code(500);
             echo Response::create(false, "Login failed", $e->getMessage());
+            exit;
         }    
     }
 
-    public function signup($name, $email, $password, $role) {
+    public function signup() {
+        $data = getRequestJson();
+
+        $name = $data['name'] ?? null;
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+        $role = $data['role'] ?? null;
+
         try {
             $signup = $this->auth->signup($email, $name, $password, $role);
             if ($signup) {
@@ -43,11 +52,17 @@ class AuthController {
                 $message = $this->auth->message;
 
                 http_response_code($this->auth->code);
-                return Response::create($signup, $message, $data);
+                echo Response::create(
+                    $signup,
+                    $message,
+                    $data
+                );
+                exit;
             }
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, "Signup failed", $e->getMessage());
+            echo Response::create(false, "Signup failed", $e->getMessage());
+            exit;
         }
     }
 

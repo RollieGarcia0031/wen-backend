@@ -35,17 +35,8 @@ switch ($uri){
         $auth->login();
         break;
     case "/auth/signup":
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        [
-            'name'=>$name,
-            'email'=>$email,
-            'password'=>$password,
-            'role'=>$role
-        ] = $data;
-
-        echo $auth->signup($name, $email, $password, $role);
-    break;
+        $auth->signup();
+        break;
 
     case "/auth/update":
         if($method === 'PUT'){
