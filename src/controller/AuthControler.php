@@ -11,8 +11,10 @@ class AuthController {
         $this->auth = new Auth();
     }
 
-    public function login($email, $password){
+    public function login(){
         $data = getRequestJson();
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
 
         try {            
             $login = $this->auth->login($email, $password);
@@ -20,11 +22,16 @@ class AuthController {
             $message = $this->auth->message;
                 
             http_response_code($this->auth->code);
-            return Response::create($login, $message, $data);
+
+            echo Response::create(
+                $login,
+                $message,
+                $data
+            );
 
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, "Login failed", $e->getMessage());
+            echo Response::create(false, "Login failed", $e->getMessage());
         }    
     }
 
