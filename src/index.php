@@ -62,11 +62,8 @@ switch ($uri){
     case "/professor/availability":
         switch ($method) {
             case "POST":
-                $data = json_decode( file_get_contents('php://input'), true );
-                ['day'=>$day, 'start'=>$start, 'end'=>$end] = $data;
-                echo $professor->addAvailability($day, $start, $end);
-            break;
-            
+                $professor->addAvailability();
+                break;
             case "GET":
                 echo $professor->getAvailability(null);
             break;

@@ -39,13 +39,19 @@ class ProfessorController {
         }
     }
 
-    public function addAvailability($day, $start, $end){
+    public function addAvailability(){
+        if(!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
+        }
+        
         $user_id = $_SESSION['uid'];
 
-        if(!$user_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
-        }
+        $data = getRequestJson();
+        $day = $data['day'] ?? null;
+        $start = $data['start'] ?? null;
+        $end = $data['end'] ?? null;
 
         try{
             $sucess = $this->professor->addAvailability($user_id, $day, $start, $end);
@@ -54,11 +60,12 @@ class ProfessorController {
             $code = $this->professor->code;
 
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
-
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
