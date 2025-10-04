@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../model/Professor.php';
 require_once __DIR__ . '/../util/Response.php';
 require_once __DIR__ . '/../util/getRequestJson.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class ProfessorController {
     private $professor;
@@ -12,12 +13,9 @@ class ProfessorController {
     }
 
     public function addProfile() {
+        AuthMiddleware::requireAuth();
+
         $uid = $_SESSION['uid'];
-        if(!$uid) {
-            http_response_code(201);
-            echo Response::create(false, "User not logged in", null);
-            exit; 
-        }
 
         $data =getRequestJson();
 
@@ -41,12 +39,8 @@ class ProfessorController {
     }
 
     public function addAvailability(){
-        if(!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
-        
+        AuthMiddleware::requireAuth();
+    
         $user_id = $_SESSION['uid'];
 
         $data = getRequestJson();
@@ -77,13 +71,8 @@ class ProfessorController {
      * @param bool $self
      */
     public function getAvailability($self = true){
-        
-        if(!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
-
+        AuthMiddleware::requireAuth();
+       
         $user_id = $self ? $_SESSION['uid'] : getRequestJson()['id'];
         
         try{
@@ -102,11 +91,7 @@ class ProfessorController {
      * Deletes an availability assigned to a professor
      */
     function removeAvailability() {
-        if(!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
+        AuthMiddleware::requireAuth();
 
         $appointmentId = getRequestJson()['id'];
 
@@ -153,13 +138,9 @@ class ProfessorController {
     }
 
     public function getProfile(){
-        $user_id = $_SESSION['uid'];
+        AuthMiddleware::requireAuth();
 
-        if(!$user_id) {
-            http_response_code(201);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
+        $user_id = $_SESSION['uid'];
 
         try{
             $sucess = $this->professor->getProfile($user_id);
@@ -178,10 +159,7 @@ class ProfessorController {
     }
 
     public function removeProfile(){
-        if(!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            return Response::create(false, "User not logged in", null);
-        }
+        AuthMiddleware::requireAuth();
 
         $data = getRequestJson();
         $id = $data['id'] ?? null;
