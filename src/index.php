@@ -37,25 +37,19 @@ switch ($uri){
     case "/auth/signup":
         $auth->signup();
         break;
-
     case "/auth/update":
         if($method === 'PUT'){
             $auth->update();
         }
-    break;
-
+        break;
     case "/auth/logout":
         $auth->logout(); 
-    break;
-
+        break;
     case "/professor/profile":
         switch ($method) {
             case "POST":
-                $data = json_decode( file_get_contents('php://input'), true );
-                ['year'=>$year, 'department'=>$department] = $data;
-                echo $professor->addProfile($year, $department);
-            break;
-
+                $professor->addProfile();
+                break;
             case "GET":
                 echo $professor->getProfile();
             break;

@@ -10,12 +10,18 @@ class ProfessorController {
         $this->professor = new Professor();
     }
 
-    public function addProfile($year, $department) {
+    public function addProfile() {
         $uid = $_SESSION['uid'];
         if(!$uid) {
             http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+            echo Response::create(false, "User not logged in", null);
+            exit; 
         }
+
+        $data =getRequestJson();
+
+        $year = $data['year'] ?? null;
+        $department = $data['department'] ?? null;
 
         try{
             $sucess = $this->professor->addProfile($year, $department, $uid);
@@ -24,10 +30,12 @@ class ProfessorController {
             $code = $this->professor->code;
             
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
