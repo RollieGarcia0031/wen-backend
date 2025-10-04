@@ -40,15 +40,7 @@ switch ($uri){
 
     case "/auth/update":
         if($method === 'PUT'){
-            $data = json_decode(file_get_contents('php://input'), true);
-            
-            $email = $data['email'] ?? null;
-            $name = $data['name'] ?? null;
-            $old_password = $data['old_password'] ?? null;
-            $new_password = $data['new_password'] ?? null;
-
-            echo $auth->update($email, $name, $old_password, $new_password);
-            
+            $auth->update();
         }
     break;
 

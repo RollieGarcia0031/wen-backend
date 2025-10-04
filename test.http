@@ -23,10 +23,10 @@ PUT http://localhost:8080/auth/update
 Content-Type: application/json
 
 {
-    "email": "angelo@email.com",
-    "name": "Sir Angelo Garcia",
-    "old_password": "123456",
-    "new_password": "12345678"
+    "email": "rollie@email.com",
+    "name": "Rollie",
+    "old_password": "12345678",
+    "new_password": "123456"
 }
 
 ### logout

@@ -94,11 +94,20 @@ class AuthController {
         }
     }
 
-    public function update($email, $name, $old_password, $new_password){
+    public function update(){
         if (!isset($_SESSION['uid'])) {
             http_response_code(401);
-            return Response::create(false, "User not logged in", null);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+        
+
+        $data = getRequestJson();
+        
+        $email = $data['email'] ?? null;
+        $name = $data['name'] ?? null;
+        $old_password = $data['old_password'] ?? null;
+        $new_password = $data['new_password'] ?? null;
 
         try {
             $success = $this->auth->updateInfos(
@@ -110,10 +119,10 @@ class AuthController {
             $code = $this->auth->code;
 
             http_response_code($code);
-            return Response::create($success, $message, $data);
+            echo Response::create($success, $message, $data);
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
         }
     }
 }
