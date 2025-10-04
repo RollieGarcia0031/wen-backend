@@ -65,8 +65,8 @@ switch ($uri){
                 $professor->addAvailability();
                 break;
             case "GET":
-                echo $professor->getAvailability(null);
-            break;
+                $professor->getAvailability(true);
+                break;
 
             case "DELETE":
                 $data = json_decode( file_get_contents('php://input'), true );
@@ -95,10 +95,8 @@ switch ($uri){
     break;
 
     case "/search/availability":
-        $data = json_decode( file_get_contents('php://input'), true );
-        ['id'=>$id] = $data;
-        echo $professor->getAvailability($id);
-    break;
+        $professor->getAvailability(false);
+        break;
 
     case "/appointment/send":
         $data = json_decode( file_get_contents('php://input'), true );
