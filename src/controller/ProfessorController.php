@@ -97,26 +97,31 @@ class ProfessorController {
             exit;
         }
     }
-
-    function removeAvailability($id) {
-        $user_id = $_SESSION['uid'];
-
-        if(!$user_id) {
+    /**
+     * Deletes an availability assigned to a professor
+     */
+    function removeAvailability() {
+        if(!isset($_SESSION['uid'])) {
             http_response_code(401);
-            return Response::create(false, "User not logged in", null);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
 
+        $appointmentId = getRequestJson()['id'];
+
         try{
-            $sucess = $this->professor->removeAvailability($id);
+            $sucess = $this->professor->removeAvailability($appointmentId);
             $message = $this->professor->message;
             $data = $this->professor->data;
             $code = $this->professor->code;
             
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
