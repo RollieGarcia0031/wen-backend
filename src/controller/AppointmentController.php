@@ -110,13 +110,16 @@ class AppointmentController {
      * this only works for student who sent the appointment or
      * professor who received the appointment
      */
-    public function delete($appointment_id) {
-        $user_id = $_SESSION['uid'];
-
-        if (!$user_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+    public function delete() {
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+
+        $data = getRequestJson();
+
+        $appointment_id = $data['id'];
 
         try{
             $sucess = $this->appointment->delete($appointment_id);
@@ -125,10 +128,12 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
@@ -143,7 +148,7 @@ class AppointmentController {
         
         $student_id = $_SESSION['uid'];
         $appointment_id = $data['id'] ?? null;
-        $message = $data['message'] ?? '';
+        $message_text = $data['message'] ?? '';
 
         try{
             $sucess = $this->appointment->updateMessage($appointment_id, $message_text, $student_id);

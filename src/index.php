@@ -94,13 +94,9 @@ switch ($uri){
         $appointment->updateMessage();
         break;
     case "/appointment/delete":
-        if ($method === 'DELETE') {
-            $data = json_decode( file_get_contents('php://input'), true );
-            $appointment_id = $data['id'];
-            echo $appointment->delete($appointment_id);
-        }
-    break;
-
+        if ($method === 'DELETE')
+            $appointment->delete();
+        break;
     case "/appointment/currentDayBooked":
         echo $appointment->getCurrentDayBooked();
     break;
