@@ -53,7 +53,7 @@ switch ($uri){
     break;
 
     case "/auth/logout":
-        echo $auth->logout(); 
+        $auth->logout(); 
     break;
 
     case "/professor/profile":

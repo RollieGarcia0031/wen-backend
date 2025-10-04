@@ -70,7 +70,8 @@ class AuthController {
         $success = $this->auth->logout();
         
         http_response_code(200);
-        return Response::create($success, "Logout successful", null);
+        echo Response::create($success, "Logout successful", null);
+        exit;
     }
 
     public function me(){
