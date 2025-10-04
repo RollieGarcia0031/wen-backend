@@ -132,6 +132,6 @@ switch ($uri){
 
     default:
         http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);
+        echo Response::create(false, "Request Does Not Exist", null);
         exit;
 }
