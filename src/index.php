@@ -77,9 +77,7 @@ switch ($uri){
     break;
 
     case "/search/professor/info":
-        $data = json_decode( file_get_contents('php://input'), true );
-        $id = $data['id'];
-        echo $professor->getInfo($id);
+        $professor->getInfo();
     break;
 
     case "/search/availability":
