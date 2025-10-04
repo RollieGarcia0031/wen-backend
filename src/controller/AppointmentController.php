@@ -132,13 +132,18 @@ class AppointmentController {
         }
     }
 
-    public function updateMessage($appointment_id, $message_text) {
-        $student_id = $_SESSION['uid'];
-
-        if (!$student_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+    public function updateMessage() {
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+        
+        $data = getRequestJson();
+        
+        $student_id = $_SESSION['uid'];
+        $appointment_id = $data['id'] ?? null;
+        $message = $data['message'] ?? '';
 
         try{
             $sucess = $this->appointment->updateMessage($appointment_id, $message_text, $student_id);

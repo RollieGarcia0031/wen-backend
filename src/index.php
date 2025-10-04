@@ -91,12 +91,8 @@ switch ($uri){
         $appointment->accept();
         break;
     case "/appointment/update/message":
-        $data = json_decode( file_get_contents('php://input'), true );
-        $appointment_id = $data['id'] ?? null;
-        $message = $data['message'] ?? '';
-        echo $appointment->updateMessage($appointment_id, $message);
-    break;
-
+        $appointment->updateMessage();
+        break;
     case "/appointment/delete":
         if ($method === 'DELETE') {
             $data = json_decode( file_get_contents('php://input'), true );
