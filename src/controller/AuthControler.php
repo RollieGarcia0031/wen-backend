@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../util/Response.php';
 require_once __DIR__ . '/../model/Auth.php';
+require_once __DIR__ . '/../util/getRequestJson.php';
 
 class AuthController {
     private $auth;
@@ -11,7 +12,8 @@ class AuthController {
     }
 
     public function login($email, $password){
-        
+        $data = getRequestJson();
+
         try {            
             $login = $this->auth->login($email, $password);
             $data = $this->auth->data;
