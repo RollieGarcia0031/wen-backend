@@ -32,178 +32,106 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($uri){
     case "/auth/login":
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        ['email'=>$email, 'password'=>$password] = $data;
+        $auth->login();
+        break;
 
-        echo $auth->login($email, $password);
-
-    break;
     case "/auth/signup":
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        [
-            'name'=>$name,
-            'email'=>$email,
-            'password'=>$password,
-            'role'=>$role
-        ] = $data;
-
-        echo $auth->signup($name, $email, $password, $role);
-    break;
+        $auth->signup();
+        break;
 
     case "/auth/update":
         if($method === 'PUT'){
-            $data = json_decode(file_get_contents('php://input'), true);
-            
-            $email = $data['email'] ?? null;
-            $name = $data['name'] ?? null;
-            $old_password = $data['old_password'] ?? null;
-            $new_password = $data['new_password'] ?? null;
-
-            echo $auth->update($email, $name, $old_password, $new_password);
-            
+            $auth->update();
         }
-    break;
+        break;
 
     case "/auth/logout":
-        echo $auth->logout(); 
-    break;
+        $auth->logout(); 
+        break;
 
     case "/professor/profile":
         switch ($method) {
             case "POST":
-                $data = json_decode( file_get_contents('php://input'), true );
-                ['year'=>$year, 'department'=>$department] = $data;
-                echo $professor->addProfile($year, $department);
-            break;
+                $professor->addProfile();
+                break;
 
             case "GET":
-                echo $professor->getProfile();
-            break;
+                $professor->getProfile();
+                break;
 
             case "DELETE":
-                $data = json_decode( file_get_contents('php://input'), true );
-                $id = $data['id'] ?? null;
-                echo $professor->removeProfile($id);
-            break;
+                $professor->removeProfile();
+                break;
         }
     break;
 
     case "/professor/availability":
         switch ($method) {
             case "POST":
-                $data = json_decode( file_get_contents('php://input'), true );
-                ['day'=>$day, 'start'=>$start, 'end'=>$end] = $data;
-                echo $professor->addAvailability($day, $start, $end);
-            break;
-            
+                $professor->addAvailability();
+                break;
             case "GET":
-                echo $professor->getAvailability(null);
-            break;
-
+                $professor->getAvailability(true);
+                break;
             case "DELETE":
-                $data = json_decode( file_get_contents('php://input'), true );
-                $id = $data['id'] ?? null;
-                echo $professor->removeAvailability($id);
+                $professor->removeAvailability();
         }
     break;
 
     case "/search/professor":
-        $data = json_decode( file_get_contents('php://input'), true );
-        
-        $name = $data['name'] ?? null;
-        $day = $data['day'] ?? null;
-        $time_start = $data['time_start'] ?? null;
-        $time_end = $data['time_end'] ?? null;
-        $department = $data['department'] ?? null;
-        $year = $data['year'] ?? null;
-
-        echo $professor->search($name, $day, $time_start, $time_end, $department, $year);
-    break;
+        $professor->search();
+        break;
 
     case "/search/professor/info":
-        $data = json_decode( file_get_contents('php://input'), true );
-        $id = $data['id'];
-        echo $professor->getInfo($id);
-    break;
+        $professor->getInfo();
+        break;
 
     case "/search/availability":
-        $data = json_decode( file_get_contents('php://input'), true );
-        ['id'=>$id] = $data;
-        echo $professor->getAvailability($id);
-    break;
+        $professor->getAvailability(false);
+        break;
 
     case "/appointment/send":
-        $data = json_decode( file_get_contents('php://input'), true );
-        [
-            'prof_id'=>$prof_id,
-            'availability_id'=>$availability_id,
-            'message'=>$message,
-            'time_stamp'=>$time_stamp
-        ] = $data;
-
-        echo $appointment->send($prof_id, $availability_id, $message, $time_stamp);
-    break;
+        $appointment->send();
+        break;
 
     case "/appointment/list":
-        echo $appointment->getList();   
-    break;
+        $appointment->getList();   
+        break;
 
     case "/appointment/accept":
-        $data = json_decode( file_get_contents('php://input'), true );
-        $appointment_id = $data['id'];
-        echo $appointment->accept($appointment_id);
-    break;
+        $appointment->accept();
+        break;
 
     case "/appointment/update/message":
-        $data = json_decode( file_get_contents('php://input'), true );
-        $appointment_id = $data['id'] ?? null;
-        $message = $data['message'] ?? '';
-        echo $appointment->updateMessage($appointment_id, $message);
-    break;
+        $appointment->updateMessage();
+        break;
 
     case "/appointment/delete":
-        if ($method === 'DELETE') {
-            $data = json_decode( file_get_contents('php://input'), true );
-            $appointment_id = $data['id'];
-            echo $appointment->delete($appointment_id);
-        }
-    break;
+        if ($method === 'DELETE')
+            $appointment->delete();
+        break;
 
     case "/appointment/currentDayBooked":
-        echo $appointment->getCurrentDayBooked();
-    break;
+        $appointment->getCurrentDayBooked();
+        break;
 
     case "/user/me":
-        if($method === 'GET'){
-            echo $auth->me();
-            exit;
-        }
-    break;
+        if($method === 'GET')
+            $auth->me();
+        break;
 
     case "/appointment/count":
-        if($method === 'POST'){
-            $data = json_decode( file_get_contents('php://input'), true );
-            $status = $data["status"] ?? null;
-            $time_stamp = $data["time_range"] ?? null;
-
-            echo $appointment->getCurrentAppointmentsCount($status, $time_stamp);
-            exit;
-        }
-    break;
+        if($method === 'POST')
+            $appointment->getCurrentAppointmentsCount();
+        break;
 
     case "/appointment/groupedCount":
-        if($method === 'POST'){
-            $data = json_decode( file_get_contents('php://input'), true );
-            $time_range = $data["time_range"] ?? null;
-
-            echo $appointment->getGroupedAppointmentsCount($time_range);
-        }
-    break;
+        if($method === 'POST')
+            $appointment->getGroupedAppointmentsCount();
+       break;
 
     default:
         http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'Not found', 'data' => null], true);
+        echo Response::create(false, "Request Does Not Exist", null);
         exit;
 }

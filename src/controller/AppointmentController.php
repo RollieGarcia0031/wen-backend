@@ -11,25 +11,41 @@ class AppointmentController {
         $this->appointment = new Appointment();
     }
 
-    public function send($prof_id, $availability_id, $message_text, $time_stamp){
+    public function send(){
+        
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
+        }
+        
         $student_id = $_SESSION['uid'];
 
-        if (!$student_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
-        }
+        $data = getRequestJson();
+        $prof_id = $data['prof_id'] ?? null;
+        $availability_id = $data['availability_id'] ?? null;
+        $message_text = $data['message'] ?? null;
+        $time_stamp = $data['time_stamp'] ?? null;
 
         try {
-            $sucess = $this->appointment->send($prof_id, $student_id, $availability_id, $message_text, $time_stamp);
+            $sucess = $this->appointment->send(
+                $prof_id,
+                $student_id,
+                $availability_id,
+                $message_text,
+                $time_stamp
+            );
             $message = $this->appointment->message;
             $data = $this->appointment->data;
             $code = $this->appointment->code;
 
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
@@ -39,12 +55,13 @@ class AppointmentController {
      * if logged session is a professor, it responses with received appointments
      */
     public function getList(){
-        $user_id = $_SESSION['uid'];
-
-        if (!$user_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+
+        $user_id = $_SESSION['uid'];
 
         try {
             $sucess = $this->appointment->getList($user_id);
@@ -53,20 +70,24 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
-    public function accept($appointment_id){
-        $user_id = $_SESSION['uid'];
-
-        if (!$user_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+    public function accept(){
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+
+        $user_id = $_SESSION['uid'];
+        $appointment_id = getRequestJson()['id'];
 
         try {
             $sucess = $this->appointment->accept($appointment_id, $user_id);
@@ -75,10 +96,12 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
@@ -87,13 +110,16 @@ class AppointmentController {
      * this only works for student who sent the appointment or
      * professor who received the appointment
      */
-    public function delete($appointment_id) {
-        $user_id = $_SESSION['uid'];
-
-        if (!$user_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+    public function delete() {
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+
+        $data = getRequestJson();
+
+        $appointment_id = $data['id'];
 
         try{
             $sucess = $this->appointment->delete($appointment_id);
@@ -102,20 +128,27 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
-    public function updateMessage($appointment_id, $message_text) {
-        $student_id = $_SESSION['uid'];
-
-        if (!$student_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+    public function updateMessage() {
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+        
+        $data = getRequestJson();
+        
+        $student_id = $_SESSION['uid'];
+        $appointment_id = $data['id'] ?? null;
+        $message_text = $data['message'] ?? '';
 
         try{
             $sucess = $this->appointment->updateMessage($appointment_id, $message_text, $student_id);
@@ -124,17 +157,20 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
     function getCurrentDayBooked(){
         if(!isset($_SESSION['uid'])) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
         
         try {
@@ -144,60 +180,74 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
-    public function getCurrentAppointmentsCount($status, $time_stamp){
+    public function getCurrentAppointmentsCount(){
         if (!isset( $_SESSION['uid'] )){
             http_response_code(401);
-            return Response::create(false, "User not logged in");
+            echo Response::create(false, "User not logged in");
+            exit;
         }
 
         $user_id = $_SESSION['uid'];
 
+        $data = getRequestJson();
+        $status = $data["status"] ?? null;
+        $time_range = $data["time_range"] ?? null;
+
         try {
-           $sucess = $this->appointment->getAppointmentsCount($user_id, $status, $time_stamp);
+           $sucess = $this->appointment->getAppointmentsCount($user_id, $status, $time_range);
            
            http_response_code($this->appointment->code);
 
-           return Response::create(
+           echo Response::create(
             $sucess,
             $this->appointment->message,
             $this->appointment->data
            );
+           exit;
 
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
-    public function getGroupedAppointmentsCount($time_range){
+    public function getGroupedAppointmentsCount(){
         if (!isset( $_SESSION['uid'] )){
             http_response_code(401);
-            return Response::create(false, "User not logged in");
+            echo Response::create(false, "User not logged in");
+            exit;
         }
 
         $user_id = $_SESSION['uid'];
+
+        $data = getRequestJson();
+        $time_range = $data["time_range"] ?? null;
 
         try {
            $sucess = $this->appointment->getGroupedAppointmentsCount($user_id, $time_range);
            
            http_response_code($this->appointment->code);
 
-           return Response::create(
+           echo Response::create(
             $sucess,
             $this->appointment->message,
             $this->appointment->data
            );
-
+           exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 }
