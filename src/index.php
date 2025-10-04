@@ -34,25 +34,31 @@ switch ($uri){
     case "/auth/login":
         $auth->login();
         break;
+
     case "/auth/signup":
         $auth->signup();
         break;
+
     case "/auth/update":
         if($method === 'PUT'){
             $auth->update();
         }
         break;
+
     case "/auth/logout":
         $auth->logout(); 
         break;
+
     case "/professor/profile":
         switch ($method) {
             case "POST":
                 $professor->addProfile();
                 break;
+
             case "GET":
                 $professor->getProfile();
                 break;
+
             case "DELETE":
                 $professor->removeProfile();
                 break;
@@ -75,49 +81,54 @@ switch ($uri){
     case "/search/professor":
         $professor->search();
         break;
+
     case "/search/professor/info":
         $professor->getInfo();
         break;
+
     case "/search/availability":
         $professor->getAvailability(false);
         break;
+
     case "/appointment/send":
         $appointment->send();
         break;
+
     case "/appointment/list":
         $appointment->getList();   
         break;
+
     case "/appointment/accept":
         $appointment->accept();
         break;
+
     case "/appointment/update/message":
         $appointment->updateMessage();
         break;
+
     case "/appointment/delete":
         if ($method === 'DELETE')
             $appointment->delete();
         break;
+
     case "/appointment/currentDayBooked":
         $appointment->getCurrentDayBooked();
         break;
+
     case "/user/me":
         if($method === 'GET')
             $auth->me();
-    break;
-    
+        break;
+
     case "/appointment/count":
         if($method === 'POST')
             $appointment->getCurrentAppointmentsCount();
-    break;
+        break;
 
     case "/appointment/groupedCount":
-        if($method === 'POST'){
-            $data = json_decode( file_get_contents('php://input'), true );
-            $time_range = $data["time_range"] ?? null;
-
-            echo $appointment->getGroupedAppointmentsCount($time_range);
-        }
-    break;
+        if($method === 'POST')
+            $appointment->getGroupedAppointmentsCount();
+       break;
 
     default:
         http_response_code(404);
