@@ -98,9 +98,8 @@ switch ($uri){
             $appointment->delete();
         break;
     case "/appointment/currentDayBooked":
-        echo $appointment->getCurrentDayBooked();
-    break;
-
+        $appointment->getCurrentDayBooked();
+        break;
     case "/user/me":
         if($method === 'GET'){
             echo $auth->me();
