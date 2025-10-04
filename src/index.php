@@ -101,10 +101,8 @@ switch ($uri){
         $appointment->getCurrentDayBooked();
         break;
     case "/user/me":
-        if($method === 'GET'){
-            echo $auth->me();
-            exit;
-        }
+        if($method === 'GET')
+            $auth->me();
     break;
 
     case "/appointment/count":
