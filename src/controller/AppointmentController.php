@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../model/Appointment.php';
 require_once __DIR__ . '/../util/Response.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class AppointmentController {
     private $appointment;
@@ -12,12 +13,7 @@ class AppointmentController {
     }
 
     public function send(){
-        
-        if (!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
+        AuthMiddleware::requireAuth();
         
         $student_id = $_SESSION['uid'];
 
@@ -55,12 +51,8 @@ class AppointmentController {
      * if logged session is a professor, it responses with received appointments
      */
     public function getList(){
-        if (!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
-
+        AuthMiddleware::requireAuth();
+        
         $user_id = $_SESSION['uid'];
 
         try {
@@ -80,11 +72,7 @@ class AppointmentController {
     }
 
     public function accept(){
-        if (!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
+        AuthMiddleware::requireAuth();
 
         $user_id = $_SESSION['uid'];
         $appointment_id = getRequestJson()['id'];
@@ -111,12 +99,8 @@ class AppointmentController {
      * professor who received the appointment
      */
     public function delete() {
-        if (!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
-
+        AuthMiddleware::requireAuth();
+        
         $data = getRequestJson();
 
         $appointment_id = $data['id'];
@@ -138,11 +122,7 @@ class AppointmentController {
     }
 
     public function updateMessage() {
-        if (!isset($_SESSION['uid'])) {
-            http_response_code(401);
-            echo Response::create(false, "User not logged in", null);
-            exit;
-        }
+        AuthMiddleware::requireAuth();
         
         $data = getRequestJson();
         
@@ -190,11 +170,7 @@ class AppointmentController {
     }
 
     public function getCurrentAppointmentsCount(){
-        if (!isset( $_SESSION['uid'] )){
-            http_response_code(401);
-            echo Response::create(false, "User not logged in");
-            exit;
-        }
+        AuthMiddleware::requireAuth();
 
         $user_id = $_SESSION['uid'];
 
@@ -222,11 +198,7 @@ class AppointmentController {
     }
 
     public function getGroupedAppointmentsCount(){
-        if (!isset( $_SESSION['uid'] )){
-            http_response_code(401);
-            echo Response::create(false, "User not logged in");
-            exit;
-        }
+        AuthMiddleware::requireAuth();
 
         $user_id = $_SESSION['uid'];
 
