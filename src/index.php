@@ -88,7 +88,7 @@ switch ($uri){
         $appointment->getList();   
         break;
     case "/appointment/accept":
-        $appointment->accept($appointment_id);
+        $appointment->accept();
         break;
     case "/appointment/update/message":
         $data = json_decode( file_get_contents('php://input'), true );
