@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../model/Professor.php';
 require_once __DIR__ . '/../util/Response.php';
+require_once __DIR__ . '/../util/getRequestJson.php';
 
 class ProfessorController {
     private $professor;
@@ -125,7 +126,16 @@ class ProfessorController {
         }
     }
 
-    public function search($name, $day, $time_start, $time_end, $department, $year) {
+    public function search() {
+        $data = getRequestJson();
+
+        $name = $data['name'] ?? null;
+        $day = $data['day'] ?? null;
+        $time_start = $data['time_start'] ?? null;
+        $time_end = $data['time_end'] ?? null;
+        $department = $data['department'] ?? null;
+        $year = $data['year'] ?? null;
+
         try{
             $sucess = $this->professor->search($name, $day, $time_start, $time_end, $department, $year);
             $message = $this->professor->message;
@@ -133,10 +143,12 @@ class ProfessorController {
             $code = $this->professor->code;
             
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
