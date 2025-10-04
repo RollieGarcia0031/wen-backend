@@ -51,9 +51,8 @@ switch ($uri){
                 $professor->addProfile();
                 break;
             case "GET":
-                echo $professor->getProfile();
-            break;
-
+                $professor->getProfile();
+                break;
             case "DELETE":
                 $data = json_decode( file_get_contents('php://input'), true );
                 $id = $data['id'] ?? null;

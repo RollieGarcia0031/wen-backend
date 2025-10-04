@@ -130,7 +130,8 @@ class ProfessorController {
 
         if(!$user_id) {
             http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
 
         try{
@@ -140,10 +141,12 @@ class ProfessorController {
             $code = $this->professor->code;
 
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
