@@ -89,7 +89,7 @@ switch ($uri){
     break;
 
     case "/appointment/list":
-        echo $appointment->getList();   
+        $appointment->getList();   
     break;
 
     case "/appointment/accept":

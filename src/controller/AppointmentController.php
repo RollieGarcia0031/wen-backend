@@ -55,12 +55,13 @@ class AppointmentController {
      * if logged session is a professor, it responses with received appointments
      */
     public function getList(){
-        $user_id = $_SESSION['uid'];
-
-        if (!$user_id) {
-            http_response_code(201);
-            return Response::create(false, "User not logged in", null);
+        if (!isset($_SESSION['uid'])) {
+            http_response_code(401);
+            echo Response::create(false, "User not logged in", null);
+            exit;
         }
+
+        $user_id = $_SESSION['uid'];
 
         try {
             $sucess = $this->appointment->getList($user_id);
@@ -69,10 +70,12 @@ class AppointmentController {
             $code = $this->appointment->code;
     
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e) {
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
