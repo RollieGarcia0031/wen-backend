@@ -150,16 +150,14 @@ class ProfessorController {
         }
     }
 
-    public function removeProfile($id){
+    public function removeProfile(){
         if(!isset($_SESSION['uid'])) {
             http_response_code(401);
             return Response::create(false, "User not logged in", null);
         }
 
-        if (!isset($id)) {
-            http_response_code(400);
-            return Response::create(false, "Id not provided", null);
-        }
+        $data = getRequestJson();
+        $id = $data['id'] ?? null;
 
         try{
             $sucess = $this->professor->removeProfile($id, $_SESSION['uid']);
@@ -168,10 +166,12 @@ class ProfessorController {
             $code = $this->professor->code;
 
             http_response_code($code);
-            return Response::create($sucess, $message, $data);
+            echo Response::create($sucess, $message, $data);
+            exit;
         } catch (PDOException $e){
             http_response_code(500);
-            return Response::create(false, $e->getMessage(), null);
+            echo Response::create(false, $e->getMessage(), null);
+            exit;
         }
     }
 
