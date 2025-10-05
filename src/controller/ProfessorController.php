@@ -12,6 +12,11 @@ class ProfessorController {
         $this->professor = new Professor();
     }
 
+    /**
+     * Adds a profile to the logged in professor
+     * the profile contains the year and department of the professor
+     * this will be used by students to filter professors
+     */
     public function addProfile() {
         AuthMiddleware::requireAuth();
 
@@ -38,6 +43,10 @@ class ProfessorController {
         }
     }
 
+    /**
+     * Allos professor to create an availability time slot for themselves
+     * that will be used by students as choices for time of appointmnet
+     */
     public function addAvailability(){
         AuthMiddleware::requireAuth();
     
@@ -111,6 +120,9 @@ class ProfessorController {
         }
     }
 
+    /**
+     * Allows users students to search for a list of professor based on a given filters
+     */
     public function search() {
         $data = getRequestJson();
 
@@ -137,6 +149,10 @@ class ProfessorController {
         }
     }
 
+    /**
+     * Allows users with student roles to view the departments and years that 
+     * a professor is teaching
+     */
     public function getProfile(){
         AuthMiddleware::requireAuth();
 
@@ -158,6 +174,10 @@ class ProfessorController {
         }
     }
 
+    /**
+     * Allows users logged as professor to remove the profile of class that they are
+     * teaching
+     */
     public function removeProfile(){
         AuthMiddleware::requireAuth();
 
