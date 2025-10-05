@@ -341,7 +341,8 @@ Accepts a pending appointment request. This is likely for professors.
         "time_stamp": "2025-09-21 00:00:00",
         "created_at": "2025-09-21 20:03:52.188579",
         "updated_at": "2025-09-21 20:03:52.188579",
-        "name":"display name"
+        "name":"display name",
+        "start_time":"09:00:00"
       }
     ]
   }
