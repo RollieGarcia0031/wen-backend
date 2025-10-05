@@ -12,6 +12,9 @@ class AppointmentController {
         $this->appointment = new Appointment();
     }
 
+    /**
+     * Sends an appointment request from a student to a professor
+     */
     public function send(){
         AuthMiddleware::requireAuth();
         
@@ -71,6 +74,11 @@ class AppointmentController {
         }
     }
 
+    /**
+     * Accepts an appointment request
+     * this only works for professors
+     * and only for appointments with status "pending"
+     */
     public function accept(){
         AuthMiddleware::requireAuth();
 
@@ -121,6 +129,10 @@ class AppointmentController {
         }
     }
 
+    /**
+     * Updates the message of an appointment
+     * this only works for student who sent the appointment
+     */
     public function updateMessage() {
         AuthMiddleware::requireAuth();
         
@@ -146,6 +158,10 @@ class AppointmentController {
         }
     }
 
+    /**
+     * Returns the number of booked appointments for the current day
+     * this works for both students and professors
+     */
     function getCurrentDayBooked(){
         if(!isset($_SESSION['uid'])) {
             http_response_code(401);
@@ -169,6 +185,10 @@ class AppointmentController {
         }
     }
 
+    /**
+     * Returns the count of appointments for the logged user
+     * can be filtered by status and time range
+     */
     public function getCurrentAppointmentsCount(){
         AuthMiddleware::requireAuth();
 
@@ -197,6 +217,10 @@ class AppointmentController {
         }
     }
 
+    /**
+     * Allows users to see the cound of appointments grouped by status
+     * can be filtered by time range
+     */
     public function getGroupedAppointmentsCount(){
         AuthMiddleware::requireAuth();
 
