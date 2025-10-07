@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
-use App\Web\Route;
+require_once __DIR__ . '/../src/Web/Route.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -21,4 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-Route::handleRoute($url, $method);
+if (isset($routes[$method][$url])){
+    [ $class, $method ] = $routes[$method][$url];
+    $instance = new $class();
+    $instance->$method();
+} else {
+    App\Http\Response::sendJson(
+        404,
+        false,
+        "Not found"
+    );
+}
