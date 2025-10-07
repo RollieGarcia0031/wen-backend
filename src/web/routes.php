@@ -6,7 +6,7 @@ use App\Http\Response;
 
 $routes = [];
 
-$route["POST"] = [
+$routes["POST"] = [
     "/auth/login" => [AuthController::class, "login"],
     "/auth/register" => [AuthController::class, "register"]
 ];

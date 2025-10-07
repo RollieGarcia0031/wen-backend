@@ -43,6 +43,47 @@ class AuthController extends Controller{
     }
 
     public function login(){
+        [
+            'email' => $email,
+            'password' => $password
+        ] = Request::getBody();
+
+        try {
+
+            $user = User::getByEmail($email);
+
+            $verified_password = password_verify($password, $user->password);
+
+            if($user && $verified_password){
+                Response::sendJson(
+                    200,
+                    true,
+                    'User logged in successfully',
+                    [
+                        "id"=> $user->id,
+                        "name" => $user->name,
+                        "email" => $user->email
+                    ]
+                );
+
+                $_SESSION["user"] = $user;
+            }
+
+            Response::sendJson(
+                401,
+                false,
+                'Invalid credentials',
+                null
+            );
+
+        } catch (PDOException $e) {
+            Response::sendJson(
+                500,
+                false,
+                $e->getMessage(),
+                null
+            );
+        }
         
     }
 }

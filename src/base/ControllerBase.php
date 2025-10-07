@@ -2,7 +2,7 @@
 
 namespace App\Base;
 
-use Database;
+use App\Database\Database;
 use PDO;
 
 class Controller {

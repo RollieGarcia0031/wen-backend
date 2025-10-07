@@ -47,4 +47,16 @@ class User
             $data['role']
         );
     }
+
+    public static function getByEmail(string $email): User
+    {
+        $q = 'SELECT * FROM users WHERE email = :email';
+        $stment = Database::get()->connect()->prepare($q);
+
+        $stment->execute(['email' => $email]);
+        
+        $user = $stment->fetchObject(self::class);
+        
+        return $user;
+    }
 }
