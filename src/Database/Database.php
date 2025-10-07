@@ -38,9 +38,9 @@ class Database {
         $dotenv->load();
         
         $host = $_ENV['DB_HOST'];
-        $username = $_ENV['DB_USERNAME'];
+        $username = $_ENV['DB_USER'];
         $password = $_ENV['DB_PASSWORD'];
-        $database = $_ENV['DB_DATABASE'];
+        $database = $_ENV['DB_NAME'];
         $port = $_ENV['DB_PORT'];
 
         $dsn = "pgsql:host=$host;port=$port;dbname=$database";
