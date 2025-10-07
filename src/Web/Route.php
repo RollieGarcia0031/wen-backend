@@ -4,19 +4,24 @@ namespace App\Web;
 use App\Controller\AuthController;
 use App\Http\Response;
 
-$routes;
-
-$routes["POST"] = [
-    "/auth/login" => [AuthController::class, "login"],
-    "/auth/register" => [AuthController::class, "register"]
-];
-
 class Route {
+    private static array $routes = [];
+
+    public static function initRoutes()
+    {
+        self::$routes["POST"] = [
+            "/auth/login" => [AuthController::class, "login"],
+            "/auth/register" => [AuthController::class, "register"]
+        ];
+    }
+
     public static function handleRoute($url, $method){
-        global $routes;
-        var_dump($routes);
-        exit;
-        if (!isset($routes[$method][$url])) {
+        // Ensure routes are initialized before use
+        if (empty(self::$routes)) {
+            self::initRoutes();
+        }
+
+        if (!isset(self::$routes[$method][$url])) {
             Response::sendJson(
                 404,
                 false,
@@ -25,7 +30,7 @@ class Route {
             );
         }
     
-        [ $controller, $method ] = $routes[$method][$url];
+        [ $controller, $method ] = self::$routes[$method][$url];
     
         $controller = new $controller();
         $controller->$method();
