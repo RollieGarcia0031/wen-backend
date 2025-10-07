@@ -54,6 +54,8 @@ class AuthController extends Controller{
             $verified_password = password_verify($password, $user->password);
 
             if($user && $verified_password){
+                $_SESSION["user"] = $user;
+
                 Response::sendJson(
                     200,
                     true,
@@ -64,8 +66,6 @@ class AuthController extends Controller{
                         "email" => $user->email
                     ]
                 );
-
-                $_SESSION["user"] = $user;
             }
 
             Response::sendJson(
