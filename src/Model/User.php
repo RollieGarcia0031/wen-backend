@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Database\Database;
+use PDO;
 
 class User
 {
@@ -55,8 +56,14 @@ class User
 
         $stment->execute(['email' => $email]);
         
-        $user = $stment->fetchObject(self::class);
-        
-        return $user;
+        $user = $stment->fetchAll(PDO::FETCH_OBJ)[0];
+
+        return new User(
+            $user->id,
+            $user->name,
+            $user->email,
+            $user->password,
+            $user->role
+        );
     }
 }

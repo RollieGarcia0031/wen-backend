@@ -49,7 +49,6 @@ class AuthController extends Controller{
         ] = Request::getBody();
 
         try {
-
             $user = User::getByEmail($email);
 
             $verified_password = password_verify($password, $user->password);
