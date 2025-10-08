@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Base\Controller;
-
+use App\Http\Cookie;
 use App\Model\User;
 use App\Http\Request;
 use App\Http\Response;
+use App\Middleware\AuthMiddleware;
 use PDOException;
 
 class AuthController extends Controller{    
@@ -54,6 +55,8 @@ class AuthController extends Controller{
             $verified_password = password_verify($password, $user->password);
 
             if($user && $verified_password){
+                $user->password = "*";
+
                 $_SESSION["user"] = $user;
 
                 Response::sendJson(
@@ -84,5 +87,13 @@ class AuthController extends Controller{
             );
         }
         
+    }
+
+    public static function getProfile(){
+        AuthMiddleware::requireAuth();
+
+        $user = Cookie::getUser();
+
+        Response::sendJson(200, true, "User Logged", (array)$user);
     }
 }
