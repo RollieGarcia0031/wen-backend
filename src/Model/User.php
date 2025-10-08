@@ -44,7 +44,7 @@ class User
             $id,
             $data['name'],
             $data['email'],
-            $data['password'],
+            "***", 
             $data['role']
         );
     }
