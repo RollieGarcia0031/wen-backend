@@ -6,7 +6,11 @@ use App\Base\Controller;
 use App\Model\Course;
 use App\Http\Request;
 use App\Http\Response;
+use App\Http\Cookie;
+use App\Middleware\AuthMiddleware;
+use App\Service\CourseService;
 use PDOException;
+
 
 class CourseController extends Controller {
     public function create(){
@@ -41,4 +45,29 @@ class CourseController extends Controller {
             );
         }
     }
+
+    public static function assignToUser(){
+        AuthMiddleware::requireAuth();
+
+        $user_id = Cookie::getUser()->id; 
+        
+        $data = Request::getBody();
+
+        [
+            "course_id" => $course_id,
+            "year"      => $year,
+        ] = $data;
+
+        $data['user_id'] = $user_id;
+
+        try {
+            $new_id = CourseService::assign($data);
+
+            Response::sendJson(201, true, "Course Assigned", [
+                "new_id" => $new_id
+            ]);
+        } catch (PDOException $e) {
+            Response::sendError($e);             
+        }
+    } 
 }
