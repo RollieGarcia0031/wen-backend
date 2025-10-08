@@ -1,0 +1,36 @@
+POST http://localhost:8080/course/create
+Content-Type: application/json
+
+{
+    "name": "JKJ",
+    "description": "ELECTRIC"
+}
+
+### 
+POST http://localhost:8080/course/use
+Content-Type: application/json
+
+{
+    "course_id": 1,
+    "year": 3
+}
+
+###
+GET http://localhost:8080/course/list
+Content-Type: application/json
+
+###
+POST http://localhost:8080/course/search
+Content-Type: application/json
+
+{
+    "name": "C"
+}
+
+###
+DELETE http://localhost:8080/course/delete
+Content-Type: application/json
+
+{
+    "id": "5"
+}
