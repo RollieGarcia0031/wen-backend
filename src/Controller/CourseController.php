@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Base\Controller;
+use App\Database\Database;
 use App\Model\Course;
 use App\Http\Request;
 use App\Http\Response;
@@ -70,4 +71,50 @@ class CourseController extends Controller {
             Response::sendError($e);             
         }
     } 
+
+    public static function list(){
+        try {
+            $data = CourseService::getAll();
+            Response::sendJson(200, true, "Query Sucess", $data);
+        } catch (PDOException $e) {
+            Response::sendError($e);
+        } 
+    }
+
+    public static function search(){
+        $data = Request::getBody();
+        /**  name  **/
+
+        try {
+            $result = CourseService::searchByName($data["name"]);
+
+            Response::sendJson(200, true, "Query Sucess", $result);
+        } catch (PDOException $e) {
+            Response::sendError($e);
+        }
+    }
+
+    public static function delete(){
+        AuthMiddleware::requireAuth();
+
+        $data = Request::getBody();
+        /** id **/
+        $user = Cookie::getUser();
+
+        $data["created_by"] = $user->id;
+
+        try {
+            $affectedRows = CourseService::deleteById($data);
+
+            if ($affectedRows <= 0){
+                Response::sendJson(201, false, "Course Not Found", null);
+            }
+
+            Response::sendJson(200, true, "Deleted", [
+                "affected_rows" => $affectedRows
+            ]); 
+        } catch (PDOException $e){
+            Response::sendError($e);
+        }
+    }
 }
