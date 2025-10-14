@@ -19,7 +19,10 @@ $routes["POST"] = [
 
 $routes["GET"] = [
     "/auth/profile"     => [ AuthController::class,     "getProfile"    ],
-    "/course/list"      => [ CourseController::class,   "list"          ]
+
+    "/course/list"      => [ CourseController::class,   "list"          ],
+
+    "/availability/list"=> [ AvailabilityController::class, "getOwnList" ]
 ];
 
 $routes["DELETE"] = [

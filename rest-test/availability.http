@@ -2,7 +2,11 @@ POST http://localhost:8080/availability/create
 Content-Type: application/json
 
 {
-    "day": 2,
+    "day": 0,
     "time_start": "09:00",
     "time_end": "13:00"
 }
+
+###
+GET http://localhost:8080/availability/list
+Content-Type: application/json

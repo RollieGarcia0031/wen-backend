@@ -38,4 +38,27 @@ class AvailabilityService {
 
         return $lastId;
     }
+
+    /**
+     * Searches a list of availability based on a given user_id
+     *
+     * @param array $param {
+     *      @type string $user_id the target user id
+     * }
+     */
+    public static function getByUser(array $param):array
+    {
+        $conn = Database::get()->connect();
+
+        $stment = $conn->prepare("
+            SELECT * FROM availability
+            WHERE user_id = :user_id
+            ORDER BY day_of_week ASC
+        ");
+
+        $stment->execute($param);
+
+        $result = $stment->fetchAll();
+        return $result;
+    }
 }

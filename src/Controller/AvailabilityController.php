@@ -53,4 +53,29 @@ class AvailabilityController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Searches for list of availability of the logged user
+     * with a role of professor
+     */
+    public static function getOwnList(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole("professor");
+        
+        try {
+            $user_id = Cookie::getUser()->id;
+            
+            $list = AvailabilityService::getByUser([
+                'user_id' => $user_id
+            ]);
+
+            Response::sendJson(
+                200, true,
+                "Query Sucess", $list
+            );
+              
+        } catch (PDOException $error){
+            Response::sendError($error);
+        } 
+    }
 }
