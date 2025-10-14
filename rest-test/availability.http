@@ -2,7 +2,7 @@ POST http://localhost:8080/availability/create
 Content-Type: application/json
 
 {
-    "day": 0,
+    "day": 7,
     "time_start": "09:00",
     "time_end": "13:00"
 }
@@ -12,9 +12,17 @@ GET http://localhost:8080/availability/list
 Content-Type: application/json
 
 ###
+POST http://localhost:8080/availability/user
+Content-Type: application/json
+
+{
+    "user_id": 3
+}
+
+###
 DELETE http://localhost:8080/availability/delete
 Content-Type: application/json
 
 {
-    "id": 3
+    "id": 2
 }

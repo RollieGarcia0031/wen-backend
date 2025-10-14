@@ -14,7 +14,8 @@ $routes["POST"] = [
     "/course/use"       => [ CourseController::class,   "assignToUser"  ],
     "/course/search"    => [ CourseController::class,   "search"        ],
 
-    "/availability/create" => [ AvailabilityController::class, "createNew" ] 
+    "/availability/create" => [ AvailabilityController::class, "createNew" ],
+    "/availability/user"   => [ AvailabilityController::class, "findUser"  ] 
 ];
 
 $routes["GET"] = [

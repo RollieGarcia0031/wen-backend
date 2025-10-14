@@ -9,6 +9,7 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Middleware\UserMiddleware;
 use App\Service\AvailabilityService;
+use Dotenv\Repository\RepositoryInterface;
 use PDO;
 use PDOException;
 
@@ -108,6 +109,24 @@ class AvailabilityController {
         }
     }
 
+    /**
+     * Finds a user's availability 
+     */
+    public static function findUser(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(['user_id']);
 
+        try {
+            $param = Request::getBody();
+            $list = AvailabilityService::getByUser([
+                "user_id" => $param["user_id"]
+            ]);
+
+            Response::sendJson(200, true, "Query Success", $list);
+
+        } catch (PDOException $error){
+            Response::sendError($error); 
+        }
+    }
 
 }
