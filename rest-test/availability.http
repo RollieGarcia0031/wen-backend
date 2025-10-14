@@ -1,0 +1,8 @@
+POST http://localhost:8080/availability/create
+Content-Type: application/json
+
+{
+    "day": 2,
+    "time_start": "09:00",
+    "time_end": "13:00"
+}

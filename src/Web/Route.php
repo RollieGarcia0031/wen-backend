@@ -1,9 +1,8 @@
 <?php
 
 use App\Controller\AuthController;
+use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
-use App\Middleware\AuthMiddleware;
-use App\Service\CourseService;
 
 $routes = [];
 
@@ -13,7 +12,9 @@ $routes["POST"] = [
 
     "/course/create"    => [ CourseController::class,   "create"        ],
     "/course/use"       => [ CourseController::class,   "assignToUser"  ],
-    "/course/search"    => [ CourseController::class,   "search"        ] 
+    "/course/search"    => [ CourseController::class,   "search"        ],
+
+    "/availability/create" => [ AvailabilityController::class, "createNew" ] 
 ];
 
 $routes["GET"] = [
