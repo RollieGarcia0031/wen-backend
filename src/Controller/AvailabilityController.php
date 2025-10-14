@@ -9,6 +9,7 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Middleware\UserMiddleware;
 use App\Service\AvailabilityService;
+use PDO;
 use PDOException;
 
 class AvailabilityController {
@@ -78,4 +79,35 @@ class AvailabilityController {
             Response::sendError($error);
         } 
     }
+
+    /**
+     * Deletes a specific availability owned by
+     * the logged user
+     */
+    public static function delete(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole("professor");
+        RequestMiddleware::requireFields(["id"]);
+
+        try {
+            $param = Request::getBody();
+            $param['user_id'] = Cookie::getUser()->id;
+
+            $affectedRows = AvailabilityService::deleteById($param);
+
+            if ($affectedRows > 0){
+                Response::sendJson(203, false, "Deleted", null);
+            } else {
+                Response::sendJson(
+                    400, false, "Not Found/No Rows Affected"
+                );
+            }
+         
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
+
+
+
 }

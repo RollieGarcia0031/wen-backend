@@ -61,4 +61,32 @@ class AvailabilityService {
         $result = $stment->fetchAll();
         return $result;
     }
+
+    /**
+     *  Deletes an availability based on id
+     *  and user_id
+     *
+     *  @param array @param {
+     *      @type int $user_id id of availability owner
+     *      @type int $id      unique id of the availability
+     *  }
+     */
+    public static function deleteById(array $param):int
+    {
+        $conn = Database::get()->connect();
+
+        $stment = $conn->prepare("
+            DELETE FROM availability
+            WHERE (
+                user_id = :user_id
+                AND
+                id = :id
+            )
+        "); 
+
+        $stment->execute($param);
+
+        $rowCount = $stment->rowCount();
+        return $rowCount;
+    }
 }

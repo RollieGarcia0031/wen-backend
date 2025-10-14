@@ -26,5 +26,7 @@ $routes["GET"] = [
 ];
 
 $routes["DELETE"] = [
-    "/course/delete"    => [ CourseController::class,   "delete"        ]
+    "/course/delete"    => [ CourseController::class,   "delete"        ],
+
+    "/availability/delete"=> [ AvailabilityController::class, "delete"  ]
 ];
