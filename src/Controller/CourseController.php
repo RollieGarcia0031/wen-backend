@@ -9,12 +9,16 @@ use App\Http\Request;
 use App\Http\Response;
 use App\Http\Cookie;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\RequestMiddleware;
 use App\Service\CourseService;
 use PDOException;
 
 
 class CourseController extends Controller {
     public function create(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(["name", "description"]);
+
         $data = Request::getBody();
 
         [
@@ -82,8 +86,9 @@ class CourseController extends Controller {
     }
 
     public static function search(){
+        RequestMiddleware::requireFields(["name"]);
+
         $data = Request::getBody();
-        /**  name  **/
 
         try {
             $result = CourseService::searchByName($data["name"]);
@@ -96,6 +101,7 @@ class CourseController extends Controller {
 
     public static function delete(){
         AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(["id"]);
 
         $data = Request::getBody();
         /** id **/
