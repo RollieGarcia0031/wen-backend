@@ -2,8 +2,8 @@ POST http://localhost:8080/course/create
 Content-Type: application/json
 
 {
-    "name": "JKJ",
-    "description": "ELECTRIC"
+    "name": "CpE",
+    "description": "Computer Engineering"
 }
 
 ### 
@@ -11,8 +11,8 @@ POST http://localhost:8080/course/use
 Content-Type: application/json
 
 {
-    "course_id": 1,
-    "year": 3
+    "course_id": 6,
+    "year": 1
 }
 
 ###
@@ -25,6 +25,14 @@ Content-Type: application/json
 
 {
     "name": "C"
+}
+
+###
+POST http://localhost:8080/course/user
+Content-Type: application/json
+
+{
+    "user_id": "1"
 }
 
 ###

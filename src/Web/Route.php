@@ -13,6 +13,7 @@ $routes["POST"] = [
     "/course/create"    => [ CourseController::class,   "create"        ],
     "/course/use"       => [ CourseController::class,   "assignToUser"  ],
     "/course/search"    => [ CourseController::class,   "search"        ],
+    "/course/user"      => [ CourseController::class,   "findUser"      ],  
 
     "/availability/create" => [ AvailabilityController::class, "createNew" ],
     "/availability/user"   => [ AvailabilityController::class, "findUser"  ] 

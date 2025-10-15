@@ -75,7 +75,7 @@ CREATE TABLE courses (
 -- =========================
 CREATE TABLE user_class (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE REFERENCES users(id),
+    user_id BIGINT NOT NULL REFERENCES users(id),
     course_id INTEGER NOT NULL REFERENCES courses(id),
     year SMALLINT NOT NULL
 );
