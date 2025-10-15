@@ -123,4 +123,24 @@ class CourseController extends Controller {
             Response::sendError($e);
         }
     }
+
+    /**
+     * Searches for a list of course that is belong to 
+     * a certain user
+     */
+    public static function findUser(){
+        RequestMiddleware::requireFields(['user_id']);
+
+        try {
+            $param = Request::getBody();
+
+            $result = CourseService::getUserCourseList($param);
+
+            Response::sendJson(
+                200, true, "Query Success", $result
+            );
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
 }

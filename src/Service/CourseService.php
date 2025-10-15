@@ -96,4 +96,35 @@ class CourseService {
 
         return $count;
     }
+
+    /**
+     *  Searches for a list of all courses that belong to a certain
+     *  user
+     *
+     *  @param array $param {
+     *      @type string $user_id   target user id
+     *  }
+     */
+    public static function getUserCourseList(array $param):array
+    {
+        $conn = Database::get()->connect();
+
+        $stment = $conn->prepare("
+            SELECT
+                uc.id,
+                uc.year,
+                c.name,
+                c.description
+            FROM user_class uc
+            LEFT JOIN courses c
+                ON uc.course_id = c.id
+            WHERE uc.user_id = :user_id
+            ORDER BY uc.year ASC
+        ");
+
+        $stment->execute($param);
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
 }
