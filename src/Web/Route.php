@@ -1,8 +1,10 @@
 <?php
 
+use App\Controller\AppointmentController;
 use App\Controller\AuthController;
 use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
+use App\Model\Appointment;
 
 $routes = [];
 
@@ -16,7 +18,9 @@ $routes["POST"] = [
     "/course/user"      => [ CourseController::class,   "findUser"      ],  
 
     "/availability/create" => [ AvailabilityController::class, "createNew" ],
-    "/availability/user"   => [ AvailabilityController::class, "findUser"  ] 
+    "/availability/user"   => [ AvailabilityController::class, "findUser"  ],
+
+    "/appointment/create"  => [ AppointmentController::class, "createNew"]
 ];
 
 $routes["GET"] = [
