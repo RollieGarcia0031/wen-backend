@@ -32,7 +32,7 @@ CREATE TABLE appointments (
     availability_id INTEGER REFERENCES availability(id),
     status VARCHAR(50) DEFAULT 'pending',
     message TEXT,
-    time_stamp TIMESTAMP NOT NULL,
+    target_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     student_user_id INTEGER REFERENCES users(id)
