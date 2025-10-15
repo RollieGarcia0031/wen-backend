@@ -35,8 +35,7 @@ CREATE TABLE appointments (
     time_stamp TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    student_user_id INTEGER REFERENCES users(id),
-    professor_user_id INTEGER REFERENCES users(id)
+    student_user_id INTEGER REFERENCES users(id)
 );
 
 -- =========================
