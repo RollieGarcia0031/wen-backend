@@ -1,1 +1,104 @@
 THIS IS A REWRITTEN VERSION OF THE BACKEND with additional features
+
+REQUEST:
+
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "rollie@email.com",
+  "password": "123456"
+}
+
+RESPONSE:
+json
+{
+  "success": true,
+  "message": "User logged in successfully",
+  "data": {
+    "id": 1,
+    "name": "Rollie Angelo",
+    "email": "rollie@email.com"
+  }
+}
+
+REQUEST:
+GET /auth/profile
+Content-Type: application/json
+
+RESPONSE:
+{
+  "success": true,
+  "message": "User Logged",
+  "data": {
+    "id": 1,
+    "name": "Rollie Angelo",
+    "email": "rollie@email.com",
+    "password": "*",
+    "role": "student"
+  }
+}
+
+REQUEST:
+POST /course/create
+Content-Type: application/json
+
+{
+    "name": "CpE",
+    "description": "Computer Engineering"
+}
+
+RESPONSE:
+{
+    "success": true,
+    "message": "Course Created",
+    "data": {
+        "id": 1
+    }
+}
+
+REQUEST:
+GET /course/list
+Content-Type: application/json
+
+RESPONSE:
+{
+    "success": true,
+    "message": "Query Sucess",
+    "data": [
+        {
+            "id": 6,
+            "created_by": "Angelo",
+            "name": "CpE",
+            "description": "Computer Engineering"
+        }
+    ]
+}
+
+REQUEST:
+POST /course/user
+Content-Type: application/json
+
+{
+    "user_id": "3"
+}
+
+RESPONSE:
+{
+  "success": true,
+  "message": "Query Success",
+  "data": [
+    {
+      "id": 3,
+      "year": 1,
+      "name": "CpE",
+      "description": "Computer Engineering"
+    },
+    {
+      "id": 2,
+      "year": 3,
+      "name": "EE",
+      "description": "ELECTRIC"
+    }
+  ]
+}
