@@ -22,3 +22,11 @@ Content-Type: application/json
 {
     "id": "6"
 }
+
+###
+DELETE http://localhost:8080/appointment/delete
+Content-Type: application/json
+
+{
+    "id": "3"
+}
