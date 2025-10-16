@@ -119,4 +119,58 @@ class AppointmentService{
 
         return $rowCount;
     }
+    /**
+     * Deletes a specific appointment, based on a given
+     * id
+     * 
+     * @param array $params {
+     *      @type string student_user_id
+     *      @type string id
+     * }
+     */
+    public static function delete(array $params):int
+    {
+        $conn = Database::get()->connect();
+
+        $stment = $conn->prepare(<<<SQL
+            DELETE FROM appointments
+            WHERE
+                student_user_id = :student_user_id
+                AND id = :id
+        SQL);
+
+        $stment->execute($params);
+
+        $rowCount = $stment->rowCount();
+
+        return $rowCount;
+    }
+
+    /**
+     * Updates the message of an appointment
+     * 
+     * @param array $params {
+     *      @type string student_user_id
+     *      @type string id
+     *      @type string message
+     * }
+     */
+    public static function updateMessage(array $params):int
+    {
+        $conn = Database::get()->connect();
+
+        $stment = $conn->prepare(<<<SQL
+            UPDATE appointments
+            SET message = :message
+            WHERE
+                id = :id
+                AND student_user_id = :student_user_id
+        SQL);
+
+        $stment->execute($params);
+
+        $rowCount = $stment->rowCount();
+
+        return $rowCount;
+    }
 }
