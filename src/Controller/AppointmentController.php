@@ -93,4 +93,34 @@ class AppointmentController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Updates an appointment status from pending to "confirmed"
+     * - Only allowed for professor
+     */
+    public function accept(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole("professor");
+        RequestMiddleware::requireFields(["id"]);
+
+        $params = Request::getBody();
+
+        try {
+            $params['professor_user_id'] = Cookie::getUser()->id;
+            $params['status'] = "confirmed";
+
+            $affectedRows = AppointmentService::updateStatus($params);
+
+            Response::sendJson(
+                200, true,
+                "Update Success",
+                ["affected_rows" => $affectedRows]
+            );
+
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+
+
+    }
 }
