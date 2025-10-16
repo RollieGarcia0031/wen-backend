@@ -88,4 +88,35 @@ class AppointmentService{
 
         return $result;
     }
+
+    /**
+     * Updates the status of an appointment
+     * 
+     * @param array $params {
+     *      @type string professor_user_id  - id of the logged in professor, who recieved the appointment
+     *      @type string id                 - id of the appointment to be updated
+     *      @type string status             - new status of the appointment
+     * }
+     */
+    public static function updateStatus($params):int
+    {
+        $conn = Database::get()->connect();
+
+        $stment = $conn->prepare(<<<SQL
+            UPDATE appointments AS apt
+            SET status = :status
+            FROM availability av
+            WHERE
+                apt.availability_id = av.id
+                AND apt.id = :id
+                AND av.user_id = :professor_user_id
+                AND apt.status = 'pending'
+        SQL);
+
+        $stment->execute($params);
+
+        $rowCount = $stment->rowCount();
+
+        return $rowCount;
+    }
 }

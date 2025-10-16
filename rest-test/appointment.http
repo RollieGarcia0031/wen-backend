@@ -2,8 +2,8 @@ POST http://localhost:8080/appointment/send
 Content-Type: application/json
 
 {
-    "availability_id": "0",
-    "message": "test!",
+    "availability_id": "5",
+    "message": "Hillo",
     "target_date": "2024-07-01T10:00:00Z"
 }
 
@@ -11,3 +11,14 @@ Content-Type: application/json
 POST http://localhost:8080/appointment/list
 Content-Type: application/json
 
+{
+    "status" "pending" //optional
+}
+
+###
+POST http://localhost:8080/appointment/accept
+Content-Type: application/json
+
+{
+    "id": "6"
+}

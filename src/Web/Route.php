@@ -21,7 +21,8 @@ $routes["POST"] = [
     "/availability/user"   => [ AvailabilityController::class, "findUser"  ],
 
     "/appointment/send"  => [ AppointmentController::class, "createNew"  ],
-    "/appointment/list"  => [ AppointmentController::class, "getOwnList" ]
+    "/appointment/list"  => [ AppointmentController::class, "getOwnList" ],
+    "/appointment/accept"=> [ AppointmentController::class, "accept"     ]
 ];
 
 $routes["GET"] = [
