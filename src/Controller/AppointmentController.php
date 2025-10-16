@@ -9,6 +9,7 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Middleware\UserMiddleware;
 use App\Model\Appointment;
+use App\Service\AppointmentService;
 use PDOException;
 
 class AppointmentController {
@@ -54,6 +55,39 @@ class AppointmentController {
                 300, false, "Creation Failed",
                 null
             );
+
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
+
+    /**
+     * Returns the list of appointments of the logged user
+     * - if opened by a student, it returns the sent appointments
+     * - if opened by a professor, it returns the received appointments
+     */
+    public function getOwnList(){
+        AuthMiddleware::requireAuth();
+
+        $params = Request::getBody();
+
+        $user_id = Cookie::getUser()->id;
+        $userRole = Cookie::getUser()->role;
+
+        
+        try {
+            $list = null;
+            
+            if ($userRole == 'student'){
+                $params['student_user_id'] = $user_id;
+                $list = AppointmentService::getAllSentAppointments($params);
+                
+            } else if ($userRole == 'professor'){
+                $params['professor_user_id'] = $user_id;
+                $list = AppointmentService::getAllRecievedAppointments($params);
+            }
+
+            Response::sendJson(200, true, "Query Success", $list);
 
         } catch (PDOException $error){
             Response::sendError($error);
