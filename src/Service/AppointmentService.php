@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Service;
+
+use App\Database\Database;
+
+
+class AppointmentService{
+
+    /**
+     * Retrieves a list of appointments sent by a student
+     * 
+     * @param array $params {
+     *      @type string student_user_id
+     *      @type string status
+     * }
+     */
+    public static function getAllSentAppointments(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                apt.id,
+                apt.status,
+                apt.message,
+                apt.target_date,
+                av.day_of_week,
+                av.start_time,
+                av.end_time,
+                u.name
+            FROM appointments apt
+            LEFT JOIN availability av ON apt.availability_id = av.id
+            LEFT JOIN users u ON av.user_id = u.id
+            WHERE apt.student_user_id = :student_user_id
+            ORDER BY apt.target_date ASC
+        SQL;
+        
+        if (isset($params['status'])) {            
+            $q .= " AND status = :status";
+        }
+        
+        $stmt = $conn->prepare($q);
+        $stmt->execute($params);
+
+        $result = $stmt->fetchAll();
+
+        return $result;
+    }
+
+    /**
+     * Retrieves a list of appointments received by a professor
+     * 
+     * @param array $params {
+     *      @type string professor_user_id
+     *      @type string status
+     * }
+     */
+    public static function getAllRecievedAppointments(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                apt.id,
+                apt.status,
+                apt.message,
+                apt.target_date,
+                av.day_of_week,
+                av.start_time,
+                av.end_time,
+                u.name
+            FROM appointments apt
+            LEFT JOIN availability av ON apt.availability_id = av.id
+            LEFT JOIN users u ON apt.student_user_id = u.id
+            WHERE av.user_id = :professor_user_id
+            ORDER BY apt.target_date ASC
+        SQL;
+        
+        if (isset($params['status'])) {            
+            $q .= " AND status = :status";
+        }
+        
+        $stmt = $conn->prepare($q);
+        $stmt->execute($params);
+
+        $result = $stmt->fetchAll();
+
+        return $result;
+    }
+}

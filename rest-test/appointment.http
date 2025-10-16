@@ -1,4 +1,4 @@
-POST http://localhost:8080/appointment/create
+POST http://localhost:8080/appointment/send
 Content-Type: application/json
 
 {
@@ -6,3 +6,8 @@ Content-Type: application/json
     "message": "test!",
     "target_date": "2024-07-01T10:00:00Z"
 }
+
+###
+POST http://localhost:8080/appointment/list
+Content-Type: application/json
+
