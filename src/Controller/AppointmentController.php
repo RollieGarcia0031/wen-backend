@@ -148,4 +148,30 @@ class AppointmentController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Updates the message of an appointment
+     * - Only allowed for students who originally created the appointment
+     */
+    public static function updateMessage(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole("student");
+        RequestMiddleware::requireFields(["id", "message"]);
+
+        $params = Request::getBody();
+
+        try {
+            $params['student_user_id'] = Cookie::getUser()->id;
+
+            $affectedRows = AppointmentService::updateMessage($params);
+
+            Response::sendJson(
+                200, true,
+                "Update Success",
+                ["affected_rows" => $affectedRows]
+            );
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
 }

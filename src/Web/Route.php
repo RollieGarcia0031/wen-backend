@@ -42,5 +42,5 @@ $routes["DELETE"] = [
 ];
 
 $routes["PUT"] = [
-    "/appointment/message/update" => [ ]
+    "/appointment/message/update" => [ AppointmentController::class, "updateMessage"  ]
 ];

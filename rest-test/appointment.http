@@ -30,3 +30,12 @@ Content-Type: application/json
 {
     "id": "3"
 }
+
+###
+PUT http://localhost:8080/appointment/message/update
+Content-Type: application/json
+
+{
+    "id": "6",
+    "message": "You're my world"
+}

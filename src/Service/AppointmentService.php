@@ -145,4 +145,32 @@ class AppointmentService{
 
         return $rowCount;
     }
+
+    /**
+     * Updates the message of an appointment
+     * 
+     * @param array $params {
+     *      @type string student_user_id
+     *      @type string id
+     *      @type string message
+     * }
+     */
+    public static function updateMessage(array $params):int
+    {
+        $conn = Database::get()->connect();
+
+        $stment = $conn->prepare(<<<SQL
+            UPDATE appointments
+            SET message = :message
+            WHERE
+                id = :id
+                AND student_user_id = :student_user_id
+        SQL);
+
+        $stment->execute($params);
+
+        $rowCount = $stment->rowCount();
+
+        return $rowCount;
+    }
 }

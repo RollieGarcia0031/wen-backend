@@ -10,10 +10,10 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-  "email": "angelo@email.com",
+  "email": "test2@email.com",
   "password": "123456",
-  "name": "Angelo",
-  "role": "professor"
+  "name": "test 2",
+  "role": "student"
 }
 
 ###
