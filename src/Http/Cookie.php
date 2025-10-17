@@ -10,7 +10,11 @@ class Cookie {
        $_SESSION['user'] = $user;    
     }
 
-    public static function getUser(): User {
-        return $_SESSION['user']; 
+    public static function getUser(): User | null {
+        if (!isset($_SESSION['user'])) {
+            return null;
+        }
+        $user = $_SESSION['user'];
+        return  $user;
     }
 }
