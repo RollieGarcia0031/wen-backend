@@ -29,6 +29,7 @@ $routes["GET"] = [
     "/auth/profile"     => [ AuthController::class,     "getProfile"    ],
 
     "/course/list"      => [ CourseController::class,   "list"          ],
+    "/course/list/self" => [ CourseController::class,   "selfList"      ],
 
     "/availability/list"=> [ AvailabilityController::class, "getOwnList" ]
 ];

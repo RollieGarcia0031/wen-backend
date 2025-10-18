@@ -143,4 +143,28 @@ class CourseController extends Controller {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Returns a list of courses that is created by the logged
+     * user, this will be used to retrieve the courses that
+     * you make, in which the creator (you) will also have
+     * the permission to delete it
+     */
+    public static function selfList(){
+        AuthMiddleware::requireAuth();
+
+        $user_id = Cookie::getUser()->id;
+
+        try {
+            $list = CourseService::getAllCreated($user_id);
+
+            Response::sendJson(
+                200, true,
+                "Query Success",
+                $list
+            );
+        } catch (PDOException $error){
+            Response::sendError($error); 
+        } 
+    }
 }
