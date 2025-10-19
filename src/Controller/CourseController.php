@@ -12,7 +12,7 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Service\CourseService;
 use PDOException;
-
+use SQLite3;
 
 class CourseController extends Controller {
     public function create(){
@@ -166,5 +166,38 @@ class CourseController extends Controller {
         } catch (PDOException $error){
             Response::sendError($error); 
         } 
+    }
+
+    public static function getAssigned(){
+        AuthMiddleware::requireAuth();
+
+        $user_id = Cookie::getUser()->id;
+
+        try {
+            $conn = Database::get()->connect();
+            $stment = $conn->prepare(<<<SQL
+                SELECT
+                    uc.id,
+                    uc.year,
+                    c.name,
+                    c.description
+                FROM user_class uc
+                LEFT JOIN courses c
+                    ON c.id = uc.course_id
+                WHERE uc.user_id = :user_id
+            SQL);
+        
+            
+            $stment->execute(["user_id"=>$user_id]);
+            $result = $stment->fetchAll();
+            
+            Response::sendJson(
+                200, true, "Query Success",
+                $result
+            );
+
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
     }
 }
