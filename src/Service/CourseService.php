@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Database\Database;
+use SQLite3;
 
 class CourseService {
 
@@ -123,6 +124,33 @@ class CourseService {
         ");
 
         $stment->execute($param);
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
+
+    /**
+     * Retrievese a list of courses filtered by the created_by
+     * field in the table
+     *
+     * @param string $created_by - the id of the user who created courses 
+     */
+    public static function getAllCreated(string $created_by): array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT 
+                id,
+                name,
+                description
+            FROM courses
+            WHERE created_by = ?
+        SQL;
+
+        $stment = $conn->prepare($q); 
+        $stment->execute([$created_by]);
+
         $result = $stment->fetchAll();
 
         return $result;

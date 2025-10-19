@@ -12,7 +12,7 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Service\CourseService;
 use PDOException;
-
+use SQLite3;
 
 class CourseController extends Controller {
     public function create(){
@@ -139,6 +139,63 @@ class CourseController extends Controller {
             Response::sendJson(
                 200, true, "Query Success", $result
             );
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
+
+    /**
+     * Returns a list of courses that is created by the logged
+     * user, this will be used to retrieve the courses that
+     * you make, in which the creator (you) will also have
+     * the permission to delete it
+     */
+    public static function selfList(){
+        AuthMiddleware::requireAuth();
+
+        $user_id = Cookie::getUser()->id;
+
+        try {
+            $list = CourseService::getAllCreated($user_id);
+
+            Response::sendJson(
+                200, true,
+                "Query Success",
+                $list
+            );
+        } catch (PDOException $error){
+            Response::sendError($error); 
+        } 
+    }
+
+    public static function getAssigned(){
+        AuthMiddleware::requireAuth();
+
+        $user_id = Cookie::getUser()->id;
+
+        try {
+            $conn = Database::get()->connect();
+            $stment = $conn->prepare(<<<SQL
+                SELECT
+                    uc.id,
+                    uc.year,
+                    c.name,
+                    c.description
+                FROM user_class uc
+                LEFT JOIN courses c
+                    ON c.id = uc.course_id
+                WHERE uc.user_id = :user_id
+            SQL);
+        
+            
+            $stment->execute(["user_id"=>$user_id]);
+            $result = $stment->fetchAll();
+            
+            Response::sendJson(
+                200, true, "Query Success",
+                $result
+            );
+
         } catch (PDOException $error){
             Response::sendError($error);
         }
