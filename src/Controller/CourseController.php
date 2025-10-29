@@ -200,4 +200,35 @@ class CourseController extends Controller {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Allows users to remove the courses that they are enrolled/teaching
+     */
+    public function unuse(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(["course_id"]);
+
+        $user_id = Cookie::getUser()->id;
+
+        $body = Request::getBody();
+        $body["user_id"] = $user_id;
+
+        try {
+            $affectedRows = CourseService::unenrollUser($body);
+
+            if ($affectedRows >= 1){
+                Response::sendJson(
+                    200, true, "Delete Success",
+                    ["affected_rows" => $affectedRows]
+                );
+            }
+
+            Response::sendJson(
+                400, false, "No rows Affected", null
+            );
+
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }

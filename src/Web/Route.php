@@ -14,6 +14,7 @@ $routes["POST"] = [
 
     "/course/create"    => [ CourseController::class,   "create"        ],
     "/course/use"       => [ CourseController::class,   "assignToUser"  ],
+    "/course/unuse"     => [ CourseController::class,   "unuse"         ],
     "/course/search"    => [ CourseController::class,   "search"        ],
     "/course/user"      => [ CourseController::class,   "findUser"      ],  
 

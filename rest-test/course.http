@@ -46,3 +46,11 @@ Content-Type: application/json
 ###
 GET http://localhost:8080/course/assigned
 Content-Type: application/json
+
+### unenroll to a course
+POST http://localhost:8080/course/unuse
+Content-Type: application/json
+
+{
+    "course_id": 6
+}
