@@ -155,4 +155,31 @@ class CourseService {
 
         return $result;
     }
+
+    /**
+     * Removes a course that is assigned to a user
+     * @param array $params {
+     *      @type string user_id
+     *      @type int course_id
+     * }
+     */
+    public static function unenrollUser(array $param): int
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            DELETE FROM user_class
+            WHERE
+                id = :course_id
+                AND
+                user_id = :user_id 
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($param);
+
+        $affectedRow = $stment->rowCount();
+
+        return $affectedRow;
+    }
 }
