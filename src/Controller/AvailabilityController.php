@@ -9,11 +9,15 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Middleware\UserMiddleware;
 use App\Service\AvailabilityService;
-use Dotenv\Repository\RepositoryInterface;
-use PDO;
 use PDOException;
 
 class AvailabilityController {
+    /**
+     * Request body:
+     *  - day: 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+     *  - time_start: 24:00
+     *  - time_end: 24:00
+     */
     public static function createNew(){
         AuthMiddleware::requireAuth();
         UserMiddleware::requireRole("professor");
@@ -128,5 +132,39 @@ class AvailabilityController {
             Response::sendError($error); 
         }
     }
+    
+    /**
+     * Creates multiple availability in one call
+     *
+     * Body:
+     * {
+     *      availability_list: [
+     *      {
+     *          day_of_week: 1-6
+     *          start_time: 24:00:00
+     *          end_time: 24:00:00
+     *      }
+     *    ]
+     * }
+     */
+    public static function createAll(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole('professor');
+        RequestMiddleware::requireFields(['availability_list']);
 
+        $param = Request::getBody();
+
+        $user_id = Cookie::getUser()->id;
+
+        $param["user_id"] = $user_id;
+
+        try {
+
+            $ids = AvailabilityService::createMultiple($param);
+
+            Response::sendJson(200, true, 'Create Success', $ids);
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
 }

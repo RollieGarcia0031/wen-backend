@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Database\Database;
+use PDOException;
 
 class AvailabilityService {
     /**
@@ -19,7 +20,7 @@ class AvailabilityService {
         int $user_id,
         string $time_start,
         string $time_end,
-        string $day 
+        int $day 
     ): int
     {
         $conn = Database::get()->connect();
@@ -88,5 +89,52 @@ class AvailabilityService {
 
         $rowCount = $stment->rowCount();
         return $rowCount;
+    }
+
+    /**
+     * Saves multiple availability for a user
+     * @param array $param {
+     *      @type array $availability_list
+     *      @type int $user_id
+     * }
+     */
+    public static function createMultiple(array $param):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            INSERT INTO availability
+                (user_id, day_of_week, start_time, end_time)
+            VALUES (:user_id, :day_of_week, :start_time, :end_time)
+            RETURNING id
+        SQL;
+
+        $stment = $conn->prepare($q);
+
+        $ids = [];
+
+        try {
+            $conn->beginTransaction();
+
+            $availability_list = $param['availability_list'];
+            
+            foreach($availability_list as $availability){
+
+                $rowParam = $availability;
+                $rowParam["user_id"] = $param["user_id"];
+                
+                $stment->execute($rowParam);
+
+                $ids[] = $stment->fetchColumn();
+            }
+
+            $conn->commit();
+
+            return $ids;
+
+        } catch (PDOException $error) {
+            $conn->rollBack();
+            throw $error; 
+        }
     }
 }
