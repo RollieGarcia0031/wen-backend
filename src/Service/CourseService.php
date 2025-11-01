@@ -110,7 +110,7 @@ class CourseService {
     {
         $conn = Database::get()->connect();
 
-        $stment = $conn->prepare("
+        $q = <<<SQL
             SELECT
                 uc.id,
                 uc.year,
@@ -121,7 +121,9 @@ class CourseService {
                 ON uc.course_id = c.id
             WHERE uc.user_id = :user_id
             ORDER BY uc.year ASC
-        ");
+        SQL; 
+
+        $stment = $conn->prepare($q);
 
         $stment->execute($param);
         $result = $stment->fetchAll();
@@ -181,5 +183,31 @@ class CourseService {
         $affectedRow = $stment->rowCount();
 
         return $affectedRow;
+    }
+
+    /**
+     * Searches for a list of courses in the user_courses table
+     */
+    public static function getAssigned(array $param):array
+    {
+        $conn = Database::get()->connect();
+        $stment = $conn->prepare(<<<SQL
+            SELECT
+                uc.id,
+                uc.year,
+                c.name,
+                c.description
+            FROM user_class uc
+            LEFT JOIN courses c
+                ON c.id = uc.course_id
+            WHERE uc.user_id = :user_id
+            ORDER BY c.name ASC;
+        SQL);
+    
+        
+        $stment->execute($param);
+        $result = $stment->fetchAll();
+
+        return $result;
     }
 }
