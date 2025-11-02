@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Database\Database;
 use App\Util\JSON_MAKER;
+use PDO;
 
 class SearchService {
 
@@ -21,8 +22,12 @@ class SearchService {
             SELECT 
                 u.name,
                 u.id,
-                ARRAY_AGG(uc.year) as year,
-                ARRAY_AGG(c.name) as class_name
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'year', uc.year,
+                        'class', c.name
+                    )::json
+                ) AS classes
             FROM users u
 
             JOIN user_class uc
@@ -43,7 +48,15 @@ class SearchService {
         $stment = $conn->prepare($q);
         $stment->execute($params);
 
-        $result = $stment->fetchAll();
+        $result = $stment->fetchAll(PDO::FETCH_ASSOC);
+
+        // convert the nested attribute (classes) to a
+        // format easy to parse as json
+        foreach ($result as &$row){
+            $classes = json_decode($row['classes']);
+
+            $row['classes'] = $classes;
+        }
 
         return $result;
     }
