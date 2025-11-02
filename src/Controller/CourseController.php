@@ -174,23 +174,10 @@ class CourseController extends Controller {
         $user_id = Cookie::getUser()->id;
 
         try {
-            $conn = Database::get()->connect();
-            $stment = $conn->prepare(<<<SQL
-                SELECT
-                    uc.id,
-                    uc.year,
-                    c.name,
-                    c.description
-                FROM user_class uc
-                LEFT JOIN courses c
-                    ON c.id = uc.course_id
-                WHERE uc.user_id = :user_id
-            SQL);
-        
-            
-            $stment->execute(["user_id"=>$user_id]);
-            $result = $stment->fetchAll();
-            
+            $param = ["user_id" => $user_id];
+
+            $result = CourseService::getAssigned($param);
+
             Response::sendJson(
                 200, true, "Query Success",
                 $result

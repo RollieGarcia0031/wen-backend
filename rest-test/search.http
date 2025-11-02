@@ -1,0 +1,6 @@
+POST http://localhost:8080/search/professors
+Content-Type: application/json
+
+{
+    "user_name": "A"
+}

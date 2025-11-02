@@ -4,6 +4,7 @@ use App\Controller\AppointmentController;
 use App\Controller\AuthController;
 use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
+use App\Controller\SearchController;
 use App\Model\Appointment;
 
 $routes = [];
@@ -24,7 +25,9 @@ $routes["POST"] = [
 
     "/appointment/send"  => [ AppointmentController::class, "createNew"  ],
     "/appointment/list"  => [ AppointmentController::class, "getOwnList" ],
-    "/appointment/accept"=> [ AppointmentController::class, "accept"     ]
+    "/appointment/accept"=> [ AppointmentController::class, "accept"     ],
+
+    "/search/professors"  => [ SearchController::class,  "searchProfessor"]
 ];
 
 $routes["GET"] = [
