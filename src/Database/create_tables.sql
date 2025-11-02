@@ -30,7 +30,7 @@ CREATE TABLE availability (
 CREATE TABLE appointments (
     id SERIAL PRIMARY KEY,
     availability_id INTEGER REFERENCES availability(id),
-    status VARCHAR(50) DEFAULT 'pending',
+    status INT,
     message TEXT,
     target_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -54,6 +54,7 @@ CREATE TABLE notifications (
 CREATE TABLE user_notifications (
     id BIGSERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
+    status SMALLINT NOT NULL,
     notification_id BIGINT NOT NULL REFERENCES notifications(id),
     CONSTRAINT user_notifications_user_id_unique UNIQUE (user_id),
     CONSTRAINT user_notifications_notification_id_unique UNIQUE (notification_id)

@@ -23,7 +23,7 @@ $routes["POST"] = [
     "/availability/createAll" =>[AvailabilityController::class,"createAll" ],
     "/availability/user"   => [ AvailabilityController::class, "findUser"  ],
 
-    "/appointment/send"  => [ AppointmentController::class, "createNew"  ],
+    "/appointment/send"  => [ AppointmentController::class, "send"  ],
     "/appointment/list"  => [ AppointmentController::class, "getOwnList" ],
     "/appointment/accept"=> [ AppointmentController::class, "accept"     ],
 

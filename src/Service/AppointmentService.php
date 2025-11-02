@@ -3,9 +3,124 @@
 namespace App\Service;
 
 use App\Database\Database;
-
+use PDOException;
+use SQLite3;
 
 class AppointmentService{
+
+    /**
+     * Insert a new appointment in the database, and upon
+     * successful creation, a new notification will also
+     * be inserted in the notif table
+     *
+     * @param array $params {
+     *      @type int $availability_id
+     *      @type string $messge
+     *      @type string $target_date
+     *      @type int $student_user_id
+     * }
+     *
+     * @return int the id of the saved appointment
+     */
+    public static function sendAppointment($params):int
+    {
+        $q1 = <<<SQL
+            INSERT INTO appointments (
+                availability_id,
+                message,
+                target_date,
+                status,
+                student_user_id
+            )
+
+            VALUES(
+                :availability_id,
+                :message,
+                :target_date,
+                0,
+                :student_user_id
+            )
+            
+            RETURNING id
+        SQL;
+
+        $conn = Database::get()->connect();
+
+        try {
+            $conn->beginTransaction();
+
+            // save the appointment in the
+            // appointmnts table
+            $stment = $conn->prepare($q1);
+            $stment->execute($params);
+
+            // get the id of the inserted appointment            
+            $insertedAppointmentId = $stment->fetchColumn();
+
+            // retrieve the user name of sender from database
+            $stment = $conn->prepare(<<<SQL
+                SELECT name FROM users
+                WHERE id = :id
+            SQL);
+
+            $stment->execute(['id' => $params['student_user_id']]);
+
+            $userName = $stment->fetch()['name'];
+
+            //insert a new notifcation row
+            $stment = $conn->prepare(<<<SQL
+                INSERT INTO notifications (
+                    message,
+                    level
+                )
+                VALUES(
+                    '$userName sent you an appointment request',
+                    0
+                )
+
+                RETURNING id
+            SQL);
+
+            $stment->execute();
+
+            // fetch the id of inserted notification
+            $insertedNotifId = $stment->fetchColumn();
+
+
+            // fetch the id of the target user professor
+            $stment = $conn->prepare(<<<SQL
+                SELECT user_id from availability
+                WHERE id = ?
+            SQL);
+
+            $stment->execute([$params['availability_id']]);
+            $targetUserId = $stment->fetch()['user_id'];
+
+            // insert the user_notification row to connect
+            // the created notification to the target user
+            // of the sender
+            $stment = $conn->prepare(<<<SQL
+                INSERT INTO user_notifications (
+                    status,
+                    notification_id,
+                    user_id
+                ) VALUES (
+                    0,
+                    $insertedNotifId,
+                    $targetUserId
+                )
+            SQL);
+
+            $stment->execute();
+
+            $conn->commit();
+
+            return $insertedAppointmentId;
+        } catch (PDOException $error){
+            $conn->rollBack();
+            throw $error;
+        }
+    }
 
     /**
      * Retrieves a list of appointments sent by a student
