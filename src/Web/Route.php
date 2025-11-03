@@ -27,7 +27,8 @@ $routes["POST"] = [
     "/appointment/list"  => [ AppointmentController::class, "getOwnList" ],
     "/appointment/accept"=> [ AppointmentController::class, "accept"     ],
 
-    "/search/professors"  => [ SearchController::class,  "searchProfessor"]
+    "/search/professors"  => [ SearchController::class,  "searchProfessor"],
+    "/search/professor/user" => [SearchController::class, "searchProfessorUser"]
 ];
 
 $routes["GET"] = [
