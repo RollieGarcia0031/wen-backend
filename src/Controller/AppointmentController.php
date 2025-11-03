@@ -15,47 +15,33 @@ use PDOException;
 class AppointmentController {
 
     /**
-     * Creates a new appointmentment
-     * Creation is only allowed to logged students
-     */ 
-    public static function createNew(){
+     * Sends an appointment
+     *
+     * Only allowed for user logged with student role
+     *
+     * Required fields:
+     *  - availability_id
+     *  - message
+     *  - target_date
+     */
+    public function send(){
         AuthMiddleware::requireAuth();
-        UserMiddleware::requireRole("student");
+        UserMiddleware::requireRole('student');
         RequestMiddleware::requireFields([
-            "availability_id",
-            "message",
-            "target_date"
+            'availability_id',
+            'message',
+            'target_date'
         ]);
 
-        $user_id = Cookie::getUser()->id;
-        $param = Request::getBody();
+        $params = Request::getBody();
+
+        $userId = Cookie::getUser()->id;
+        $params['student_user_id'] = $userId;
 
         try {
-            $appointment = new Appointment(
-                $user_id,
-                $param['availability_id'],
-                "pending", 
-                $param['message'],
-                $param['target_date'] 
-            );
+            $result = AppointmentService::sendAppointment($params);
 
-            $appointment->create();
-
-            $new_id = $appointment->id;
-
-            if ($new_id >= 0){
-                Response::sendJson(
-                    201, true,
-                    "Appointment Created",
-                    ["new_id" => $new_id]
-                );
-            }
-
-            Response::sendJson(
-                300, false, "Creation Failed",
-                null
-            );
-
+            Response::sendJson(200, true, "Sent", ["id" => $result]);
         } catch (PDOException $error){
             Response::sendError($error);
         }

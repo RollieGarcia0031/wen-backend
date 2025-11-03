@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Database\Database;
-use App\Util\JSON_MAKER;
 use PDO;
 
 class SearchService {
@@ -56,6 +55,81 @@ class SearchService {
             $classes = json_decode($row['classes']);
 
             $row['classes'] = $classes;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Search for availability and classes of a user
+     *
+     * @param array $params {
+     *      @type string $professor_user_id uid of the target professor
+     * }
+     *
+     * @return array the info about professor
+     */
+    public static function searchUserInfo($params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                u.name,
+                u.email,
+                u.id,
+
+                (SELECT
+                    JSONB_AGG(
+                        DISTINCT JSONB_BUILD_OBJECT(
+                            'start_time', av.start_time,
+                            'end_time', av.end_time,
+                            'day_of_week', av.day_of_week,
+                            'availability_id', av.id
+                        )
+                    )
+                
+                    FROM availability av
+                    WHERE av.user_id = u.id
+                ) AS availabilities,
+
+                (SELECT
+                    JSONB_AGG(
+                        DISTINCT JSONB_BUILD_OBJECT(
+                            'year', uc.year,
+                            'course',c.name,
+                            'description', c.description
+                        )
+                    )
+
+                    FROM user_class uc
+                    JOIN courses c
+                        ON c.id = uc.course_id
+                    WHERE uc.user_id = u.id
+                ) AS classes
+
+            FROM users u
+
+            WHERE (
+                u.id = :professor_user_id
+                AND role = 'professor'
+            )
+
+            GROUP BY u.id, u.name, u.email
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($params);
+
+        $result = $stment->fetchAll();
+
+        // convert nested json in parse-ready json
+        foreach ($result as &$row){
+            $av = $row['availabilities'];
+            $row['availabilities'] = json_decode($av, true);
+
+            $classes = $row['classes'];
+            $row['classes'] = json_decode($classes, true);
         }
 
         return $result;
