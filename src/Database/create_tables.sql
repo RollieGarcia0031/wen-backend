@@ -41,10 +41,14 @@ CREATE TABLE appointments (
 -- =========================
 -- NOTIFICATIONS
 -- =========================
+-- each notifications has a level indicating its importance
+-- also, message is limited to 255 characters
+-- a state ranging from 0 (unread) to 1 (read) is indicated
 CREATE TABLE notifications (
     id BIGSERIAL PRIMARY KEY,
     message VARCHAR(255) NOT NULL,
     level SMALLINT NOT NULL,
+    state SMALLINT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -56,7 +60,6 @@ CREATE TABLE user_notifications (
     user_id INTEGER NOT NULL REFERENCES users(id),
     status SMALLINT NOT NULL,
     notification_id BIGINT NOT NULL REFERENCES notifications(id),
-    CONSTRAINT user_notifications_user_id_unique UNIQUE (user_id),
     CONSTRAINT user_notifications_notification_id_unique UNIQUE (notification_id)
 );
 
