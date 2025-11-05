@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Database\Database;
 use PDOException;
-use SQLite3;
 
 class AppointmentService{
 
@@ -71,10 +70,12 @@ class AppointmentService{
             $stment = $conn->prepare(<<<SQL
                 INSERT INTO notifications (
                     message,
-                    level
+                    level,
+                    state
                 )
                 VALUES(
                     '$userName sent you an appointment request',
+                    0,
                     0
                 )
 
