@@ -48,12 +48,15 @@ class AuthController extends Controller{
     public function login(){
         RequestMiddleware::requireFields(['email', 'password']);
 
+        // extract the email and password from the
+        // JSON input of API request
         [
             'email' => $email,
             'password' => $password
         ] = Request::getBody();
 
         try {
+            // retrieve the user
             $user = User::getByEmail($email);
 
             $verified_password = password_verify($password, $user->password);
@@ -99,6 +102,10 @@ class AuthController extends Controller{
         AuthMiddleware::requireAuth();
 
         $user = Cookie::getUser();
+
+        if (!isset($user)){
+            Response::sendJson(401, false, "Not Logged In", null);
+        }
 
         Response::sendJson(200, true, "User Logged", (array)$user);
     }
