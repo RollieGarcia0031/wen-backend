@@ -8,6 +8,8 @@ use App\Model\User;
 use App\Http\Request;
 use App\Http\Response;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\RequestMiddleware;
+use Exception;
 use PDOException;
 
 class AuthController extends Controller{    
@@ -44,6 +46,8 @@ class AuthController extends Controller{
     }
 
     public function login(){
+        RequestMiddleware::requireFields(['email', 'password']);
+
         [
             'email' => $email,
             'password' => $password
@@ -85,6 +89,8 @@ class AuthController extends Controller{
                 $e->getMessage(),
                 null
             );
+        } catch (Exception $error) {
+            Response::sendError($error);
         }
         
     }

@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Database\Database;
+use Exception;
 use PDO;
 
 class User
@@ -56,7 +57,13 @@ class User
 
         $stment->execute(['email' => $email]);
         
-        $user = $stment->fetchAll(PDO::FETCH_OBJ)[0];
+        $result = $stment->fetchAll(PDO::FETCH_OBJ);
+
+        $user = $result[0];
+
+        if (count($result) == 0){
+            throw new Exception("Email not found");
+        }
 
         return new User(
             $user->id,
