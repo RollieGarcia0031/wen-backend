@@ -1,0 +1,7 @@
+### count all unread notifications
+GET http://localhost:8080/notification/count/unread
+Content-Type: application/json
+
+###
+GET http://localhost:8080/notification/mark-all-read
+Content-Type: application/json

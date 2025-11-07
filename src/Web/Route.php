@@ -4,6 +4,7 @@ use App\Controller\AppointmentController;
 use App\Controller\AuthController;
 use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
+use App\Controller\NotificationController;
 use App\Controller\SearchController;
 use App\Model\Appointment;
 
@@ -38,7 +39,9 @@ $routes["GET"] = [
     "/course/list/self" => [ CourseController::class,   "selfList"      ],
     "/course/assigned"  => [ CourseController::class,   "getAssigned"   ],
 
-    "/availability/list"=> [ AvailabilityController::class, "getOwnList" ]
+    "/availability/list"=> [ AvailabilityController::class, "getOwnList" ],
+
+    "/notification/count/unread" => [ NotificationController::class, "countUnread"]
 ];
 
 $routes["DELETE"] = [

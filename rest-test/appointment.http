@@ -12,7 +12,7 @@ POST http://localhost:8080/appointment/list
 Content-Type: application/json
 
 {
-    "status" "pending" //optional
+    "status": "0" //optional
 }
 
 ###
