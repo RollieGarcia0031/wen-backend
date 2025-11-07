@@ -26,4 +26,23 @@ class NotificationController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Updates all of notification with unread status to
+     * seen status
+     */
+    public function markAllAsRead(){
+        AuthMiddleware::requireAuth();
+
+        $user_id = Cookie::getUser()->id;
+        $params = ["user_id" => $user_id];
+
+        try {
+            NotificationService::markAllAsRead($params);
+
+            Response::sendJson(200, true, "Query Success", null);
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
 }

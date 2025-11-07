@@ -41,7 +41,8 @@ $routes["GET"] = [
 
     "/availability/list"=> [ AvailabilityController::class, "getOwnList" ],
 
-    "/notification/count/unread" => [ NotificationController::class, "countUnread"]
+    "/notification/count/unread" => [ NotificationController::class, "countUnread"],
+    "/notification/mark-all-read" =>[ NotificationController::class, "markAllAsRead"]
 ];
 
 $routes["DELETE"] = [
