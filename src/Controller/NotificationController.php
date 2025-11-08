@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Http\Cookie;
 use App\Http\Response;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\RequestMiddleware;
+use App\Http\Request;
 use App\Service\NotificationService;
 use PDOException;
 
@@ -41,6 +43,27 @@ class NotificationController {
             NotificationService::markAllAsRead($params);
 
             Response::sendJson(200, true, "Query Success", null);
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
+
+    /**
+     * Lists all of the unread notifications for the user
+     */
+    public function listUnread(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(["end_from"]);
+
+        $params = Request::getBody();
+        
+        $user_id = Cookie::getUser()->id;
+        $params["user_id"] = $user_id;
+
+        try {
+            $results = NotificationService::listUnread($params);
+
+            Response::sendJson(200, true, "Query Success", $results);
         } catch (PDOException $error){
             Response::sendError($error);
         }

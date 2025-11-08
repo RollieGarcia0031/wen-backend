@@ -7,10 +7,11 @@ GET http://localhost:8080/notification/mark-all-read
 Content-Type: application/json
 
 ### get all unread notifications with pagination
-GET http://localhost:8080/notification/list/unread
+### it uses cursor based pagination
+### the end_from is the id of the last notification received
+POST http://localhost:8080/notification/list/unread
 Content-Type: application/json
 
 {
-    "page": 1,
-    "limit": 10
+    "end_from": 0
 }

@@ -54,4 +54,42 @@ class NotificationService {
         $stment = $conn->prepare($q);
         $stment->execute($params);
     }
+
+    /**
+     * Lists all of the unread notifications for the user
+     * @param array $params {
+     *      @type string $user_id
+     *      @type int    $end_from - id of the last notification received
+     * }
+     */
+    public static function listUnread(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT *
+            FROM user_notifications un
+            JOIN notifications n
+                ON un.notification_id = n.id
+            WHERE (
+                un.id > :end_from
+                AND un.status = 0
+                AND un.user_id = :user_id
+            )
+            ORDER BY n.created_at DESC
+            LIMIT 10
+        SQL;
+
+        $stment = $conn->prepare($q);
+
+        $lastId = intval($params["end_from"]);
+
+        if( $lastId > 0 )
+            $params["end_from"] = $lastId + 1;
+
+        $stment->execute($params);
+        $results = $stment->fetchAll();
+
+        return $results;
+    }
 }
