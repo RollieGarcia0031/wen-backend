@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Database\Database;
 use PDOException;
+use PDO;
 
 class NotificationService {
     
@@ -95,65 +96,75 @@ class NotificationService {
     }
 
     /**
-     * Lists all of the notifications for the user
+     * Lists all of the notifications for the user using cursor-based pagination
      * @param array $params {
      *      @type string $user_id
-     *      @type int    $end_from - id of the last notification received
+     *      @type int|null $end_from  ID of the last notification received (cursor)
      * }
      */
-    public static function listAll($params):array
+    public static function listAll($params): array
     {
         $conn = Database::get()->connect();
 
-        try{
+        try {
             $conn->beginTransaction();
 
-            
-            // retrieve notifications
-            $q = <<<SQL
-                SELECT *
-                FROM user_notifications un
-                JOIN notifications n
-                    ON un.notification_id = n.id
-                WHERE (
-                    un.id < :end_from
-                    AND un.user_id = :user_id
-                )
-                ORDER BY n.created_at DESC
-                LIMIT 10
-            SQL;
-    
-            $stment = $conn->prepare($q);
-            
-            $lastId = intval($params["end_from"]);
-            
-            if( $lastId > 0 )
-                $params["end_from"] = $lastId + 2;
-            else {
-                // retrieve the id of most recent notification
-                $q2 = <<<SQL
-                    SELECT MAX(id) AS max_id
-                    FROM user_notifications
-                    WHERE user_id = :user_id
-                SQL;
-                $stment2 = $conn->prepare($q2);
-                $stment2->bindParam(":user_id", $params["user_id"]);
-                $stment2->execute();
-    
-                $retrievedLastId = $stment2->fetch()["max_id"];
-                $retrievedLastId = intval($retrievedLastId);
+            $limit = 10;
+            $userId = $params['user_id'];
+            // convert to integer or null if not set
+            $lastId = isset($params['end_from']) ? intval($params['end_from']) : null;
 
-                $params["end_from"] = $retrievedLastId + 4;
+            if ($lastId) {
+                // Fetch older notifications (id < lastId)
+                $q = <<<SQL
+                    SELECT n.*, un.id AS user_notification_id
+                    FROM user_notifications un
+                    JOIN notifications n
+                        ON un.notification_id = n.id
+                    WHERE (
+                        un.user_id = :user_id
+                        AND un.id < :last_id
+                    )
+                    ORDER BY un.id DESC
+                    LIMIT :limit
+                SQL;
+
+                $stmt = $conn->prepare($q);
+                $stmt->bindValue(':last_id', $lastId, PDO::PARAM_INT);
+            } else {
+                // First page (most recent)
+                $q = <<<SQL
+                    SELECT n.*, un.id AS user_notification_id
+                    FROM user_notifications un
+                    JOIN notifications n
+                        ON un.notification_id = n.id
+                    WHERE un.user_id = :user_id
+                    ORDER BY un.id DESC
+                    LIMIT :limit
+                SQL;
+
+                $stmt = $conn->prepare($q);
             }
-    
-            $stment->execute($params);
-            $results = $stment->fetchAll();
-    
-            return $results;
-        } catch (PDOException $e){
+
+            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Determine the next cursor (last id from this batch)
+            $nextCursor = count($results) > 0 ? end($results)['user_notification_id'] : null;
+
+            $conn->commit();
+
+            return [
+                'data' => $results,
+                'next_cursor' => $nextCursor
+            ];
+
+        } catch (PDOException $e) {
             $conn->rollBack();
             throw $e;
         }
-        
     }
 }
