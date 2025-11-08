@@ -31,7 +31,8 @@ $routes["POST"] = [
     "/search/professors"  => [ SearchController::class,  "searchProfessor"],
     "/search/professor/user" => [SearchController::class, "searchProfessorUser"],
 
-    "/notification/list/unread" => [ NotificationController::class, "listUnread" ]
+    "/notification/list/unread" => [ NotificationController::class, "listUnread" ],
+    "/notification/list/all" => [ NotificationController::class, "listAll" ]
 ];
 
 $routes["GET"] = [

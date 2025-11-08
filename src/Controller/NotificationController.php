@@ -68,4 +68,25 @@ class NotificationController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Lists all of the notifications for the user
+     */
+    public function listAll(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(["end_from"]);
+
+        $params = Request::getBody();
+        
+        $user_id = Cookie::getUser()->id;
+        $params["user_id"] = $user_id;
+
+        try {
+            $results = NotificationService::listAll($params);
+
+            Response::sendJson(200, true, "Query Success", $results);
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
 }
