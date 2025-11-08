@@ -4,6 +4,7 @@ use App\Controller\AppointmentController;
 use App\Controller\AuthController;
 use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
+use App\Controller\NotificationController;
 use App\Controller\SearchController;
 use App\Model\Appointment;
 
@@ -28,7 +29,10 @@ $routes["POST"] = [
     "/appointment/accept"=> [ AppointmentController::class, "accept"     ],
 
     "/search/professors"  => [ SearchController::class,  "searchProfessor"],
-    "/search/professor/user" => [SearchController::class, "searchProfessorUser"]
+    "/search/professor/user" => [SearchController::class, "searchProfessorUser"],
+
+    "/notification/list/unread" => [ NotificationController::class, "listUnread" ],
+    "/notification/list/all" => [ NotificationController::class, "listAll" ]
 ];
 
 $routes["GET"] = [
@@ -38,7 +42,10 @@ $routes["GET"] = [
     "/course/list/self" => [ CourseController::class,   "selfList"      ],
     "/course/assigned"  => [ CourseController::class,   "getAssigned"   ],
 
-    "/availability/list"=> [ AvailabilityController::class, "getOwnList" ]
+    "/availability/list"=> [ AvailabilityController::class, "getOwnList" ],
+
+    "/notification/count/unread" => [ NotificationController::class, "countUnread"],
+    "/notification/mark-all-read" =>[ NotificationController::class, "markAllAsRead"]
 ];
 
 $routes["DELETE"] = [
