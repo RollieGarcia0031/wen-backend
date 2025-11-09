@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Database\Database;
+use Exception;
 use PDOException;
 
 class AppointmentService{
@@ -211,7 +212,7 @@ class AppointmentService{
      * @param array $params {
      *      @type string professor_user_id  - id of the logged in professor, who recieved the appointment
      *      @type string id                 - id of the appointment to be updated
-     *      @type string status             - new status of the appointment
+     *      @type int status             - new status of the appointment
      * }
      */
     public static function updateStatus($params):int
@@ -226,7 +227,7 @@ class AppointmentService{
                 apt.availability_id = av.id
                 AND apt.id = :id
                 AND av.user_id = :professor_user_id
-                AND apt.status = 'pending'
+                AND apt.status = 0
         SQL);
 
         $stment->execute($params);
@@ -234,6 +235,113 @@ class AppointmentService{
         $rowCount = $stment->rowCount();
 
         return $rowCount;
+    }
+
+    /**
+     * Sets the status of an appointment to "approved" (status = 1)
+     *  - if sucessful a notification is also created for the student
+     * 
+     * @param array $params {
+     *    @type string id                - id of the appointment to be approved
+     *    @type string professor_user_id - id of the professor approving the appointment
+     * }
+     */
+    public static function approveAppointment($params):int
+    {
+        $conn = Database::get()->connect();
+
+        try {
+            $conn->beginTransaction();
+
+            // update the appointment status
+            $stment = $conn->prepare(<<<SQL
+                UPDATE appointments a
+                SET status = 1
+                FROM availability av
+                WHERE (
+                    a.id = :id
+                    AND a.status = 0
+                    AND av.user_id = :professor_user_id
+                    AND a.availability_id = av.id 
+                )
+            SQL);
+
+            // bind params and execute
+            $stment->execute([
+                'id' => $params['id'],
+                'professor_user_id' => $params['professor_user_id']
+            ]);
+
+            // get number of affected rows
+            $affectedRows = $stment->rowCount();
+
+            if ($affectedRows == 0)
+                throw new Exception("No appointment updated");
+
+            // get user name of professor
+            $stment = $conn->prepare(<<<SQL
+                SELECT name FROM users
+                WHERE id = :id
+            SQL);
+            $stment->execute(['id' => $params['professor_user_id']]);
+
+            $profName = $stment->fetch()['name'];
+            $notifMessage = "Your appointment for $profName has been approved";
+
+            // insert a new notification for the student
+            $stment = $conn->prepare(<<<SQL
+                INSERT INTO notifications (
+                    message,
+                    level,
+                    state
+                )
+                VALUES(
+                    '$notifMessage',
+                    0,
+                    0
+                )
+
+                RETURNING id
+            SQL);
+
+            $stment->execute();
+
+            $insertedNotifId = $stment->fetchColumn();
+
+            // fetch the student user id from the appointment
+            $stment = $conn->prepare(<<<SQL
+                SELECT student_user_id FROM appointments
+                WHERE id = :id
+            SQL);
+            $stment->execute(['id' => $params['id']]);
+            $student_user_id = $stment->fetch()['student_user_id'];
+
+            // link the notification to the student user
+            $stment = $conn->prepare(<<<SQL
+                INSERT INTO user_notifications (
+                    status,
+                    notification_id,
+                    user_id
+                ) VALUES (
+                    0,
+                    $insertedNotifId,
+                    :student_user_id
+                )
+            SQL);
+
+            $stment->execute(['student_user_id' => $student_user_id]);
+
+            $conn->commit();
+
+            return $affectedRows;
+
+        } catch (PDOException $error){
+            $conn->rollBack();
+            throw $error;
+        } catch (Exception $e){
+            $conn->rollBack();
+            throw $e;
+        }
     }
     /**
      * Deletes a specific appointment, based on a given
