@@ -171,4 +171,44 @@ class AppointmentController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Declines an appointment
+     * - Only allowed for professors who received the appointment
+     * - Required fields:
+     *   - id
+     * - Sets status to 2 (declined)
+     * - Only works for pending (status 0) appointments
+     */
+    public function decline(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole("professor");
+        RequestMiddleware::requireFields(["id"]);
+
+        $params = Request::getBody();
+        $params['professor_user_id'] = Cookie::getUser()->id;
+
+        try {
+            $affectedRows = AppointmentService::declineAppointment($params);
+
+            if ($affectedRows == 0){
+                Response::sendJson(
+                    400, false,
+                    "No appointment updated",
+                    ["affected_rows" => $affectedRows]
+                );
+            }
+
+            Response::sendJson(
+                200, true,
+                "Update Success",
+                ["affected_rows" => $affectedRows]
+            );
+
+        } catch (PDOException $error){
+            Response::sendError($error);
+        } catch (Exception $e){
+            Response::sendError($e);
+        }
+    }
 }

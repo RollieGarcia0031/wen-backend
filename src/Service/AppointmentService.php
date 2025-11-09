@@ -397,4 +397,106 @@ class AppointmentService{
 
         return $rowCount;
     }
+
+    /**
+     * Declines a specific appointment, based on a given
+     * id
+     * 
+     * creates a notification for the student upon success
+     * 
+     * @param array $params {
+     *      @type string professor_user_id - id of the logged in professor, who recieved the appointment
+     *      @type string id                - id of the appointment to be declined
+     * }
+     */
+    public static function declineAppointment($params):int
+    {
+        $conn = Database::get()->connect();
+        try {
+            $conn->beginTransaction();
+
+            // update the appointment status
+            $stment = $conn->prepare(<<<SQL
+                UPDATE appointments AS apt
+                SET status = 2
+                FROM availability av
+                WHERE
+                    apt.availability_id = av.id
+                    AND apt.id = :id
+                    AND av.user_id = :professor_user_id
+                    AND apt.status = 0
+            SQL);
+
+            $stment->execute($params);
+
+            $affectedRows = $stment->rowCount();
+
+            if ($affectedRows == 0)
+                throw new Exception("No appointment updated");
+
+            // get user name of professor
+            $stment = $conn->prepare(<<<SQL
+                SELECT name FROM users
+                WHERE id = :id
+            SQL);
+            $stment->execute(['id' => $params['professor_user_id']]);
+
+            $profName = $stment->fetch()['name'];
+            $notifMessage = "Your appointment for $profName has been declined";
+
+            // insert a new notification for the student
+            $stment = $conn->prepare(<<<SQL
+                INSERT INTO notifications (
+                    message,
+                    level,
+                    state
+                )
+                VALUES(
+                    '$notifMessage',
+                    0,
+                    0
+                )
+
+                RETURNING id
+            SQL);
+
+            $stment->execute();
+
+            $insertedNotifId = $stment->fetchColumn();
+
+            // fetch the student user id from the appointment
+            $stment = $conn->prepare(<<<SQL
+                SELECT student_user_id FROM appointments
+                WHERE id = :id
+            SQL);
+            $stment->execute(['id' => $params['id']]);
+            $student_user_id = $stment->fetch()['student_user_id'];
+
+            // link the notification to the student user
+            $stment = $conn->prepare(<<<SQL
+                INSERT INTO user_notifications (
+                    status,
+                    notification_id,
+                    user_id
+                ) VALUES (
+                    0,
+                    $insertedNotifId,
+                    :student_user_id
+                )
+            SQL);
+
+            $stment->execute(['student_user_id' => $student_user_id]);
+
+            $conn->commit();
+
+            return $affectedRows;
+
+        } catch (PDOException $error){
+            $conn->rollBack();
+            throw $error;
+        } catch (Exception $e){
+            $conn->rollBack();
+            throw $e;
+        }
+    }
 }

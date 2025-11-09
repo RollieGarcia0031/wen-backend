@@ -27,6 +27,7 @@ $routes["POST"] = [
     "/appointment/send"  => [ AppointmentController::class, "send"  ],
     "/appointment/list"  => [ AppointmentController::class, "getOwnList" ],
     "/appointment/accept"=> [ AppointmentController::class, "accept"     ],
+    "/appointment/decline" => [ AppointmentController::class, "decline"  ],
 
     "/search/professors"  => [ SearchController::class,  "searchProfessor"],
     "/search/professor/user" => [SearchController::class, "searchProfessorUser"],
