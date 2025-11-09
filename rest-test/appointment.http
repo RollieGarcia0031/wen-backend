@@ -20,7 +20,7 @@ POST http://localhost:8080/appointment/accept
 Content-Type: application/json
 
 {
-    "id": "6"
+    "id": "30"
 }
 
 ###

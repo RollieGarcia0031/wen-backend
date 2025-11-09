@@ -11,6 +11,7 @@ use App\Middleware\UserMiddleware;
 use App\Model\Appointment;
 use App\Service\AppointmentService;
 use PDOException;
+use Exception;
 
 class AppointmentController {
 
@@ -93,9 +94,17 @@ class AppointmentController {
 
         try {
             $params['professor_user_id'] = Cookie::getUser()->id;
-            $params['status'] = "confirmed";
+            $params['status'] = 1;
 
-            $affectedRows = AppointmentService::updateStatus($params);
+            $affectedRows = AppointmentService::approveAppointment($params);
+
+            if ($affectedRows == 0){
+                Response::sendJson(
+                    400, false,
+                    "No appointment updated",
+                    ["affected_rows" => $affectedRows]
+                );
+            }
 
             Response::sendJson(
                 200, true,
@@ -105,6 +114,8 @@ class AppointmentController {
 
         } catch (PDOException $error){
             Response::sendError($error);
+        } catch (Exception $e){
+            Response::sendError($e);
         }
     }
 
