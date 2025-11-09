@@ -47,3 +47,11 @@ Content-Type: application/json
 {
     "id": "17"
 }
+
+###
+POST http://localhost:8080/appointment/hide
+Content-Type: application/json
+
+{
+    "ids": [69,70, 90]
+}

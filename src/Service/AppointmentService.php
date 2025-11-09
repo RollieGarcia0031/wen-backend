@@ -499,4 +499,60 @@ class AppointmentService{
             throw $e;
         }
     }
+
+    /**
+     * Updates multiple appointments in one request
+     * It sets the status of appointments to 3
+     *
+     * @param array $params {
+     *      @type array ids                - the ids of target appointments
+     *      @type string professor_user_id - the professor's user id
+     * }
+     *
+     * @return int ammount of rows affected
+     */
+    public static function hideMultiple(array $params):int
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            UPDATE appointments apt
+            SET status = 3
+            FROM availability av
+            WHERE
+                apt.id = :id
+                AND av.id = apt.availability_id
+                AND av.user_id = :professor_user_id
+        SQL;
+
+        try {
+            $conn->beginTransaction();
+
+            $affectedRows = 0;
+            
+            foreach($params['ids'] as $id){
+
+                $newParam = [
+                    "id" => $id,
+                    "professor_user_id" => $params["professor_user_id"]
+                ];
+
+                $stment = $conn->prepare($q);
+                $stment->execute($newParam);
+                
+                $affectedRows += $stment->rowCount();
+            }
+
+            $conn->commit();
+
+            return $affectedRows;
+
+        } catch (PDOException $error) {
+            $conn->rollBack();
+            throw $error;
+        } catch (Exception $error) {
+            $conn->rollBack();
+            throw $error;
+        }
+    }
 }

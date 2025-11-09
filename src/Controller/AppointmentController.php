@@ -211,4 +211,33 @@ class AppointmentController {
             Response::sendError($e);
         }
     }
+
+    /**
+     * Allows professor to hide multiple appointments
+     */
+    public function hide(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole("professor");
+        RequestMiddleware::requireFields(['ids']);
+
+        $user_id = Cookie::getUser()->id;
+
+        $params = Request::getBody();
+        $params['professor_user_id'] = $user_id;
+
+        try {
+            $affectedRows = AppointmentService::hideMultiple($params);
+
+            if ($affectedRows === 0) {
+                Response::sendJson(400, false, 'No Rows affected', null);
+            }
+
+            Response::sendJson(200, true, "Query Success", [
+                "affected_rows" => $affectedRows
+            ]);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+        
+    }
 }
