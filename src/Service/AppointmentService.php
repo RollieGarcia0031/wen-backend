@@ -190,7 +190,10 @@ class AppointmentService{
             FROM appointments apt
             LEFT JOIN availability av ON apt.availability_id = av.id
             LEFT JOIN users u ON apt.student_user_id = u.id
-            WHERE av.user_id = :professor_user_id
+            WHERE (
+                av.user_id = :professor_user_id
+                AND apt.status != 3
+            )
             ORDER BY apt.target_date ASC
         SQL;
         
