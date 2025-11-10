@@ -193,7 +193,7 @@ class AppointmentService{
             LEFT JOIN users u ON apt.student_user_id = u.id
             WHERE (
                 av.user_id = :professor_user_id
-                AND apt.visible_to_prof = FALSE
+                AND apt.visible_to_prof = TRUE
             )
             ORDER BY apt.target_date ASC
         SQL;
@@ -580,7 +580,7 @@ class AppointmentService{
 
     /**
      * Updates multiple appointments in one request
-     * It sets the status of appointments to 3
+     * It sets the visible_to_prof column to FALSE
      *
      * @param array $params {
      *      @type array ids                - the ids of target appointments
@@ -595,7 +595,7 @@ class AppointmentService{
 
         $q = <<<SQL
             UPDATE appointments apt
-            SET status = 3
+            SET visible_to_prof = FALSE
             FROM availability av
             WHERE
                 apt.id = :id
