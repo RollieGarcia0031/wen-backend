@@ -380,7 +380,7 @@ class AppointmentService{
 
             if (
                 $status < 2 // status is pending/approved
-                || $target_date > $current_date // the appointment haven't been done
+                && $target_date > $current_date // the appointment haven't been done
             ) {
                 // create a notification for the professor
 
