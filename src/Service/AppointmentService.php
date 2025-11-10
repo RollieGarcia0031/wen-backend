@@ -379,9 +379,10 @@ class AppointmentService{
             $current_date = new DateTime();
 
             if (
-                $status < 2 // status is pending/approved
-                && $target_date > $current_date // the appointment haven't been done
+                $status < 2
+                && $target_date < $current_date // the appointment haven't been done
             ) {
+                echo "create notif!";
                 // create a notification for the professor
 
                 // get user id of proffesor
