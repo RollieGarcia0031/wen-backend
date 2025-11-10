@@ -30,6 +30,8 @@ $routes["POST"] = [
     "/appointment/decline" => [ AppointmentController::class, "decline"  ],
     "/appointment/hide"  => [ AppointmentController::class, "hide"       ],
 
+    "/appointment/current-day" => [ AppointmentController::class, "currentDay"],
+
     "/search/professors"  => [ SearchController::class,  "searchProfessor"],
     "/search/professor/user" => [SearchController::class, "searchProfessorUser"],
 

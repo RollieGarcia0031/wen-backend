@@ -633,4 +633,86 @@ class AppointmentService{
             throw $error;
         }
     }
+
+    /**
+     * Selects pending and approved appointment for the current day
+     * Fetch implepements cursor-page-pagination
+     *
+     * @param array $params {
+     *      @type string user_id   - user id of professor
+     *      @type int    cursor_id - reference as starting index for pagination
+     * }
+     */
+    public static function getCurrentRecivedAppointments(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        $limit = 10;
+        $cursor_id = $params['cursor_id'] ?? 0;
+        $user_id = $params['user_id'];
+
+        $result = null;
+
+        if ($cursor_id < 1){
+            // query to get first page
+            $q = <<<SQL
+                SELECT
+                    apt.id,
+                    apt.message,
+                    apt.status,
+                    av.start_time,
+                    av.end_time,
+                    u.name
+                FROM appointments apt
+                JOIN availability av
+                    ON av.id = apt.availability_id
+                JOIN users u
+                    ON u.id = apt.student_user_id
+                WHERE
+                    apt.target_date = CURRENT_DATE
+                    AND apt.status < 2
+                    AND av.user_id = ?
+                LIMIT ?
+            SQL;
+
+            $stment = $conn->prepare($q);
+            $stment->execute([$user_id, $limit]);
+            $result = $stment->fetchAll();
+
+        } else {
+            // query to get remaining pages
+            $q = <<<SQL
+                SELECT
+                    apt.id,
+                    apt.message,
+                    apt.status,
+                    av.start_time,
+                    av.end_time,
+                    u.name
+                FROM appointments apt
+                JOIN availability av
+                    ON av.id = apt.availability_id
+                JOIN users u
+                    ON u.id = apt.student_user_id
+                WHERE
+                    apt.target_date = CURRENT_DATE
+                    AND apt.status < 2
+                    AND av.user_id = ?
+                    AND apt.id > ?
+                LIMIT ?
+            SQL;
+
+            $stment = $conn->prepare($q);
+            $stment->execute([$user_id, $cursor_id, $limit]);
+            $result = $stment->fetchAll();
+        }
+
+        $data = [];
+        $data['result'] = $result;
+
+        $nextCursor = count($result) > 0 ? end($result)['id'] : null;
+        $data['next_cursor'] = $nextCursor;
+
+        return $data;
+    }
 }

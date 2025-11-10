@@ -243,4 +243,33 @@ class AppointmentController {
         }
         
     }
+
+    /**
+     * Retrieve all of both pending and approved appointment
+     * for the current day
+     */
+    public function currentDay(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(['cursor_id']);
+
+        $user = Cookie::getUser();
+
+        $params = Request::getBody();
+        $params['user_id'] = $user->id;
+
+        try {
+            $result = null;
+
+            if ($user->role === 'professor'){
+                $result = AppointmentService::getCurrentRecivedAppointments($params);
+            } else {
+            
+            }
+
+            Response::sendJson(200, true, "Query Success", $result);
+
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }

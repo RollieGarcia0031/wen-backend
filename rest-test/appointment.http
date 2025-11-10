@@ -55,3 +55,11 @@ Content-Type: application/json
 {
     "ids": [69,70, 90]
 }
+
+### get appointments for current day
+POST http://localhost:8080/appointment/current-day
+Content-Type: application/json
+
+{
+    "cursor_id": 25
+}
