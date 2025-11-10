@@ -28,7 +28,7 @@ DELETE http://localhost:8080/appointment/delete
 Content-Type: application/json
 
 {
-    "id": "3"
+    "id": "71"
 }
 
 ###

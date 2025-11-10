@@ -131,9 +131,10 @@ class AppointmentController {
         $params = Request::getBody();
 
         try {
-            $params['student_user_id'] = Cookie::getUser()->id;
+            $user = Cookie::getUser();
+            $params['student_user_id'] = $user->id;
 
-            $affectedRows = AppointmentService::delete($params);
+            $affectedRows = AppointmentService::delete($params, $user->name);
 
             Response::sendJson(
                 200, true,
@@ -142,6 +143,8 @@ class AppointmentController {
             );
 
         } catch (PDOException $error){
+            Response::sendError($error);
+        } catch (Exception $error){
             Response::sendError($error);
         }
     }

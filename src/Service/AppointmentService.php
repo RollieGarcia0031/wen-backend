@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Database\Database;
+use DateTime;
 use Exception;
 use PDOException;
 
@@ -354,21 +355,95 @@ class AppointmentService{
      *      @type string student_user_id
      *      @type string id
      * }
+     * @param string $student_name name of the student
      */
-    public static function delete(array $params):int
+    public static function delete(array $params, string $student_name):int
     {
         $conn = Database::get()->connect();
 
-        $stment = $conn->prepare(<<<SQL
-            DELETE FROM appointments
-            WHERE
-                student_user_id = :student_user_id
-                AND id = :id
-        SQL);
+        try {
+            $conn->beginTransaction();
 
-        $stment->execute($params);
+            // determine the status and target_date of appointment
+            $stment = $conn->prepare(<<<SQL
+                SELECT status, target_date FROM appointments
+                WHERE id = ?
+            SQL);
+            $stment->execute([ $params['id'] ]);
 
-        $rowCount = $stment->rowCount();
+            $result = $stment->fetch();
+
+            if (!$result) throw new Exception("Appointment not found");
+            $status = $result['status'];
+            $target_date = $result['target_date'];
+            $current_date = new DateTime();
+
+            if (
+                $status < 2 // status is pending/approved
+                || $target_date > $current_date // the appointment haven't been done
+            ) {
+                // create a notification for the professor
+
+                // get user id of proffesor
+                $stment = $conn->prepare(<<<SQL
+                    SELECT
+                        av.user_id AS professor_id
+                    FROM appointments apt
+                    JOIN availability av
+                        ON av.id = apt.availability_id
+                    WHERE apt.id = ?
+                SQL);
+                $stment->execute([$params['id']]);
+                $professor_user_id = $stment->fetch()['professor_id'];
+
+                // insert a new notifcation
+                $message = "$student_name cancelled his appointment";
+                $stment = $conn->prepare(<<<SQL
+                    INSERT INTO notifications (
+                        message,
+                        level,
+                        state
+                    ) VALUES (
+                        '$message',
+                        0,
+                        0
+                    )
+
+                    RETURNING id
+                SQL);
+                $stment->execute();
+                $new_notfication_id = $stment->fetchColumn();
+
+                // insert into user_notification table
+                // to notify the professor
+                $stment = $conn->prepare(<<<SQL
+                    INSERT INTO user_notifications
+                    ( user_id, status, notification_id )
+                    VALUES (?, 0, ?)
+                SQL);
+                $stment->execute([$professor_user_id, $new_notfication_id]);
+            }
+
+            // delete the appointment
+            $stment = $conn->prepare(<<<SQL
+                DELETE FROM appointments
+                WHERE
+                    student_user_id = :student_user_id
+                    AND id = :id
+            SQL);
+    
+            $stment->execute($params);
+    
+            $rowCount = $stment->rowCount();
+            
+            $conn->commit();
+        } catch (PDOException $error){
+            $conn->rollBack();
+            throw $error;
+        } catch (Exception $error){
+            $conn->rollBack();
+            throw $error;
+        }
 
         return $rowCount;
     }
