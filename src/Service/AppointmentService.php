@@ -193,7 +193,7 @@ class AppointmentService{
             LEFT JOIN users u ON apt.student_user_id = u.id
             WHERE (
                 av.user_id = :professor_user_id
-                AND apt.status != 3
+                AND apt.visible_to_prof = FALSE
             )
             ORDER BY apt.target_date ASC
         SQL;
