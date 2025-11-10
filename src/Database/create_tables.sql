@@ -27,12 +27,17 @@ CREATE TABLE availability (
 -- =========================
 -- APPOINTMENTS
 -- =========================
+-- status representation:
+-- 0: pending
+-- 1: approved
+-- 3: declined
 CREATE TABLE appointments (
     id SERIAL PRIMARY KEY,
     availability_id INTEGER REFERENCES availability(id),
-    status INT,
+    status SMALLINT,
     message TEXT,
     target_date DATE NOT NULL,
+    visible_to_prof BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     student_user_id INTEGER REFERENCES users(id)
