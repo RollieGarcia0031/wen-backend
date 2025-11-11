@@ -103,10 +103,9 @@ class CourseController extends Controller {
         AuthMiddleware::requireAuth();
         RequestMiddleware::requireFields(["id"]);
 
-        $data = Request::getBody();
-        /** id **/
         $user = Cookie::getUser();
 
+        $data = Request::getBody();
         $data["created_by"] = $user->id;
 
         try {
@@ -118,9 +117,9 @@ class CourseController extends Controller {
 
             Response::sendJson(200, true, "Deleted", [
                 "affected_rows" => $affectedRows
-            ]); 
-        } catch (PDOException $e){
-            Response::sendError($e);
+            ]);
+        } catch (PDOException $error){
+            Response::sendError($error);
         }
     }
 

@@ -33,7 +33,7 @@ CREATE TABLE availability (
 -- 3: declined
 CREATE TABLE appointments (
     id SERIAL PRIMARY KEY,
-    availability_id INTEGER REFERENCES availability(id),
+    availability_id INTEGER REFERENCES availability(id) ON DELETE CASCADE,
     status SMALLINT,
     message TEXT,
     target_date DATE NOT NULL,
