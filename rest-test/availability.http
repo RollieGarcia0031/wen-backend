@@ -21,7 +21,8 @@ Content-Type: application/json
     ]
 }
 
-###
+### gets the list of availability of user along with
+### how many students are booked to that appointment
 GET http://localhost:8080/availability/list
 Content-Type: application/json
 

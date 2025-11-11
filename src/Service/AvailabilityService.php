@@ -61,7 +61,10 @@ class AvailabilityService {
             FROM availability av
             FULL OUTER JOIN appointments apt
                 ON av.id = apt.availability_id
-            WHERE av.user_id = :user_id
+                AND apt.status < 2
+                AND apt.target_date > CURRENT_DATE
+            WHERE
+                av.user_id = :user_id
             GROUP BY
                 av.id
             ORDER BY av.start_time ASC
