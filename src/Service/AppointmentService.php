@@ -715,4 +715,93 @@ class AppointmentService{
 
         return $data;
     }
+
+    /**
+     * Retrieves the pending and approved appointments for the current day
+     * that are sent by the students
+     *
+     * @param array $params {
+     *    @type string student_user_id - user id of the logged student
+     *    @type int    cursor_id       - id of appointment as reference for pagination
+     * }
+     */
+    public static function getCurrentSentAppointments(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        // limit per request for pagination
+        $limit = 10;
+        $cursor_id = (int)$params['cursor_id'] ?? 0;
+        $student_user_id = $params['user_id'];
+
+        $stment = null;
+
+        if ($cursor_id > 0){
+            $q = <<<SQL
+                SELECT
+                    apt.id,
+                    apt.status,
+                    apt.message,
+                    av.start_time,
+                    av.end_time,
+                    u.name
+                FROM appointments apt
+                JOIN availability av
+                    ON av.id = apt.availability_id
+                JOIN users u
+                    ON u.id = av.user_id
+                WHERE
+                    apt.target_date = CURRENT_DATE
+                    AND apt.student_user_id = :student_user_id
+                    AND apt.status < 2
+                    AND apt.id < :cursor_id
+                ORDER BY av.start_time ASC
+                LIMIT :limit
+            SQL;
+
+            $stment = $conn->prepare($q);
+            $stment->bindParam(':cursor_id', $cursor_id);
+
+        } else {
+
+            $q = <<<SQL
+                SELECT
+                    apt.id,
+                    apt.status,
+                    apt.message,
+                    av.start_time,
+                    av.end_time,
+                    u.name
+                FROM appointments apt
+                JOIN availability av
+                    ON av.id = apt.availability_id
+                JOIN users u
+                    ON u.id = av.user_id
+                WHERE
+                    apt.target_date = CURRENT_DATE
+                    AND apt.student_user_id = :student_user_id
+                    AND apt.status < 2
+                ORDER BY av.start_time ASC
+                LIMIT :limit
+            SQL;
+
+            $stment = $conn->prepare($q);
+        }
+
+        $stment->bindParam(':limit', $limit);
+        $stment->bindParam(':student_user_id', $student_user_id);
+
+        $stment->execute();
+
+        $result = $stment->fetchAll();
+        $next_cursor = count($result) > 0 ? end($result)['id'] : null;
+
+        $data = [
+            "data" => $result,
+            "next_cursor" => $next_cursor
+        ];
+
+        return $data;
+
+    }
 }

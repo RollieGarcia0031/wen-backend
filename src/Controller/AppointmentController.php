@@ -263,7 +263,7 @@ class AppointmentController {
             if ($user->role === 'professor'){
                 $result = AppointmentService::getCurrentRecivedAppointments($params);
             } else {
-            
+                $result = AppointmentService::getCurrentSentAppointments($params); 
             }
 
             Response::sendJson(200, true, "Query Success", $result);

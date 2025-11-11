@@ -61,5 +61,5 @@ POST http://localhost:8080/appointment/current-day
 Content-Type: application/json
 
 {
-    "cursor_id": 25
+    "cursor_id": 47
 }
