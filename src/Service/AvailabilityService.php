@@ -51,11 +51,23 @@ class AvailabilityService {
     {
         $conn = Database::get()->connect();
 
-        $stment = $conn->prepare("
-            SELECT * FROM availability
-            WHERE user_id = :user_id
-            ORDER BY day_of_week ASC
-        ");
+        $q = <<<SQL
+            SELECT
+                av.id,
+                av.day_of_week,
+                av.start_time,
+                av.end_time,
+                COUNT(apt.*) AS booked
+            FROM availability av
+            FULL OUTER JOIN appointments apt
+                ON av.id = apt.availability_id
+            WHERE av.user_id = :user_id
+            GROUP BY
+                av.id
+            ORDER BY av.start_time ASC
+        SQL;
+
+        $stment = $conn->prepare($q);
 
         $stment->execute($param);
 

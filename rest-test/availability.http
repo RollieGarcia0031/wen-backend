@@ -8,6 +8,20 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:8080/availability/createAll
+Content-Type: application/json
+
+{
+    "availability_list": [
+        {
+            "day_of_week": 0,
+            "start_time": "09:00",
+            "end_time": "13:00"
+        }
+    ]
+}
+
+###
 GET http://localhost:8080/availability/list
 Content-Type: application/json
 

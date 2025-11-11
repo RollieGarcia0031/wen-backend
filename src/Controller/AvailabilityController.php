@@ -64,16 +64,15 @@ class AvailabilityController {
      * Searches for list of availability of the logged user
      * with a role of professor
      */
-    public static function getOwnList(){
+    public function getOwnList(){
         AuthMiddleware::requireAuth();
         UserMiddleware::requireRole("professor");
         
         try {
             $user_id = Cookie::getUser()->id;
-            
-            $list = AvailabilityService::getByUser([
-                'user_id' => $user_id
-            ]);
+            $params = [ "user_id" => $user_id];
+
+            $list = AvailabilityService::getByUser($params);
 
             Response::sendJson(
                 200, true,
