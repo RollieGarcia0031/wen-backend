@@ -72,12 +72,10 @@ class AppointmentService{
             $stment = $conn->prepare(<<<SQL
                 INSERT INTO notifications (
                     message,
-                    level,
-                    state
+                    level
                 )
                 VALUES(
                     '$userName sent you an appointment request',
-                    0,
                     0
                 )
 
@@ -296,12 +294,10 @@ class AppointmentService{
             $stment = $conn->prepare(<<<SQL
                 INSERT INTO notifications (
                     message,
-                    level,
-                    state
+                    level
                 )
                 VALUES(
                     '$notifMessage',
-                    0,
                     0
                 )
 
@@ -401,11 +397,9 @@ class AppointmentService{
                 $stment = $conn->prepare(<<<SQL
                     INSERT INTO notifications (
                         message,
-                        level,
-                        state
+                        level
                     ) VALUES (
                         '$message',
-                        0,
                         0
                     )
 
@@ -526,12 +520,10 @@ class AppointmentService{
             $stment = $conn->prepare(<<<SQL
                 INSERT INTO notifications (
                     message,
-                    level,
-                    state
+                    level
                 )
                 VALUES(
                     '$notifMessage',
-                    0,
                     0
                 )
 
