@@ -8,7 +8,6 @@ use App\Http\Request;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Middleware\UserMiddleware;
-use App\Model\Appointment;
 use App\Service\AppointmentService;
 use PDOException;
 use Exception;
@@ -21,9 +20,9 @@ class AppointmentController {
      * Only allowed for user logged with student role
      *
      * Required fields:
-     *  - availability_id
-     *  - message
-     *  - target_date
+     *  - availability_id - primary key of availability
+     *  - message         - string message to be sent as "topic" or header
+     *  - target_date     - date to be assigned
      */
     public function send(){
         AuthMiddleware::requireAuth();
@@ -34,15 +33,19 @@ class AppointmentController {
             'target_date'
         ]);
 
-        $params = Request::getBody();
-
         $userId = Cookie::getUser()->id;
+
+        $params = Request::getBody();
         $params['student_user_id'] = $userId;
 
         try {
-            $result = AppointmentService::sendAppointment($params);
+            $newId = AppointmentService::sendAppointment($params);
 
-            Response::sendJson(200, true, "Sent", ["id" => $result]);
+            $message = "Appointment sent successfully";
+            $data = [ "id" => $newId ];
+
+            Response::sendJson(200, true, $message, $data);
+
         } catch (PDOException $error){
             Response::sendError($error);
         }
@@ -61,20 +64,25 @@ class AppointmentController {
         $user_id = Cookie::getUser()->id;
         $userRole = Cookie::getUser()->role;
 
+        $data = null;
+        $message = null;
         
         try {
-            $list = null;
-            
+
             if ($userRole == 'student'){
                 $params['student_user_id'] = $user_id;
-                $list = AppointmentService::getAllSentAppointments($params);
+
+                $message = "Appointment retrieved";
+                $data = AppointmentService::getAllSentAppointments($params);
                 
             } else if ($userRole == 'professor'){
                 $params['professor_user_id'] = $user_id;
-                $list = AppointmentService::getAllRecievedAppointments($params);
+
+                $message = "Appointment retrieved";
+                $data = AppointmentService::getAllRecievedAppointments($params);
             }
 
-            Response::sendJson(200, true, "Query Success", $list);
+            Response::sendJson(200, true, $message, $data);
 
         } catch (PDOException $error){
             Response::sendError($error);
@@ -84,6 +92,9 @@ class AppointmentController {
     /**
      * Updates an appointment status from pending to "confirmed"
      * - Only allowed for professor
+     *
+     * Required fileds:
+     * - id - primary id of the appointment to be accepted
      */
     public function accept(){
         AuthMiddleware::requireAuth();
@@ -92,36 +103,36 @@ class AppointmentController {
 
         $params = Request::getBody();
 
+        $params['professor_user_id'] = Cookie::getUser()->id;
+        $params['status'] = 1;
+
         try {
-            $params['professor_user_id'] = Cookie::getUser()->id;
-            $params['status'] = 1;
 
             $affectedRows = AppointmentService::approveAppointment($params);
 
             if ($affectedRows == 0){
-                Response::sendJson(
-                    400, false,
-                    "No appointment updated",
-                    ["affected_rows" => $affectedRows]
-                );
+                $message = "No appointment updated";
+                Response::sendJson(400, false, $message, null);
             }
 
-            Response::sendJson(
-                200, true,
-                "Update Success",
-                ["affected_rows" => $affectedRows]
-            );
+            $message = "Update Success";
+            $data = [ "affected_rows" => $affectedRows ];
+
+            Response::sendJson(200, true, $message, $data);
 
         } catch (PDOException $error){
             Response::sendError($error);
-        } catch (Exception $e){
-            Response::sendError($e);
+        } catch (Exception $error){
+            Response::sendError($error);
         }
     }
 
     /**
      * Deletes an appointment
      * - Only allowed for students who originally created the appointment
+     *
+     * Required fields:
+     *  - id - primary id of appointment to be deleted
      */
     public static function delete(){
         AuthMiddleware::requireAuth();
@@ -136,11 +147,10 @@ class AppointmentController {
 
             $affectedRows = AppointmentService::delete($params, $user->name);
 
-            Response::sendJson(
-                200, true,
-                "Delete Success",
-                ["affected_rows" => $affectedRows]
-            );
+            $message = "Delete Success";
+            $data = [ "affected_rows" => $affectedRows ];
+
+            Response::sendJson(200, true, $message, $data);
 
         } catch (PDOException $error){
             Response::sendError($error);
@@ -152,6 +162,7 @@ class AppointmentController {
     /**
      * Updates the message of an appointment
      * - Only allowed for students who originally created the appointment
+     *
      */
     public static function updateMessage(){
         AuthMiddleware::requireAuth();
@@ -165,11 +176,11 @@ class AppointmentController {
 
             $affectedRows = AppointmentService::updateMessage($params);
 
-            Response::sendJson(
-                200, true,
-                "Update Success",
-                ["affected_rows" => $affectedRows]
-            );
+            $message = "Update Succes";
+            $data = [ "affected_rows" => $affectedRows ];
+
+            Response::sendJson(200, true, $message, $data);
+
         } catch (PDOException $error){
             Response::sendError($error);
         }
@@ -178,10 +189,10 @@ class AppointmentController {
     /**
      * Declines an appointment
      * - Only allowed for professors who received the appointment
-     * - Required fields:
-     *   - id
-     * - Sets status to 2 (declined)
      * - Only works for pending (status 0) appointments
+     *
+     * - Required fields:
+     *   - id - id of the appointment from appointments table
      */
     public function decline(){
         AuthMiddleware::requireAuth();
@@ -192,31 +203,33 @@ class AppointmentController {
         $params['professor_user_id'] = Cookie::getUser()->id;
 
         try {
+
             $affectedRows = AppointmentService::declineAppointment($params);
 
             if ($affectedRows == 0){
-                Response::sendJson(
-                    400, false,
-                    "No appointment updated",
-                    ["affected_rows" => $affectedRows]
-                );
+
+                $message = "No appointment updated";
+
+                Response::sendJson(400, false, $message, null);
             }
 
-            Response::sendJson(
-                200, true,
-                "Update Success",
-                ["affected_rows" => $affectedRows]
-            );
+            $message = "Appointment has been declined";
+            $data = [ "affected_rows" => $affectedRows ];
+
+            Response::sendJson(200, true, $message, $data);
 
         } catch (PDOException $error){
             Response::sendError($error);
-        } catch (Exception $e){
-            Response::sendError($e);
+        } catch (Exception $error){
+            Response::sendError($error);
         }
     }
 
     /**
      * Allows professor to hide multiple appointments
+     *
+     * Required fields:
+     *  - ids - array of ids of appointment to be deleted by the professor
      */
     public function hide(){
         AuthMiddleware::requireAuth();
@@ -232,21 +245,32 @@ class AppointmentController {
             $affectedRows = AppointmentService::hideMultiple($params);
 
             if ($affectedRows === 0) {
-                Response::sendJson(400, false, 'No Rows affected', null);
+                $message = "Appointments you tried to hide does not exist";
+
+                Response::sendJson(400, false, $message, null);
             }
 
-            Response::sendJson(200, true, "Query Success", [
-                "affected_rows" => $affectedRows
-            ]);
+            $message = "Appointments has been hidden successfully";
+            $data = [ "affected_by" => $affectedRows ];
+
+            Response::sendJson(200, true, $message, $data);
+
         } catch (PDOException $error) {
             Response::sendError($error);
         }
-        
+
     }
 
     /**
      * Retrieve all of both pending and approved appointment
      * for the current day
+     *
+     * Required field:
+     *  - cursor_id - the id of the appointment serving as next index,
+     *                if unknown, 0 (zero) can be passed as value,
+     *                but for further requests, next_cursor from previous
+     *                response shall be used as the current cursor_id
+     *                in the new request for pagination to work
      */
     public function currentDay(){
         AuthMiddleware::requireAuth();
@@ -258,6 +282,7 @@ class AppointmentController {
         $params['user_id'] = $user->id;
 
         try {
+
             $result = null;
 
             if ($user->role === 'professor'){
@@ -266,7 +291,9 @@ class AppointmentController {
                 $result = AppointmentService::getCurrentSentAppointments($params); 
             }
 
-            Response::sendJson(200, true, "Query Success", $result);
+            $message = "Appointments successfully retrieved";
+
+            Response::sendJson(200, true, $message, $result);
 
         } catch (PDOException $error) {
             Response::sendError($error);

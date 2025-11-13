@@ -6,7 +6,23 @@ use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
 use App\Controller\NotificationController;
 use App\Controller\SearchController;
-use App\Model\Appointment;
+
+/*
+===========================================================
+
+This file contains the associative array of all routes
+the exist in the api of backend.
+
+It defines 4 different methods, and pairs the routes with
+their corresponding class names of controller and the
+name of method to call inside the controller class.
+
+it follows a format of:
+
+"api_route/endpoint" => [ Controller, function_name ]
+
+===========================================================
+ */
 
 $routes = [];
 
