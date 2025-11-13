@@ -796,4 +796,34 @@ class AppointmentService{
         return $data;
 
     }
+
+    /**
+     * Returns the count of appointments today grouped by different status
+     *
+     * @param array $params {
+     *      @type string user_id - id of the student owning appointments
+     * }
+     */
+    public static function getStudentsAppointmentCountToday($params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                apt.status,
+                COUNT(apt.status)
+            FROM appointments apt
+            JOIN users u
+                ON u.id = apt.student_user_id
+            WHERE u.id = :user_id
+            GROUP BY apt.status
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($params);
+
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
 }

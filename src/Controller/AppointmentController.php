@@ -312,16 +312,18 @@ class AppointmentController {
         RequestMiddleware::requireFields(["time_range"]);
 
         $param = Request::getBody();
+        $user_id = Cookie::getUser()->id;
 
         $time_range = $param['time_range'];
 
+        $newParam = [ "user_id" => $user_id ];
         $result = null;
 
         try {
             switch ($time_range){
 
                 case 'today':
-                    $result;
+                    $result = AppointmentService::getStudentsAppointmentCountToday($newParam);
                     break;
 
                 case 'tommorow':
