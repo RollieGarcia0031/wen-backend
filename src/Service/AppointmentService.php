@@ -804,7 +804,7 @@ class AppointmentService{
      *      @type string user_id - id of the student owning appointments
      * }
      */
-    public static function getStudentsAppointmentCountToday($params):array
+    public static function getStudentsAppointmentCountToday(array $params):array
     {
         $conn = Database::get()->connect();
 
@@ -815,12 +815,49 @@ class AppointmentService{
             FROM appointments apt
             JOIN users u
                 ON u.id = apt.student_user_id
-            WHERE u.id = :user_id
+            WHERE
+                u.id = :user_id
+                AND apt.target_date = CURRENT_DATE
             GROUP BY apt.status
         SQL;
 
         $stment = $conn->prepare($q);
         $stment->execute($params);
+
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
+
+    /**
+     * Returns the count of appointments reviced by the proffesor
+     * for current day
+     *
+     * @param array $param {
+     *      @type string user_id - id of proffesor who recieves appointments
+     * }
+     */
+    public static function getProfAppointmentCountToday(array $param):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                apt.status,
+                COUNT(apt.*)
+            FROM appointments apt
+            JOIN availability av
+                ON apt.availability_id = av.id
+            JOIN users u
+                ON u.id = av.user_id
+            WHERE
+                u.id = :user_id
+                AND apt.target_date = CURRENT_DATE
+            GROUP BY apt.status
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($param);
 
         $result = $stment->fetchAll();
 
