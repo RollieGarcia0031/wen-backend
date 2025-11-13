@@ -332,8 +332,11 @@ class AppointmentController {
                         : AppointmentService::getProfAppointmentCountToday($newParam);
                     break;
 
-                case 'tommorow':
-                    $result;
+                case 'tomorrow':
+                    $result = 
+                        $user_role === 'student'
+                        ? AppointmentService::getStudentAppointmentCountTomorrow($newParam)
+                        : AppointmentService::getProfAppointmentCountTomorrow($newParam);
                     break;
 
                 case 'this_week':
