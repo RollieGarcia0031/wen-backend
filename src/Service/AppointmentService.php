@@ -810,15 +810,13 @@ class AppointmentService{
 
         $q = <<<SQL
             SELECT
-                apt.status,
-                COUNT(apt.status)
-            FROM appointments apt
-            JOIN users u
-                ON u.id = apt.student_user_id
+                status,
+                COUNT(*)
+            FROM appointments
             WHERE
-                u.id = :user_id
-                AND apt.target_date = CURRENT_DATE
-            GROUP BY apt.status
+                student_user_id = :user_id
+                AND target_date = CURRENT_DATE
+            GROUP BY status
         SQL;
 
         $stment = $conn->prepare($q);
@@ -848,10 +846,8 @@ class AppointmentService{
             FROM appointments apt
             JOIN availability av
                 ON apt.availability_id = av.id
-            JOIN users u
-                ON u.id = av.user_id
             WHERE
-                u.id = :user_id
+                av.user_id = :user_id
                 AND apt.target_date = CURRENT_DATE
             GROUP BY apt.status
         SQL;
