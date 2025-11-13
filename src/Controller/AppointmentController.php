@@ -299,4 +299,46 @@ class AppointmentController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Returns the count of pending, approved, and declined appointments
+     * that exist in a certain time_range
+     *
+     * Required field:
+     *  - time_range - { 'today' | 'tommorow' | 'current_week' }
+     */
+    public function count(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(["time_range"]);
+
+        $param = Request::getBody();
+
+        $time_range = $param['time_range'];
+
+        $result = null;
+
+        try {
+            switch ($time_range){
+
+                case 'today':
+                    $result;
+                    break;
+
+                case 'tommorow':
+                    $result;
+                    break;
+
+                case 'this_week':
+                    $result;
+                    break;
+            }
+
+            $message = "Appointments counted";
+
+            Response::sendJson(200, true, $message, $result);
+
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }
