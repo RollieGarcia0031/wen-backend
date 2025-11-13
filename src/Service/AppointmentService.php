@@ -796,4 +796,131 @@ class AppointmentService{
         return $data;
 
     }
+
+    /**
+     * Returns the count of appointments today grouped by different status
+     *
+     * @param array $params {
+     *      @type string user_id - id of the student owning appointments
+     * }
+     */
+    public static function getStudentsAppointmentCountToday(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                status,
+                COUNT(*)
+            FROM appointments
+            WHERE
+                student_user_id = :user_id
+                AND target_date = CURRENT_DATE
+            GROUP BY status
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($params);
+
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
+
+    /**
+     * Returns the count of appointments reviced by the proffesor
+     * for current day
+     *
+     * @param array $param {
+     *      @type string user_id - id of proffesor who recieves appointments
+     * }
+     */
+    public static function getProfAppointmentCountToday(array $param):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                apt.status,
+                COUNT(apt.*)
+            FROM appointments apt
+            JOIN availability av
+                ON apt.availability_id = av.id
+            WHERE
+                av.user_id = :user_id
+                AND apt.target_date = CURRENT_DATE
+            GROUP BY apt.status
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($param);
+
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
+
+    /**
+     * Returns the count of appointments of given student user id
+     * for tomorrow
+     *
+     * @param array $params {
+     *      @type string user_id - user id of student as owner of appointments
+     * }
+     */
+    public static function getStudentAppointmentCountTomorrow(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                status,
+                COUNT(*)
+            FROM appointments
+            WHERE
+                student_user_id = :user_id
+                AND target_date >= CURRENT_DATE + INTERVAL '1 day'
+                AND target_date < CURRENT_DATE + INTERVAL '2 day'
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($params);
+
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
+
+    /**
+     * Returns the count of appointments of professor for the tomorrow
+     *
+     * @param array $params {
+     *      @type string user_id - user id of professor
+     * }
+     */
+    public static function getProfAppointmentCountTomorrow(array $params):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                apt.status,
+                COUNT(apt.*)
+            FROM appointments apt
+            JOIN availability av
+                ON av.id = apt.availability_id
+            WHERE
+                av.user_id = :user_id
+                AND target_date >= CURRENT_DATE + INTERVAL '1 day'
+                AND target_date < CURRENT_DATE + INTERVAL '2 day'
+            GROUP BY apt.status
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($params);
+
+        $result = $stment->fetchAll();
+
+        return $result;
+    }
 }

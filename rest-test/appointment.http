@@ -63,3 +63,11 @@ Content-Type: application/json
 {
     "cursor_id": 0
 }
+
+### counts appointment on different time range
+POST http://localhost:8080/appointment/count
+Content-Type: application/json
+
+{
+    "time_range": "today"
+}
