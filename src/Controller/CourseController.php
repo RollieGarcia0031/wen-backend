@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Base\Controller;
-use App\Database\Database;
 use App\Model\Course;
 use App\Http\Request;
 use App\Http\Response;
@@ -12,93 +11,115 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Service\CourseService;
 use PDOException;
-use SQLite3;
 
 class CourseController extends Controller {
+
+    /**
+     * Allows users to create a new course, that can be used
+     * by themselves or other users
+     *
+     * Required fields:
+     *  - name        - name of course
+     *  - description - description/long name for the course
+     */
     public function create(){
         AuthMiddleware::requireAuth();
         RequestMiddleware::requireFields(["name", "description"]);
 
+        $currentUser = Cookie::getUser();
         $data = Request::getBody();
 
-        [
-            "name"       => $name,
-            "description"=> $description 
-        ] = $data; 
+        $data['created_by'] = $currentUser->id;
 
         try {
-            $data['created_by'] = $_SESSION['user']->id;
 
             $course = Course::create($data);
 
-            if ($course->id >= 0){
-                Response::sendJson(
-                    200,
-                    true,
-                    "Course Created",
-                    [ "id" => $course->id]   
-                );
-            }
+            $message = "Course created successfully";
+            $data = [ "id" => $course->id ];
 
-           
-        } catch (PDOException $e){
-            Response::sendJson(
-                500,
-                false,
-                $e->getMessage(),
-                null
-            );
+            Response::sendJson(200, true, $message, $data);
+
+        } catch (PDOException $error){
+            Response::sendError($error);
         }
     }
 
+    /**
+     * Assigns a course to the logged user
+     *
+     * Required fields:
+     *   - year      - year of class, (1,2,3,4)
+     *   - course_id - id of course to be assigned
+     */
     public static function assignToUser(){
         AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(['year', 'course_id']);
 
         $user_id = Cookie::getUser()->id; 
         
         $data = Request::getBody();
-
-        [
-            "course_id" => $course_id,
-            "year"      => $year,
-        ] = $data;
 
         $data['user_id'] = $user_id;
 
         try {
             $new_id = CourseService::assign($data);
 
-            Response::sendJson(201, true, "Course Assigned", [
-                "new_id" => $new_id
-            ]);
-        } catch (PDOException $e) {
-            Response::sendError($e);             
+            $message = "Course has beed assigned";
+            $data = [ "new_id" => $new_id ];
+
+            Response::sendJson(200, true, $message, $data);
+        } catch (PDOException $error) {
+            Response::sendError($error);             
         }
     } 
 
+    /**
+     * Get the list of all availabile courses that are both
+     * created by the logged user and created by other users
+     */
     public static function list(){
         try {
             $data = CourseService::getAll();
-            Response::sendJson(200, true, "Query Sucess", $data);
-        } catch (PDOException $e) {
-            Response::sendError($e);
+            $message = "Query Success";
+
+            Response::sendJson(200, true, $message, $data);
+
+        } catch (PDOException $error) {
+            Response::sendError($error);
         } 
     }
 
+    /**
+     * Searches for a list of courses based on a given name
+     *
+     * Required fields:
+     *   - name - name of appointment to be searched
+     */
     public static function search(){
         RequestMiddleware::requireFields(["name"]);
 
         $data = Request::getBody();
 
         try {
-            $result = CourseService::searchByName($data["name"]);
 
-            Response::sendJson(200, true, "Query Sucess", $result);
-        } catch (PDOException $e) {
-            Response::sendError($e);
+            $result = CourseService::searchByName($data["name"]);
+            $message = "Query Success";
+
+            Response::sendJson(200, true, $message, $result);
+
+        } catch (PDOException $error) {
+            Response::sendError($error);
         }
     }
 
+    /**
+     * deletes a course that is created by the logged user
+     * - throws 400 error status if course is not found
+     *
+     * Required fields:
+     *   - id - the id of course from courses table
+     */
     public static function delete(){
         AuthMiddleware::requireAuth();
         RequestMiddleware::requireFields(["id"]);
@@ -112,12 +133,15 @@ class CourseController extends Controller {
             $affectedRows = CourseService::deleteById($data);
 
             if ($affectedRows <= 0){
-                Response::sendJson(201, false, "Course Not Found", null);
+                $message = "Course not found";
+                Response::sendJson(400, false, $message, null);
             }
 
-            Response::sendJson(200, true, "Deleted", [
-                "affected_rows" => $affectedRows
-            ]);
+            $message = "Course deleted successfully";
+            $data = [ "affected_rows" => $affectedRows ];
+
+            Response::sendJson(200, true, $message, $data);
+
         } catch (PDOException $error){
             Response::sendError($error);
         }
@@ -126,6 +150,9 @@ class CourseController extends Controller {
     /**
      * Searches for a list of course that is belong to 
      * a certain user
+     *
+     * Required fields:
+     *  user_id - id of user that you need to search for courses
      */
     public static function findUser(){
         RequestMiddleware::requireFields(['user_id']);
@@ -134,10 +161,10 @@ class CourseController extends Controller {
             $param = Request::getBody();
 
             $result = CourseService::getUserCourseList($param);
+            $message = "Search Operation Success";
 
-            Response::sendJson(
-                200, true, "Query Success", $result
-            );
+            Response::sendJson(200, true, $message, $result);
+
         } catch (PDOException $error){
             Response::sendError($error);
         }
@@ -156,17 +183,18 @@ class CourseController extends Controller {
 
         try {
             $list = CourseService::getAllCreated($user_id);
+            $message = "Searched Successfully";
 
-            Response::sendJson(
-                200, true,
-                "Query Success",
-                $list
-            );
+            Response::sendJson(200, true, $message, $list);
+
         } catch (PDOException $error){
             Response::sendError($error); 
         } 
     }
 
+    /**
+     * Get the courses assigned to the logged user
+     */
     public static function getAssigned(){
         AuthMiddleware::requireAuth();
 
@@ -176,11 +204,9 @@ class CourseController extends Controller {
             $param = ["user_id" => $user_id];
 
             $result = CourseService::getAssigned($param);
+            $message = "Search success";
 
-            Response::sendJson(
-                200, true, "Query Success",
-                $result
-            );
+            Response::sendJson(200, true, $message, $result);
 
         } catch (PDOException $error){
             Response::sendError($error);
@@ -189,6 +215,9 @@ class CourseController extends Controller {
 
     /**
      * Allows users to remove the courses that they are enrolled/teaching
+     *
+     * Required fields:
+     *      - course_id - the id of course to be removed
      */
     public function unuse(){
         AuthMiddleware::requireAuth();
@@ -202,16 +231,17 @@ class CourseController extends Controller {
         try {
             $affectedRows = CourseService::unenrollUser($body);
 
-            if ($affectedRows >= 1){
-                Response::sendJson(
-                    200, true, "Delete Success",
-                    ["affected_rows" => $affectedRows]
-                );
-            }
 
-            Response::sendJson(
-                400, false, "No rows Affected", null
-            );
+            if ($affectedRows >= 1){
+                $data = [ "affected_rows" => $affectedRows ];
+                $message = "Deleted successfully";
+
+                Response::sendJson(200, true, $message, $data);
+            }
+            
+            $message = "Course not found";
+
+            Response::sendJson(400, false, $message, null);
 
         } catch (PDOException $error) {
             Response::sendError($error);

@@ -23,6 +23,15 @@ class Course {
         $this->description = $description; 
     }
 
+    /**
+     * Inserts a new course into the courses table
+     *
+     * @param array $data {
+     *     @type string name - name of course
+     *     @type string description
+     *     @type string created_by - user id of course owner
+     * }
+     */
     public static function create(array $data): Course
     {
         $q = "INSERT INTO courses
@@ -33,7 +42,6 @@ class Course {
         $stment = Database::get()->connect()->prepare($q);
         $stment->execute($data);
         $id = Database::get()->connect()->lastInsertId();
-
 
         return new Course(
             $id,
