@@ -923,4 +923,41 @@ class AppointmentService{
 
         return $result;
     }
+
+    /**
+     * Returns the count of appointment sent by the students with a target
+     * date from current day to upcoming sunday
+     *
+     * @param array $param {
+     *      @type string user_id - user id of student
+     * }
+     */
+    public static function getStudentAppointmentCountWeekly(array $param):array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                status,
+                COUNT(*)
+            FROM appointments
+            WHERE
+                student_user_id = :user_id
+                AND
+                    target_date BETWEEN CURRENT_DATE
+                    AND (
+                        CURRENT_DATE
+                        + INTERVAL '1 day'
+                        * (7 - EXTRACT(DOW FROM CURRENT_DATE))
+                    )
+            GROUP BY status
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($param);
+
+        $result = $stment->fetchAll();
+        return $result;
+    }
+
 }
