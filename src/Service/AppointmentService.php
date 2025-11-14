@@ -881,6 +881,7 @@ class AppointmentService{
                 student_user_id = :user_id
                 AND target_date >= CURRENT_DATE + INTERVAL '1 day'
                 AND target_date < CURRENT_DATE + INTERVAL '2 day'
+            GROUP BY status
         SQL;
 
         $stment = $conn->prepare($q);
