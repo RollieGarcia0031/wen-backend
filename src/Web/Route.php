@@ -29,6 +29,7 @@ $routes = [];
 $routes["POST"] = [
     "/auth/register"    => [ AuthController::class,     "register"      ],
     "/auth/login"       => [ AuthController::class,     "login"         ],
+    "/auth/logout"      => [ AuthController::class,     "logout"        ],
 
     "/course/create"    => [ CourseController::class,   "create"        ],
     "/course/use"       => [ CourseController::class,   "assignToUser"  ],

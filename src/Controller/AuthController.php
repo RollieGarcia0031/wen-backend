@@ -106,4 +106,12 @@ class AuthController extends Controller{
             Response::sendError($error);
         }
     }
+
+    /**
+     * logs the user out of the system
+     */
+    public function logout(){
+        session_destroy();
+        Response::sendJson(200, true, "User logged out", null);
+    }
 }
