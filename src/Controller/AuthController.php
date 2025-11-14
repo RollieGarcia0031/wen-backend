@@ -12,8 +12,13 @@ use App\Middleware\RequestMiddleware;
 use Exception;
 use PDOException;
 
-class AuthController extends Controller{    
+class AuthController extends Controller{
+    /**
+     * Creates a new user account
+     */
     public function register(){
+        RequestMiddleware::requireFields(['name', 'email', 'password', 'role']);
+
         $body = Request::getBody();
         
         $name = $body['name'];
@@ -29,22 +34,18 @@ class AuthController extends Controller{
                 'role' => $role
             ]);
 
-            Response::sendJson(
-                200,
-                true,
-                'User created successfully'
-            );
+            $message = "User created successfully";
 
-        } catch (PDOException $e) {
-            Response::sendJson(
-                500,
-                false,
-                $e->getMessage(),
-                null
-            );
+            Response::sendJson(200, true, $message, null);
+
+        } catch (PDOException $error) {
+            Response::sendError($error);
         }
     }
 
+    /**
+     * Allows both student and professor to login their account
+     */
     public function login(){
         RequestMiddleware::requireFields(['email', 'password']);
 
@@ -66,47 +67,43 @@ class AuthController extends Controller{
 
                 $_SESSION["user"] = $user;
 
-                Response::sendJson(
-                    200,
-                    true,
-                    'User logged in successfully',
-                    [
-                        "id"=> $user->id,
-                        "name" => $user->name,
-                        "email" => $user->email
-                    ]
-                );
+                $message = "User logged in successfully";
+                $data = [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "email" => $user->email
+                ];
+
+                Response::sendJson(200, true, $message, $data);
             }
 
-            Response::sendJson(
-                401,
-                false,
-                'Invalid credentials',
-                null
-            );
+            $message = "Invalid credentials";
+            Response::sendJson(401, false, $message, null);
 
-        } catch (PDOException $e) {
-            Response::sendJson(
-                500,
-                false,
-                $e->getMessage(),
-                null
-            );
+        } catch (PDOException $error) {
+            Response::sendError($error);
         } catch (Exception $error) {
             Response::sendError($error);
         }
         
     }
 
+    /**
+     * Get information about the logged user
+     */
     public static function getProfile(){
         AuthMiddleware::requireAuth();
 
-        $user = Cookie::getUser();
+        try {
+            $user = Cookie::getUser();
 
-        if (!isset($user)){
-            Response::sendJson(401, false, "Not Logged In", null);
+            if (!isset($user)){
+                Response::sendJson(401, false, "Not Logged In", null);
+            }
+
+            Response::sendJson(200, true, "User Logged", (array)$user);
+        } catch (Exception $error) {
+            Response::sendError($error);
         }
-
-        Response::sendJson(200, true, "User Logged", (array)$user);
     }
 }
