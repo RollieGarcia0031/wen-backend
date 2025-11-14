@@ -340,7 +340,10 @@ class AppointmentController {
                     break;
 
                 case 'this_week':
-                    $result;
+                    $result =
+                        $user_role === 'student'
+                        ? AppointmentService::getStudentAppointmentCountWeekly($newParam)
+                        : AppointmentService::getProfApointmentCountWeekly($newParam);
                     break;
             }
 

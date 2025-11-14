@@ -69,5 +69,5 @@ POST http://localhost:8080/appointment/count
 Content-Type: application/json
 
 {
-    "time_range": "today"
+    "time_range": "this_week"
 }
