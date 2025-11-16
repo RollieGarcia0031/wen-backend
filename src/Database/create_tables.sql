@@ -63,8 +63,7 @@ CREATE TABLE user_notifications (
     id BIGSERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
     status SMALLINT NOT NULL,
-    notification_id BIGINT NOT NULL REFERENCES notifications(id),
-    CONSTRAINT user_notifications_notification_id_unique UNIQUE (notification_id)
+    notification_id BIGINT NOT NULL REFERENCES notifications(id)
 );
 
 -- =========================
