@@ -23,5 +23,5 @@ POST http://localhost:8080/notification/list/all
 Content-Type: application/json
 
 {
-    "end_from": 0
+    "end_from": 248
 }

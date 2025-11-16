@@ -98,8 +98,8 @@ class NotificationService {
     /**
      * Lists all of the notifications for the user using cursor-based pagination
      * @param array $params {
-     *      @type string $user_id
-     *      @type int|null $end_from  ID of the last notification received (cursor)
+     *      @type string    user_id   ID of the logged user
+     *      @type int|null  end_from  ID of the last notification received (cursor)
      * }
      */
     public static function listAll($params): array
@@ -121,10 +121,9 @@ class NotificationService {
                     FROM user_notifications un
                     JOIN notifications n
                         ON un.notification_id = n.id
-                    WHERE (
+                    WHERE
                         un.user_id = :user_id
                         AND un.id < :last_id
-                    )
                     ORDER BY un.id DESC
                     LIMIT :limit
                 SQL;

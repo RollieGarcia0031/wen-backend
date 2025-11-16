@@ -71,6 +71,10 @@ class NotificationController {
 
     /**
      * Lists all of the notifications for the user
+     *
+     * Required Fields:
+     *  - end_from - the last id of notification
+     *               from the previous request
      */
     public function listAll(){
         AuthMiddleware::requireAuth();
