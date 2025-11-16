@@ -271,6 +271,10 @@ class AppointmentController {
      *                but for further requests, next_cursor from previous
      *                response shall be used as the current cursor_id
      *                in the new request for pagination to work
+     *  - cursor_time - the time of the appointment serving as next time reference,
+     *                  if unknown, "00:00:00" can be passed as value,
+     *                  but for further requests, next_cursor_time from previous
+     *                  response shall be used as the current cursor_time
      */
     public function currentDay(){
         AuthMiddleware::requireAuth();

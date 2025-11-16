@@ -736,6 +736,7 @@ class AppointmentService{
      * @param array $params {
      *    @type string user_id - user id of the logged student
      *    @type int    cursor_id       - id of appointment as reference for pagination
+     *    @type string cursor_time    - time of appointment as reference for pagination
      * }
      */
     public static function getCurrentSentAppointments(array $params): array
