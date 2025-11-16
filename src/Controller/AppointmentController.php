@@ -274,7 +274,7 @@ class AppointmentController {
      */
     public function currentDay(){
         AuthMiddleware::requireAuth();
-        RequestMiddleware::requireFields(['cursor_id']);
+        RequestMiddleware::requireFields(['cursor_id', 'cursor_time']);
 
         $user = Cookie::getUser();
 

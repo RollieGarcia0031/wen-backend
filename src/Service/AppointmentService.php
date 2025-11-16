@@ -6,6 +6,7 @@ use App\Database\Database;
 use DateTime;
 use Exception;
 use PDOException;
+use PDO;
 
 class AppointmentService{
 
@@ -633,20 +634,21 @@ class AppointmentService{
      * @param array $params {
      *      @type string user_id   - user id of professor
      *      @type int    cursor_id - reference as starting index for pagination
+     *      @type string cursor_time - reference time for pagination
      * }
      */
-    public static function getCurrentRecivedAppointments(array $params):array
+    public static function getCurrentRecivedAppointments(array $params): array
     {
         $conn = Database::get()->connect();
 
         $limit = 10;
         $cursor_id = $params['cursor_id'] ?? 0;
+        $cursor_time = $params['cursor_time'] ?? null;
         $user_id = $params['user_id'];
 
-        $result = null;
+        // FIRST PAGE (no cursor yet)
+        if ($cursor_id == 0 || $cursor_time === null) {
 
-        if ($cursor_id < 1){
-            // query to get first page
             $q = <<<SQL
                 SELECT
                     apt.id,
@@ -663,16 +665,18 @@ class AppointmentService{
                 WHERE
                     apt.target_date = CURRENT_DATE
                     AND apt.status < 2
-                    AND av.user_id = ?
-                LIMIT ?
+                    AND av.user_id = :user_id
+                ORDER BY av.start_time ASC, apt.id ASC
+                LIMIT :limit
             SQL;
 
             $stment = $conn->prepare($q);
-            $stment->execute([$user_id, $limit]);
-            $result = $stment->fetchAll();
+            $stment->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $stment->bindValue(':limit', $limit, PDO::PARAM_INT);
 
         } else {
-            // query to get remaining pages
+
+            // NEXT PAGES
             $q = <<<SQL
                 SELECT
                     apt.id,
@@ -689,23 +693,40 @@ class AppointmentService{
                 WHERE
                     apt.target_date = CURRENT_DATE
                     AND apt.status < 2
-                    AND av.user_id = ?
-                    AND apt.id > ?
-                LIMIT ?
+                    AND av.user_id = :user_id
+                    AND (
+                        av.start_time > :cursor_time
+                        OR (av.start_time = :cursor_time AND apt.id > :cursor_id)
+                    )
+                ORDER BY av.start_time ASC, apt.id ASC
+                LIMIT :limit
             SQL;
 
             $stment = $conn->prepare($q);
-            $stment->execute([$user_id, $cursor_id, $limit]);
-            $result = $stment->fetchAll();
+            $stment->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $stment->bindValue(':cursor_time', $cursor_time);       // TIME
+            $stment->bindValue(':cursor_id', $cursor_id, PDO::PARAM_INT);
+            $stment->bindValue(':limit', $limit, PDO::PARAM_INT);
         }
 
-        $data = [];
-        $data['result'] = $result;
+        $stment->execute();
+        $result = $stment->fetchAll();
 
-        $nextCursor = count($result) > 0 ? end($result)['id'] : null;
-        $data['next_cursor'] = $nextCursor;
+        // Build next cursor
+        if ($result) {
+            $last = end($result);
+            $next_cursor_id = $last['id'];
+            $next_cursor_time = $last['start_time'];
+        } else {
+            $next_cursor_id = null;
+            $next_cursor_time = null;
+        }
 
-        return $data;
+        return [
+            "data" => $result,
+            "next_cursor_id" => $next_cursor_id,
+            "next_cursor_time" => $next_cursor_time
+        ];
     }
 
     /**
@@ -713,22 +734,23 @@ class AppointmentService{
      * that are sent by the students
      *
      * @param array $params {
-     *    @type string student_user_id - user id of the logged student
+     *    @type string user_id - user id of the logged student
      *    @type int    cursor_id       - id of appointment as reference for pagination
      * }
      */
-    public static function getCurrentSentAppointments(array $params):array
+    public static function getCurrentSentAppointments(array $params): array
     {
         $conn = Database::get()->connect();
 
-        // limit per request for pagination
         $limit = 10;
-        $cursor_id = (int)$params['cursor_id'] ?? 0;
+
+        $cursor_id = $params['cursor_id'] ?? 0;
+        $cursor_time = $params['cursor_time'] ?? null;
         $student_user_id = $params['user_id'];
 
-        $stment = null;
+        if ($cursor_id == 0 || $cursor_time === null) {
 
-        if ($cursor_id > 0){
+            // First page
             $q = <<<SQL
                 SELECT
                     apt.id,
@@ -738,25 +760,24 @@ class AppointmentService{
                     av.end_time,
                     u.name
                 FROM appointments apt
-                JOIN availability av
-                    ON av.id = apt.availability_id
-                JOIN users u
-                    ON u.id = av.user_id
+                JOIN availability av ON av.id = apt.availability_id
+                JOIN users u ON u.id = av.user_id
                 WHERE
                     apt.target_date = CURRENT_DATE
                     AND apt.student_user_id = :student_user_id
                     AND apt.status < 2
-                    AND apt.id < :cursor_id
-                ORDER BY av.start_time ASC
+                ORDER BY av.start_time ASC, apt.id ASC
                 LIMIT :limit
             SQL;
 
-            $stment = $conn->prepare($q);
-            $stment->bindParam(':cursor_id', $cursor_id);
+            $stm = $conn->prepare($q);
+            $stm->bindValue(":student_user_id", $student_user_id, PDO::PARAM_INT);
+            $stm->bindValue(":limit", $limit, PDO::PARAM_INT);
 
         } else {
 
-            $q = <<<SQL
+            // Next pages
+            $sql = <<<SQL
                 SELECT
                     apt.id,
                     apt.status,
@@ -765,36 +786,44 @@ class AppointmentService{
                     av.end_time,
                     u.name
                 FROM appointments apt
-                JOIN availability av
-                    ON av.id = apt.availability_id
-                JOIN users u
-                    ON u.id = av.user_id
+                JOIN availability av ON av.id = apt.availability_id
+                JOIN users u ON u.id = av.user_id
                 WHERE
                     apt.target_date = CURRENT_DATE
                     AND apt.student_user_id = :student_user_id
                     AND apt.status < 2
-                ORDER BY av.start_time ASC
+                    AND (
+                        av.start_time > :cursor_time
+                        OR (av.start_time = :cursor_time AND apt.id > :cursor_id)
+                    )
+                ORDER BY av.start_time ASC, apt.id ASC
                 LIMIT :limit
             SQL;
 
-            $stment = $conn->prepare($q);
+            $stm = $conn->prepare($sql);
+            $stm->bindValue(":student_user_id", $student_user_id, PDO::PARAM_INT);
+            $stm->bindValue(":cursor_time", $cursor_time);
+            $stm->bindValue(":cursor_id", $cursor_id, PDO::PARAM_INT);
+            $stm->bindValue(":limit", $limit, PDO::PARAM_INT);
         }
 
-        $stment->bindParam(':limit', $limit);
-        $stment->bindParam(':student_user_id', $student_user_id);
+        $stm->execute();
+        $result = $stm->fetchAll();
 
-        $stment->execute();
+        if ($result) {
+            $last = end($result);
+            $next_cursor_id   = $last["id"];
+            $next_cursor_time = $last["start_time"];
+        } else {
+            $next_cursor_id   = null;
+            $next_cursor_time = null;
+        }
 
-        $result = $stment->fetchAll();
-        $next_cursor = count($result) > 0 ? end($result)['id'] : null;
-
-        $data = [
-            "data" => $result,
-            "next_cursor" => $next_cursor
+        return [
+            "data"             => $result,
+            "next_cursor_id"   => $next_cursor_id,
+            "next_cursor_time" => $next_cursor_time
         ];
-
-        return $data;
-
     }
 
     /**
