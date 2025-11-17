@@ -55,6 +55,19 @@ class AppointmentController {
      * Returns the list of appointments of the logged user
      * - if opened by a student, it returns the sent appointments
      * - if opened by a professor, it returns the received appointments
+     * 
+     *  - Required fiellds:
+     *      - cursor_id   - the id of the appointment serving as next index,
+     *                      if unknown, 0 (zero) can be passed as value,
+     *                      but for further requests, next_cursor from previous
+     *      - cursor_date - the date of the appointment serving as next date reference,
+     * 
+     *  - Optional fields:
+     *      - status     - filter by status of appointment
+     *                     (0: pending, 1: approved, 2: declined)
+     *      - time_range - filter by time range of appointment
+     *                    ('past', 'upcoming', 'all', 'today')
+     * 
      */
     public function getOwnList(){
         AuthMiddleware::requireAuth();

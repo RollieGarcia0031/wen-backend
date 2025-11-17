@@ -2,9 +2,9 @@ POST http://localhost:8080/appointment/send
 Content-Type: application/json
 
 {
-    "availability_id": "5",
+    "availability_id": "123",
     "message": "Hillo",
-    "target_date": "2024-07-01T10:00:00Z"
+    "target_date": "2025-11-17T10:00:00Z"
 }
 
 ###
@@ -61,8 +61,8 @@ POST http://localhost:8080/appointment/current-day
 Content-Type: application/json
 
 {
-    "cursor_id": "56",
-    "cursor_time": "07:00:00"
+    "cursor_id": "0",
+    "cursor_time": "00:00:00"
 }
 
 ### counts appointment on different time range
