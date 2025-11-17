@@ -12,7 +12,9 @@ POST http://localhost:8080/appointment/list
 Content-Type: application/json
 
 {
-    "status": "0" //optional
+    "status": "0",
+    "cursor_id": 0,
+    "cursor_date": "0"
 }
 
 ###
