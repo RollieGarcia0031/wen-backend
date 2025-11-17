@@ -11,6 +11,7 @@ use App\Middleware\UserMiddleware;
 use App\Service\AppointmentService;
 use PDOException;
 use Exception;
+use Throwable;
 
 class AppointmentController {
 
@@ -55,36 +56,41 @@ class AppointmentController {
      * Returns the list of appointments of the logged user
      * - if opened by a student, it returns the sent appointments
      * - if opened by a professor, it returns the received appointments
+     * 
+     *  - Required fiellds:
+     *      - cursor_id   - the id of the appointment serving as next index,
+     *                      if unknown, 0 (zero) can be passed as value,
+     *                      but for further requests, next_cursor from previous
+     *      - cursor_date - the date of the appointment serving as next date reference,
+     * 
+     *  - Optional fields:
+     *      - status     - filter by status of appointment
+     *                     (0: pending, 1: approved, 2: declined)
+     *      - time_range - filter by time range of appointment
+     *                    ('past', 'upcoming', 'all', 'today')
+     *                    default is 'all'
      */
-    public function getOwnList(){
+    public function getOwnList()
+    {
         AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(['cursor_id', 'cursor_date']);
 
         $params = Request::getBody();
+        $user   = Cookie::getUser();
 
-        $user_id = Cookie::getUser()->id;
-        $userRole = Cookie::getUser()->role;
-
-        $data = null;
-        $message = null;
-        
         try {
-
-            if ($userRole == 'student'){
-                $params['student_user_id'] = $user_id;
-
-                $message = "Appointment retrieved";
-                $data = AppointmentService::getAllSentAppointments($params);
-                
-            } else if ($userRole == 'professor'){
-                $params['professor_user_id'] = $user_id;
-
-                $message = "Appointment retrieved";
-                $data = AppointmentService::getAllRecievedAppointments($params);
+            if ($user->role === 'student') {
+                $params['student_user_id'] = $user->id;
+            } else {
+                $params['professor_user_id'] = $user->id;
             }
 
-            Response::sendJson(200, true, $message, $data);
+            $result = AppointmentService::fetchAppointments($params);
+            $message = "Appointments retrieved";
 
-        } catch (PDOException $error){
+            Response::sendJson(200, true, $message, $result);
+
+        } catch (Throwable $error) {
             Response::sendError($error);
         }
     }
