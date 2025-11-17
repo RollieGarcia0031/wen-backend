@@ -11,6 +11,7 @@ use App\Middleware\UserMiddleware;
 use App\Service\AppointmentService;
 use PDOException;
 use Exception;
+use Throwable;
 
 class AppointmentController {
 
@@ -67,37 +68,29 @@ class AppointmentController {
      *                     (0: pending, 1: approved, 2: declined)
      *      - time_range - filter by time range of appointment
      *                    ('past', 'upcoming', 'all', 'today')
-     * 
+     *                    default is 'all'
      */
-    public function getOwnList(){
+    public function getOwnList()
+    {
         AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(['cursor_id', 'cursor_date']);
 
         $params = Request::getBody();
+        $user   = Cookie::getUser();
 
-        $user_id = Cookie::getUser()->id;
-        $userRole = Cookie::getUser()->role;
-
-        $data = null;
-        $message = null;
-        
         try {
-
-            if ($userRole == 'student'){
-                $params['student_user_id'] = $user_id;
-
-                $message = "Appointment retrieved";
-                $data = AppointmentService::getAllSentAppointments($params);
-                
-            } else if ($userRole == 'professor'){
-                $params['professor_user_id'] = $user_id;
-
-                $message = "Appointment retrieved";
-                $data = AppointmentService::getAllRecievedAppointments($params);
+            if ($user->role === 'student') {
+                $params['student_user_id'] = $user->id;
+            } else {
+                $params['professor_user_id'] = $user->id;
             }
 
-            Response::sendJson(200, true, $message, $data);
+            $result = AppointmentService::fetchAppointments($params);
+            $message = "Appointments retrieved";
 
-        } catch (PDOException $error){
+            Response::sendJson(200, true, $message, $result);
+
+        } catch (Throwable $error) {
             Response::sendError($error);
         }
     }

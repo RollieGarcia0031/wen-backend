@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Database\Database;
 use DateTime;
 use Exception;
+use InvalidArgumentException;
 use PDOException;
 use PDO;
 
@@ -122,6 +123,160 @@ class AppointmentService{
             $conn->rollBack();
             throw $error;
         }
+    }
+    /**
+     * Fetch paginated and filtered appointments for students or professors.
+     *
+     * Cursor Based Pagination:
+     *  - cursor_date (DATE) and cursor_id (INT) define the last retrieved item.
+     *  - When both are provided, we retrieve items strictly AFTER this composite value.
+     *
+     * Supports Filters:
+     *  - status:     0 = pending, 1 = approved, 2 = declined
+     *  - time_range: 'past', 'upcoming', 'today', 'all'
+     *
+     * @param array $params
+     * @return array {
+     *      items: array,
+     *      next_cursor: ['cursor_id' => int, 'cursor_date' => string] | null
+     * }
+     */
+    public static function fetchAppointments(array $params): array
+    {
+        $conn = Database::get()->connect();
+
+        $isStudent   = isset($params['student_user_id']);
+        $isProfessor = isset($params['professor_user_id']);
+
+        if (!$isStudent && !$isProfessor) {
+            throw new InvalidArgumentException("Expected student_user_id or professor_user_id.");
+        }
+
+        // ---------------------------------------------------------------
+        // Base SELECT
+        // ---------------------------------------------------------------
+        $sql = <<<SQL
+            SELECT
+                apt.id,
+                apt.status,
+                apt.message,
+                apt.target_date,
+                av.day_of_week,
+                av.start_time,
+                av.end_time,
+                u.name AS counterpart_name
+            FROM appointments apt
+            LEFT JOIN availability av ON apt.availability_id = av.id
+        SQL;
+
+        // Join correct user name based on caller role
+        if ($isStudent) {
+            $sql .= " LEFT JOIN users u ON av.user_id = u.id ";
+        } else {
+            $sql .= " LEFT JOIN users u ON apt.student_user_id = u.id ";
+        }
+
+        // ---------------------------------------------------------------
+        // WHERE Conditions
+        // ---------------------------------------------------------------
+        $sql .= " WHERE 1=1 ";
+
+        // Role-based visibility
+        if ($isStudent) {
+            $sql .= " AND apt.student_user_id = :student_user_id ";
+        }
+
+        if ($isProfessor) {
+            $sql .= " AND av.user_id = :professor_user_id ";
+            $sql .= " AND apt.visible_to_prof = TRUE ";
+        }
+
+        // Filter by status
+        if (isset($params['status'])) {
+            $sql .= " AND apt.status = :status ";
+        }
+
+        // Filter by time range
+        if (!empty($params['time_range']) && $params['time_range'] !== 'all') {
+            switch ($params['time_range']) {
+                case 'past':
+                    $sql .= " AND apt.target_date < CURRENT_DATE ";
+                    break;
+                case 'upcoming':
+                    $sql .= " AND apt.target_date > CURRENT_DATE ";
+                    break;
+                case 'today':
+                    $sql .= " AND apt.target_date = CURRENT_DATE ";
+                    break;
+            }
+        }
+
+        // ---------------------------------------------------------------
+        // Cursor Pagination (Only applied if both values exist)
+        // ---------------------------------------------------------------
+        $useCursor = !empty($params['cursor_date']) && !empty($params['cursor_id']);
+
+        if ($useCursor) {
+            $sql .= "
+                AND (
+                    apt.target_date > :cursor_date
+                    OR (apt.target_date = :cursor_date AND apt.id > :cursor_id)
+                )
+            ";
+        }
+
+        // ---------------------------------------------------------------
+        // ORDER & LIMIT (stable ordering for pagination)
+        // ---------------------------------------------------------------
+        $sql .= " ORDER BY apt.target_date ASC, apt.id ASC ";
+        $sql .= " LIMIT 20 ";
+
+        // ---------------------------------------------------------------
+        // Execute SQL
+        // ---------------------------------------------------------------
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(self::prepareSqlParams($params, $useCursor));
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // ---------------------------------------------------------------
+        // Next Cursor
+        // ---------------------------------------------------------------
+        $nextCursor = null;
+
+        if (!empty($rows)) {
+            $last = end($rows);
+            $nextCursor = [
+                'cursor_id'   => $last['id'],
+                'cursor_date' => $last['target_date']
+            ];
+        }
+
+        return [
+            'items'       => $rows,
+            'next_cursor' => $nextCursor
+        ];
+    }
+
+    /**
+     * Bind only the parameters that are actually used in SQL.
+     */
+    private static function prepareSqlParams(array $params, bool $useCursor): array
+    {
+        $bind = [];
+
+        foreach (['student_user_id', 'professor_user_id', 'status'] as $key) {
+            if (isset($params[$key])) {
+                $bind[$key] = $params[$key];
+            }
+        }
+
+        if ($useCursor) {
+            $bind['cursor_date'] = $params['cursor_date'];
+            $bind['cursor_id']   = $params['cursor_id'];
+        }
+
+        return $bind;
     }
 
     /**

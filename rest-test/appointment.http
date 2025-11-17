@@ -13,8 +13,9 @@ Content-Type: application/json
 
 {
     "status": "0",
-    "cursor_id": 0,
-    "cursor_date": "0"
+    "cursor_id": 81,
+    "cursor_date": "2025-11-17",
+    "time_range": "all"
 }
 
 ###
