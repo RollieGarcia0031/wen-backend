@@ -152,9 +152,7 @@ class AppointmentService{
             throw new InvalidArgumentException("Expected student_user_id or professor_user_id.");
         }
 
-        // ---------------------------------------------------------------
-        // Base SELECT
-        // ---------------------------------------------------------------
+        // Base SELECT statement
         $sql = <<<SQL
             SELECT
                 apt.id,
@@ -176,9 +174,7 @@ class AppointmentService{
             $sql .= " LEFT JOIN users u ON apt.student_user_id = u.id ";
         }
 
-        // ---------------------------------------------------------------
         // WHERE Conditions
-        // ---------------------------------------------------------------
         $sql .= " WHERE 1=1 ";
 
         // Role-based visibility
@@ -211,9 +207,7 @@ class AppointmentService{
             }
         }
 
-        // ---------------------------------------------------------------
         // Cursor Pagination (Only applied if both values exist)
-        // ---------------------------------------------------------------
         $useCursor = !empty($params['cursor_date']) && !empty($params['cursor_id']);
 
         if ($useCursor) {
@@ -225,23 +219,17 @@ class AppointmentService{
             ";
         }
 
-        // ---------------------------------------------------------------
         // ORDER & LIMIT (stable ordering for pagination)
-        // ---------------------------------------------------------------
         $sql .= " ORDER BY apt.target_date ASC, apt.id ASC ";
-        $sql .= " LIMIT 20 ";
+        $sql .= " LIMIT 20";
 
-        // ---------------------------------------------------------------
         // Execute SQL
-        // ---------------------------------------------------------------
         $stmt = $conn->prepare($sql);
         $stmt->execute(self::prepareSqlParams($params, $useCursor));
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // ---------------------------------------------------------------
         // Next Cursor
-        // ---------------------------------------------------------------
         $nextCursor = null;
 
         if (!empty($rows)) {
