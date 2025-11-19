@@ -66,22 +66,3 @@ CREATE TABLE user_notifications (
     notification_id BIGINT NOT NULL REFERENCES notifications(id)
 );
 
--- =========================
--- COURSES
--- =========================
-CREATE TABLE courses (
-    id SERIAL PRIMARY KEY,
-    created_by INTEGER NOT NULL REFERENCES users(id),
-    name VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL
-);
-
--- =========================
--- USER CLASS
--- =========================
-CREATE TABLE user_class (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id),
-    course_id INTEGER NOT NULL REFERENCES courses(id),
-    year SMALLINT NOT NULL
-);
