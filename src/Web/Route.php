@@ -75,7 +75,9 @@ $routes["DELETE"] = [
 
     "/availability/delete"=> [ AvailabilityController::class, "delete"  ],
 
-    "/appointment/delete" => [ AppointmentController::class, "delete"  ]
+    "/appointment/delete" => [ AppointmentController::class, "delete"  ],
+
+    "/notification/delete-all" => [ NotificationController::class, "deleteAll"]
 ];
 
 $routes["PUT"] = [

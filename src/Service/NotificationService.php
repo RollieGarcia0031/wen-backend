@@ -166,4 +166,25 @@ class NotificationService {
             throw $e;
         }
     }
+
+    /**
+     * Deletes all of notificaion in the
+     * user_notification table based on the user owner
+     *
+     * @param array $params {
+     *      @type string user_id
+     * }
+     */
+    public static function deleteAll($params):void
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            DELETE FROM user_notifications
+            WHERE user_id = :user_id
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute($params);
+    }
 }
