@@ -93,4 +93,24 @@ class NotificationController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Deletes all of the notification for the logged user
+     */
+    public function deleteAll(){
+        AuthMiddleware::requireAuth();
+
+        $user_id = Cookie::getUser()->id;
+        $params = [ "user_id" => $user_id ];
+
+        try {
+            NotificationService::deleteAll($params);
+
+            $message = "All notifications deleted successfully!";
+            Response::sendJson(200, true, $message, null);
+
+        } catch (PDOExeption $error){
+            Response::sendError($error);
+        }
+    }
 }

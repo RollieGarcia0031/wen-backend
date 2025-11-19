@@ -25,3 +25,7 @@ Content-Type: application/json
 {
     "end_from": 248
 }
+
+### delete all notifications
+DELETE http://localhost:8080/notification/delete-all
+Content-Type: application/json
