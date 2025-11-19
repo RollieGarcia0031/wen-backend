@@ -66,3 +66,69 @@ CREATE TABLE user_notifications (
     notification_id BIGINT NOT NULL REFERENCES notifications(id)
 );
 
+-- =========================
+-- COURSES
+-- =========================
+-- courses that can be made by admin only
+CREATE TABLE courses (
+    course_id SERIAL PRIMARY KEY,
+    course_code VARCHAR(10) NOT NULL UNIQUE,
+    course_name VARCHAR(100) NOT NULL
+);
+
+-- =========================
+-- SECTIONS
+-- =========================
+-- sections belong to a course
+CREATE TABLE sections (
+    section_id SERIAL PRIMARY KEY,
+    course_id INT NOT NULL REFERENCES courses(course_id),
+    section_code VARCHAR(20) NOT NULL,
+    year_level INT NULL,
+    UNIQUE (section_code)
+);
+
+-- =========================
+-- STUDENT SECTIONS
+-- =========================
+-- mapping table between students and sections
+-- a student can be in many sections and a section can have many students
+-- can only be created by students themselves
+CREATE TABLE student_sections(
+    user_id INT NOT NULL,
+    section_id INT NOT NULL,
+    UNIQUE (user_id, section_id)
+);
+
+-- =========================
+-- PROFESSOR SECTIONS
+-- =========================
+-- mapping table between professors and sections
+-- a professor can teach many sections and a section can have many professors
+-- can only be created by professors themselves
+CREATE TABLE professor_sections(
+    user_id INT NOT NULL,
+    section_id INT NOT NULL,
+    UNIQUE (user_id, section_id)
+);
+
+-- =========================
+-- DEPARTMENTS
+-- =========================
+-- departments that can be made by admin only
+-- e.g., CAS, CEN, MED
+CREATE TABLE departments (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    code VARCHAR(10) NOT NULL UNIQUE
+);
+
+-- =========================
+-- PROFESSOR DEPARTMENTS
+-- =========================
+-- mapping table between professors and departments
+-- a professor can belong to many departments and a department can have many professors
+CREATE TABLE professor_departments (
+    user_id INT UNIQUE NOT NULL,
+    department_id INT NOT NULL
+);
