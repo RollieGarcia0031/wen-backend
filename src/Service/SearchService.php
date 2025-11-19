@@ -20,25 +20,11 @@ class SearchService {
         $q = <<<SQL
             SELECT 
                 u.name,
-                u.id,
-                JSON_AGG(
-                    JSON_BUILD_OBJECT(
-                        'year', uc.year,
-                        'class', c.name
-                    )::json
-                ) AS classes
+                u.id
             FROM users u
-
-            JOIN user_class uc
-                ON uc.user_id = u.id
-
-            JOIN courses c
-                ON uc.course_id = c.id
-
             WHERE 
                 u.name ~* :user_name
                 AND u.role = 'professor'
-
             GROUP BY u.name, u.id
             ORDER BY u.name ASC;
 
@@ -88,33 +74,14 @@ class SearchService {
                             'availability_id', av.id
                         )
                     )
-                
                     FROM availability av
                     WHERE av.user_id = u.id
-                ) AS availabilities,
-
-                (SELECT
-                    JSONB_AGG(
-                        DISTINCT JSONB_BUILD_OBJECT(
-                            'year', uc.year,
-                            'course',c.name,
-                            'description', c.description
-                        )
-                    )
-
-                    FROM user_class uc
-                    JOIN courses c
-                        ON c.id = uc.course_id
-                    WHERE uc.user_id = u.id
-                ) AS classes
-
+                ) AS availabilities
             FROM users u
-
             WHERE (
                 u.id = :professor_user_id
                 AND role = 'professor'
             )
-
             GROUP BY u.id, u.name, u.email
         SQL;
 
