@@ -85,7 +85,7 @@ CREATE TABLE sections (
     course_id INT NOT NULL REFERENCES courses(course_id),
     section_code VARCHAR(20) NOT NULL,
     year_level INT NULL,
-    UNIQUE (section_code)
+    UNIQUE (section_code, year_level)
 );
 
 -- =========================
