@@ -6,6 +6,7 @@ use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
 use App\Controller\NotificationController;
 use App\Controller\SearchController;
+use App\Controller\SectionController;
 
 /*
 ===========================================================
@@ -35,7 +36,10 @@ $routes["POST"] = [
     "/course/use"       => [ CourseController::class,   "assignToUser"  ],
     "/course/unuse"     => [ CourseController::class,   "unuse"         ],
     "/course/search"    => [ CourseController::class,   "search"        ],
-    "/course/user"      => [ CourseController::class,   "findUser"      ],  
+    "/course/user"      => [ CourseController::class,   "findUser"      ],
+    
+    "/section/enroll" => [ SectionController::class, "enrollStudent" ],
+    "/section/unenroll" => [  SectionController::class, "unenrollUser" ],
 
     "/availability/create" => [ AvailabilityController::class, "createNew" ],
     "/availability/createAll" =>[AvailabilityController::class,"createAll" ],
@@ -63,6 +67,9 @@ $routes["GET"] = [
     "/course/list"      => [ CourseController::class,   "list"          ],
     "/course/list/self" => [ CourseController::class,   "selfList"      ],
     "/course/assigned"  => [ CourseController::class,   "getAssigned"   ],
+
+    "/section/list/all" => [ SectionController::class, "getAll" ],
+    "/section/list/owned"     => [ SectionController::class, "getOwned" ],
 
     "/availability/list"=> [ AvailabilityController::class, "getOwnList" ],
 
