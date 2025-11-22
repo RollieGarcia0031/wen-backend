@@ -58,4 +58,30 @@ class SectionController extends Controller
         }
 
     }
+
+    /**
+     * Unenroll the logged user from a specific section
+     * 
+     * - Required Fields:
+     *    - section_id - primary key of section to be removed
+     */
+    public function unenrollUser(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(['section_id']);
+
+        $user = Cookie::getUser();
+        $role = $user->role;
+
+        $params = Request::getBody();
+        $params['user_id'] = $user->id;
+
+        try {
+            $result = SectionService::unenrollUser($params, $role);
+
+            $message = "Succesfully Unenrolled";
+            Response::sendJson(200, true, $message, null);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }

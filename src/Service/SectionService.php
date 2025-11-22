@@ -85,4 +85,39 @@ class SectionService
         return $result;
     }
 
+    /**
+     * Unenroll the logged user from a specific section
+     * 
+     * @param array $params {
+     *      @type int $user_id
+     *      @type int $section_id
+     * }
+     */
+    public static function unenrollUser(array $params, string $role):void
+    {
+        $conn = Database::get()->connect();
+
+        if ($role === 'professor') {
+
+            $stmt = $conn->prepare(<<<SQL
+                DELETE FROM professor_sections
+                WHERE
+                    user_id = :user_id
+                    AND section_id = :section_id
+            SQL);
+            $stmt->execute($params);
+
+        } else {
+
+            $stmt = $conn->prepare(<<<SQL
+                DELETE FROM student_sections
+                WHERE
+                    user_id = :user_id
+                    AND section_id = :section_id
+            SQL);
+            $stmt->execute($params);
+
+        }
+    }
+
 }

@@ -39,6 +39,7 @@ $routes["POST"] = [
     "/course/user"      => [ CourseController::class,   "findUser"      ],
     
     "/section/enroll" => [ SectionController::class, "enrollStudent" ],
+    "/section/unenroll" => [  SectionController::class, "unenrollUser" ],
 
     "/availability/create" => [ AvailabilityController::class, "createNew" ],
     "/availability/createAll" =>[AvailabilityController::class,"createAll" ],

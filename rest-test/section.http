@@ -2,10 +2,18 @@ POST http://localhost:8080/section/enroll
 Content-Type:application/json
 
 {
-    "section_id": 1
+    "section_id": 2
 }
 
 
 ### Gets list of all available sections
 GET http://localhost:8080/section/list/all
 Content-Type: application/json
+
+### Unenroll the logged user from a specific section
+POST http://localhost:8080/section/unenroll
+Content-Type:application/json
+
+{
+    "section_id": 1
+}
