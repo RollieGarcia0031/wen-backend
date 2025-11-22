@@ -1,0 +1,6 @@
+POST http://localhost:8080//section/enroll
+Content-Type:application/json
+
+{
+    "section_id": 1
+}
