@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS professor_departments CASCADE;
+DROP TABLE IF EXISTS professor_sections CASCADE;
+DROP TABLE IF EXISTS student_sections CASCADE;
+DROP TABLE IF EXISTS sections CASCADE;
+DROP TABLE IF EXISTS courses CASCADE;
+DROP TABLE IF EXISTS user_notifications CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS appointments CASCADE;
+DROP TABLE IF EXISTS availability CASCADE;
+DROP TABLE IF EXISTS departments CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 -- =========================
 -- USERS
 -- =========================
