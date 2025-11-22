@@ -15,5 +15,10 @@ POST http://localhost:8080/section/unenroll
 Content-Type:application/json
 
 {
-    "section_id": 1
+    "section_id": 2
 }
+
+
+### Gets list of sections owned by the logged user
+GET http://localhost:8080/section/list/owned
+Content-Type: application/json

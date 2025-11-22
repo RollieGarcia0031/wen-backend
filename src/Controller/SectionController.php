@@ -84,4 +84,24 @@ class SectionController extends Controller
             Response::sendError($error);
         }
     }
+
+    /**
+     * Retrieves the list of sections owned by the logged user
+     */
+    public function getOwned(){
+        AuthMiddleware::requireAuth();
+
+        $user = Cookie::getUser();
+
+        $user_id = $user->id;
+        $role = $user->role;
+
+        try {
+            $result = SectionService::getOwned($user_id, $role);
+
+            Response::sendJson(200, true, "Success", $result);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }

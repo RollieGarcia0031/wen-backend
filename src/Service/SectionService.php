@@ -120,4 +120,74 @@ class SectionService
         }
     }
 
+    /**
+     * Retrieves the list of sections owned by the logged user
+     * 
+     * @param string $user_id
+     * @param string $role - the role of the user { professor, student }
+     * 
+     * @return array - the list of owned sections
+     */
+    public static function getOwned(string $user_id, string $role): array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                c.course_name,
+                c.course_code,
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'section_id', s.section_id,
+                        'year_level', s.year_level,
+                        'section_code', s.section_code
+                    )
+                    ORDER BY s.year_level, s.section_code
+                ) AS sections
+            FROM courses c
+            LEFT JOIN sections s
+                ON s.course_id = c.course_id
+        SQL;
+
+        $params = [];   // <-- parameter holder
+
+        // Conditional JOIN + WHERE
+        if ($role === 'professor') {
+            $q .= <<<SQL
+                LEFT JOIN professor_sections ps
+                    ON ps.section_id = s.section_id
+                WHERE ps.user_id = :user_id
+            SQL;
+            $params['user_id'] = $user_id;
+
+        } elseif ($role === 'student') {
+            $q .= <<<SQL
+                LEFT JOIN student_sections ss
+                    ON ss.section_id = s.section_id
+                WHERE ss.user_id = :user_id
+            SQL;
+            $params['user_id'] = $user_id;
+        }
+
+        $q .= <<<SQL
+            GROUP BY
+                c.course_id, c.course_name, c.course_code
+            ORDER BY
+                c.course_name
+        SQL;
+
+        $stment = $conn->prepare($q);
+
+        // execute with parameters ONLY if needed
+        $stment->execute($params);
+
+        $result = $stment->fetchAll();
+
+        foreach ($result as &$row) {
+            $row['sections'] = json_decode($row['sections'], true);
+        }
+
+        return $result;
+    }
+
 }
