@@ -10,7 +10,7 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RequestMiddleware;
 use App\Middleware\UserMiddleware;
 use PDOException;
-use SectionService;
+use App\Service\SectionService;
 
 class SectionController extends Controller
 {
