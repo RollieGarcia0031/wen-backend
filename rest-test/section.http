@@ -7,5 +7,5 @@ Content-Type:application/json
 
 
 ### Gets list of all available sections
-GET http://lolcahost:8080/section/list/all
+GET http://localhost:8080/section/list/all
 Content-Type: application/json

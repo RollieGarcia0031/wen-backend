@@ -41,4 +41,21 @@ class SectionController extends Controller
             Response::sendError($error);
         }
     }
+
+    /**
+     * Retrieves the list of all available sections
+     * to be enrolled by the logged user
+     */
+    public function getAll(){
+        AuthMiddleware::requireAuth();
+
+        try {
+            $result = SectionService::getAll();
+
+            Response::sendJson(200, true, "Success", $result);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+
+    }
 }

@@ -67,6 +67,8 @@ $routes["GET"] = [
     "/course/list/self" => [ CourseController::class,   "selfList"      ],
     "/course/assigned"  => [ CourseController::class,   "getAssigned"   ],
 
+    "/section/list/all" => [ SectionController::class, "getAll" ],
+
     "/availability/list"=> [ AvailabilityController::class, "getOwnList" ],
 
     "/notification/count/unread" => [ NotificationController::class, "countUnread"],

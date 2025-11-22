@@ -45,4 +45,44 @@ class SectionService
         }
     }
 
+    /**
+     * Retrieves the list of all available sections
+     * 
+     * @return array - the list of all sections to be enrolled
+     */
+    public static function getAll():array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+        SELECT
+            c.course_name,
+            c.course_code,
+            JSON_AGG(
+                JSON_BUILD_OBJECT(
+                    'section_id', s.section_id,
+                    'year_level', s.year_level,
+                    'section_code', s.section_code
+                )
+                ORDER BY s.year_level, s.section_code
+            ) AS sections
+        FROM courses c
+        LEFT JOIN sections s
+            ON s.course_id = c.course_id
+        GROUP BY
+            c.course_id, c.course_name, c.course_code
+        ORDER BY
+            c.course_name
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute();
+        $result = $stment->fetchAll();
+
+        foreach ($result as &$row){
+            $row['sections'] = json_decode($row['sections'], true);
+        }
+        return $result;
+    }
+
 }
