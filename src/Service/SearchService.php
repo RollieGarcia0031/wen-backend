@@ -35,14 +35,6 @@ class SearchService {
 
         $result = $stment->fetchAll(PDO::FETCH_ASSOC);
 
-        // convert the nested attribute (classes) to a
-        // format easy to parse as json
-        foreach ($result as &$row){
-            $classes = json_decode($row['classes']);
-
-            $row['classes'] = $classes;
-        }
-
         return $result;
     }
 
