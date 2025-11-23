@@ -2,7 +2,7 @@ POST http://localhost:8080/appointment/send
 Content-Type: application/json
 
 {
-    "availability_id": "123",
+    "availability_id": "2",
     "message": "Hillo",
     "target_date": "2025-11-17T10:00:00Z"
 }
