@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Database\Database;
+use PDOException;
 
 class SectionService
 {
@@ -58,6 +59,7 @@ class SectionService
         SELECT
             c.course_name,
             c.course_code,
+            c.course_id,
             JSON_AGG(
                 JSON_BUILD_OBJECT(
                     'section_id', s.section_id,
@@ -190,4 +192,51 @@ class SectionService
         return $result;
     }
 
+    /**
+     * Allows a user to add a multiple set of sections to their account
+     * 
+     * @param array $params {
+     *      @type int $user_id - the id of the user to add sections to
+     *      @type array $section_ids - the list of sections to add
+     * }
+     * @param string $role - the role of the user { professor, student } 
+     */
+    public static function enrollMultiple(array $params, string $role):void
+    {
+        $conn = Database::get()->connect();
+        
+        $section_ids = $params['section_ids'];
+        $user_id = $params['user_id'];
+
+        try {
+            $conn->beginTransaction();
+    
+            if ($role === 'professor') {            
+                foreach($section_ids as $section_id) {
+                    $stmt = $conn->prepare(<<<SQL
+                        INSERT INTO professor_sections
+                            (user_id, section_id)
+                        VALUES
+                            (?, ?)
+                    SQL);
+                    $stmt->execute([$user_id, $section_id]);
+                }
+            } else {
+                foreach($section_ids as $section_id) {
+                    $stmt = $conn->prepare(<<<SQL
+                        INSERT INTO student_sections
+                            (user_id, section_id)
+                        VALUES
+                            (?, ?)
+                    SQL);
+                    $stmt->execute([$user_id, $section_id]);
+                }
+            }
+
+            $conn->commit();
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            throw $e;
+        }
+    }
 }

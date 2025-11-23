@@ -43,6 +43,32 @@ class SectionController extends Controller
     }
 
     /**
+     * Enroll the logged student to a list multiple available sections
+     * 
+     * - Required Fields:
+     *    - section_ids - array of primary keys of sections
+     */
+    public function enrollAll(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(['section_ids']);
+
+        $user = Cookie::getUser();
+        $role = $user->role;
+
+        $params = Request::getBody();
+        $params['user_id'] = $user->id;
+
+        try {
+            SectionService::enrollMultiple($params, $role);
+
+            $message = "Succesfully Enrolled";
+            Response::sendJson(200, true, $message, null);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
+
+    /**
      * Retrieves the list of all available sections
      * to be enrolled by the logged user
      */
