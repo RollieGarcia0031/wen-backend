@@ -59,6 +59,7 @@ class SectionService
         SELECT
             c.course_name,
             c.course_code,
+            c.course_id,
             JSON_AGG(
                 JSON_BUILD_OBJECT(
                     'section_id', s.section_id,
