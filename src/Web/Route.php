@@ -4,6 +4,7 @@ use App\Controller\AppointmentController;
 use App\Controller\AuthController;
 use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
+use App\Controller\DepartmentController;
 use App\Controller\NotificationController;
 use App\Controller\SearchController;
 use App\Controller\SectionController;
@@ -42,6 +43,9 @@ $routes["POST"] = [
     "/section/unenroll" => [  SectionController::class, "unenrollUser" ],
     "/section/enroll/all" => [ SectionController::class, "enrollAll" ],
 
+    "/department/join" => [ DepartmentController::class, "join" ],
+    "/department/leave" => [ DepartmentController::class, "leave" ],
+
     "/availability/create" => [ AvailabilityController::class, "createNew" ],
     "/availability/createAll" =>[AvailabilityController::class,"createAll" ],
     "/availability/user"   => [ AvailabilityController::class, "findUser"  ],
@@ -68,6 +72,9 @@ $routes["GET"] = [
     "/course/list"      => [ CourseController::class,   "list"          ],
     "/course/list/self" => [ CourseController::class,   "selfList"      ],
     "/course/assigned"  => [ CourseController::class,   "getAssigned"   ],
+
+    "/department/list/all" => [ DepartmentController::class, "listAll" ],
+    "/department/list/joined" => [ DepartmentController::class, "listJoined" ],
 
     "/section/list/all" => [ SectionController::class, "getAll" ],
     "/section/list/owned"     => [ SectionController::class, "getOwned" ],
