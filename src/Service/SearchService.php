@@ -56,7 +56,6 @@ class SearchService {
                 u.name,
                 u.email,
                 u.id,
-
                 (SELECT
                     JSONB_AGG(
                         DISTINCT JSONB_BUILD_OBJECT(
@@ -68,7 +67,36 @@ class SearchService {
                     )
                     FROM availability av
                     WHERE av.user_id = u.id
-                ) AS availabilities
+                ) AS availabilities,
+                (SELECT
+                    JSONB_AGG(
+                        DISTINCT JSONB_BUILD_OBJECT(
+                            'section_code', s.section_code,
+                            'year_level', s.year_level,
+                            'section_id', s.section_id,
+                            'course_name', c.course_name,
+                            'course_code', c.course_code
+                        )
+                    )
+                    FROM professor_sections ps
+                    LEFT JOIN sections s
+                        ON ps.section_id = s.section_id
+                    LEFT JOIN courses c
+                        ON s.course_id = c.course_id
+                    WHERE ps.user_id = u.id
+                ) AS sections,
+                (SELECT
+                    JSON_AGG(
+                        DISTINCT JSONB_BUILD_OBJECT(
+                            'department_name', d.name,
+                            'department_code', d.code
+                        )
+                    )
+                    FROM professor_departments pd
+                    LEFT JOIN departments d
+                        ON pd.department_id = d.id
+                    WHERE pd.user_id = u.id
+                ) AS departments
             FROM users u
             WHERE (
                 u.id = :professor_user_id
@@ -85,6 +113,12 @@ class SearchService {
         foreach ($result as &$row){
             $av = $row['availabilities'];
             $row['availabilities'] = json_decode($av, true);
+
+            $sec = $row['sections'];
+            $row['sections'] = json_decode($sec, true);
+
+            $deo = $row['departments'];
+            $row['departments'] = json_decode($deo, true);
         }
 
         return $result;
