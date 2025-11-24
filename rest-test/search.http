@@ -10,5 +10,5 @@ POST http://localhost:8080/search/professor/user
 Content-Type: application/json
 
 {
-    "professor_user_id": "16"
+    "professor_user_id": "2"
 }
