@@ -82,13 +82,9 @@ class SearchService {
 
         $result = $stment->fetchAll();
 
-        // convert nested json in parse-ready json
         foreach ($result as &$row){
             $av = $row['availabilities'];
             $row['availabilities'] = json_decode($av, true);
-
-            $classes = $row['classes'];
-            $row['classes'] = json_decode($classes, true);
         }
 
         return $result;
