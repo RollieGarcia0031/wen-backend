@@ -5,6 +5,14 @@ Content-Type: application/json
     "department_id": 1
 }
 
+### 
+POST http://localhost:8080/department/join/multi
+Content-Type: application/json
+
+{
+    "department_ids": [1]
+}
+
 ###
 GET http://localhost:8080/department/list/all
 Content-Type: application/json

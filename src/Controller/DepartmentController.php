@@ -97,4 +97,28 @@ class DepartmentController extends Controller {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Allows a professor to join multiple departments
+     * 
+     * - Required fields:
+     *      - department_ids - array of department ids
+     */
+    public function joinMulti(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole('professor');
+        RequestMiddleware::requireFields(['department_ids']);
+
+        $user = Cookie::getUser();
+
+        $user_id = $user->id;
+        $department_ids = Request::getBody()['department_ids'];
+
+        try {
+            DepartmentService::addUserToDepartments($user_id, $department_ids);
+            Response::sendJson(200, true, "Success", null);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }

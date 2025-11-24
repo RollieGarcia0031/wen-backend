@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Database\Database;
+use PDOException;
 
 class DepartmentService {
 
@@ -82,5 +83,26 @@ class DepartmentService {
 
         $stmt = $conn->prepare($q);
         $stmt->execute([$user_id, $department_id]);
+    }
+
+    /**
+     * Add a user to multiple departments
+     */
+    public static function addUserToDepartments(string $user_id, array $department_ids):void
+    {
+        $conn = Database::get()->connect();
+
+        try {
+            $conn->beginTransaction();
+
+            foreach ($department_ids as $department_id) {
+                self::addUserToDepartment($user_id, $department_id);
+            }
+
+            $conn->commit();
+        } catch (PDOException $error) {
+            $conn->rollBack();
+            throw $error;
+        }
     }
 }
