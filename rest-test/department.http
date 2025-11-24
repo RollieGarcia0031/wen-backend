@@ -15,3 +15,8 @@ Content-Type: application/json
 
 ###
 POST http://localhost:8080/department/leave
+Content-Type: application/json
+
+{
+    "department_id": 1
+}

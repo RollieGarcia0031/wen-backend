@@ -44,6 +44,7 @@ $routes["POST"] = [
     "/section/enroll/all" => [ SectionController::class, "enrollAll" ],
 
     "/department/join" => [ DepartmentController::class, "join" ],
+    "/department/leave" => [ DepartmentController::class, "leave" ],
 
     "/availability/create" => [ AvailabilityController::class, "createNew" ],
     "/availability/createAll" =>[AvailabilityController::class,"createAll" ],

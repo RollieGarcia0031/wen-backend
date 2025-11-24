@@ -39,6 +39,31 @@ class DepartmentController extends Controller {
         } 
     }
 
+
+    /**
+     * Allows a logged professor to leave a department
+     * 
+     * - Required fields:
+     *      - department_id - id of department
+     */
+    public function leave(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole('professor');
+        RequestMiddleware::requireFields(['department_id']);
+
+        $user = Cookie::getUser();
+
+        $user_id = $user->id;
+        $department_id = Request::getBody()['department_id'];
+
+        try {
+            DepartmentService::removeUserFromDepartment($user_id, $department_id);
+
+            Response::sendJson(200, true, "Success", null);
+        } catch (PDOException $error){
+            Response::sendError($error);
+        }
+    }
     /**
      * Retrieves all of the departments available
      */

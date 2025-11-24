@@ -64,4 +64,23 @@ class DepartmentService {
         return $stment->fetchAll();
     }
 
+
+    /**
+     * Remove a user from a department
+     * 
+     * @param string $user_id - user id of professor
+     * @param int $department_id - id of department
+     */
+    public static function removeUserFromDepartment(string $user_id, int $department_id):void
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            DELETE FROM professor_departments
+            WHERE user_id = ? AND department_id = ?;
+        SQL;
+
+        $stmt = $conn->prepare($q);
+        $stmt->execute([$user_id, $department_id]);
+    }
 }
