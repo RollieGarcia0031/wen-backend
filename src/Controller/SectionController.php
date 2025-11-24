@@ -21,7 +21,7 @@ class SectionController extends Controller
      * - Required Fields:
      *    - section_id - primary key of section
      */
-    public function enrollStudent(){
+    public function join(){
         AuthMiddleware::requireAuth();
         RequestMiddleware::requireFields(['section_id']);
 
