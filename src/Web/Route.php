@@ -73,6 +73,7 @@ $routes["GET"] = [
     "/course/assigned"  => [ CourseController::class,   "getAssigned"   ],
 
     "/department/list/all" => [ DepartmentController::class, "listAll" ],
+    "/department/list/joined" => [ DepartmentController::class, "listJoined" ],
 
     "/section/list/all" => [ SectionController::class, "getAll" ],
     "/section/list/owned"     => [ SectionController::class, "getOwned" ],

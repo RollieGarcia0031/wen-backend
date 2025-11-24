@@ -30,7 +30,8 @@ class DepartmentService {
     /**
      * Get all departments
      */
-    public static function getAllDepartments(){
+    public static function getAllDepartments():array
+    {
         $conn = Database::get()->connect();
 
         $q = <<<SQL
@@ -39,4 +40,28 @@ class DepartmentService {
 
         return $conn->query($q)->fetchAll();
     }
+
+    /**
+     * Get all departments owned by a user
+     * 
+     * @param string $user_id - user id of professor
+     */
+    public static function getOwnedDepartments(string $user_id):array
+    {
+        $conn = Database::get()->connect();
+
+        $q  = <<<SQL
+            SELECT
+                d.*
+            FROM professor_departments pd
+            JOIN departments d
+                ON pd.department_id = d.id
+            WHERE pd.user_id = ?
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute([$user_id]);
+        return $stment->fetchAll();
+    }
+
 }

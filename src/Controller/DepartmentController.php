@@ -54,4 +54,22 @@ class DepartmentController extends Controller {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Retrieves all of the departments owned by the logged professor
+     */
+    public function listJoined(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole('professor');
+
+        $user_id = Cookie::getUser()->id;
+
+        try {
+            $departments = DepartmentService::getOwnedDepartments($user_id);
+
+            Response::sendJson(200, true, "Success", $departments);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }
