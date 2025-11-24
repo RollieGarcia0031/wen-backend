@@ -38,4 +38,20 @@ class DepartmentController extends Controller {
             Response::sendError($error);
         } 
     }
+
+    /**
+     * Retrieves all of the departments available
+     */
+    public function listAll(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole('professor');
+
+        try {
+            $departments = DepartmentService::getAllDepartments();
+
+            Response::sendJson(200, true, "Success", $departments);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        }
+    }
 }

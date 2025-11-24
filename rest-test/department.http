@@ -2,5 +2,12 @@ POST http://localhost:8080/department/join
 Content-Type: application/json
 
 {
-    
+    "department_id": 1
 }
+
+###
+GET http://localhost:8080/department/list/all
+Content-Type: application/json
+
+###
+GET http://localhost:8080/department/list/joined

@@ -26,4 +26,17 @@ class DepartmentService {
         $stmt = $conn->prepare($q);
         $stmt->execute([$user_id, $department_id]);
     }
+
+    /**
+     * Get all departments
+     */
+    public static function getAllDepartments(){
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT * FROM departments;
+        SQL;
+
+        return $conn->query($q)->fetchAll();
+    }
 }
