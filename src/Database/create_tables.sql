@@ -145,10 +145,11 @@ CREATE TABLE professor_departments (
     department_id INT NOT NULL
 );
 
-
+DROP TABLE IF EXISTS student_info CASCADE;
+DROP TABLE IF EXISTS professor_info CASCADE;
 
 CREATE TABLE student_info (
-    user_id INT REFERENCES users(id),
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     middle_name VARCHAR(100),
@@ -156,7 +157,7 @@ CREATE TABLE student_info (
 );
 
 CREATE TABLE professor_info (
-    user_id INT REFERENCES users(id),
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     middle_name VARCHAR(100),

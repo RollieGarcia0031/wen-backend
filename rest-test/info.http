@@ -1,0 +1,9 @@
+POST http://localhost:8080/info/update/student
+Content-Type: application/json
+
+{
+    "first_name": "Rollie Angelo",
+    "last_name": "GARCIA",
+    "middle_name": "Ranillo",
+    "birthday": "1990-01-01"
+}
