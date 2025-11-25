@@ -29,3 +29,7 @@ Content-Type: application/json
 {
     "user_id": 2
 }
+
+### get a full detail on the logged professor
+GET http://localhost:8080/info/professor
+Content-Type: application/json

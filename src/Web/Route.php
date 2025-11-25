@@ -88,7 +88,9 @@ $routes["GET"] = [
     "/availability/list"=> [ AvailabilityController::class, "getOwnList" ],
 
     "/notification/count/unread" => [ NotificationController::class, "countUnread"],
-    "/notification/mark-all-read" =>[ NotificationController::class, "markAllAsRead"]
+    "/notification/mark-all-read" =>[ NotificationController::class, "markAllAsRead"],
+
+    "/info/professor" => [ InfoController::class, "professor" ]
 ];
 
 $routes["DELETE"] = [
