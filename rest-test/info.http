@@ -21,3 +21,11 @@ Content-Type: application/json
     "bio": "I am a professor",
     "cellphone_number": "09603734196"
 }
+
+### get a full detail on a professor
+POST http://localhost:8080/info/professor
+Content-Type: application/json
+
+{
+    "user_id": 2
+}

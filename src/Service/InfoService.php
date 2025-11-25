@@ -3,6 +3,9 @@
 namespace App\Service;
 
 use App\Database\Database;
+use Error;
+use Exception;
+use PDO;
 
 class InfoService {
 
@@ -138,4 +141,59 @@ class InfoService {
         $stmt->execute();
     }
 
+
+    public static function getProfessor($user_id): array
+    {
+        $conn = Database::get()->connect();
+
+        $q = <<<SQL
+            SELECT
+                pi.*,
+                u.name As user_name,
+                u.email,
+                d.name AS department_name,
+                d.code AS department_code,
+                JSONB_AGG(
+                    JSONB_BUILD_OBJECT(
+                        'section_code', s.section_code,
+                        'year_level', s.year_level,
+                        'course_code', c.course_code,
+                        'course_name', c.course_name
+                    )
+                ) AS sections
+            FROM professor_info pi
+            JOIN users u ON u.id = pi.user_id
+            JOIN professor_departments pd
+                ON pd.user_id = u.id
+            JOIN departments d
+                ON d.id = pd.department_id
+            JOIN professor_sections ps
+                ON ps.user_id = u.id
+            JOIN sections s
+                ON s.section_id = ps.section_id
+            JOIN courses c
+                ON c.course_id = s.course_id
+            WHERE pi.user_id = :user_id
+            GROUP BY
+                pi.user_id,
+                u.name,
+                u.email,
+                d.name,
+                d.code
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute(['user_id' => $user_id]);
+        $result = $stment->fetch();
+
+        if (isset($result['sections'])) {
+            $result['sections'] = json_decode($result['sections'], true);
+        }
+
+        
+        if (!$result) {
+            throw new Exception("Professor not found", 404);
+        }
+        return $result;
+    }
 }
