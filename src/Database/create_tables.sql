@@ -144,3 +144,25 @@ CREATE TABLE professor_departments (
     user_id INT UNIQUE NOT NULL,
     department_id INT NOT NULL
 );
+
+DROP TABLE IF EXISTS student_info CASCADE;
+DROP TABLE IF EXISTS professor_info CASCADE;
+
+CREATE TABLE student_info (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    middle_name VARCHAR(100),
+    birthday DATE
+);
+
+CREATE TABLE professor_info (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    middle_name VARCHAR(100),
+    birthday DATE,
+    bio TEXT,
+    gender INT CHECK (gender IN (1, 2, 3, 4)),
+    cellphone_number VARCHAR(11)
+);

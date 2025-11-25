@@ -1,0 +1,39 @@
+POST http://localhost:8080/info/update/student
+Content-Type: application/json
+
+{
+    "first_name": "Rollie Angelo",
+    "last_name": "Garcia",
+    "middle_name": "R",
+    "birthday": "1990-01-01"
+}
+
+###
+POST http://localhost:8080/info/update/professor
+Content-Type: application/json
+
+{
+    "first_name": "Rollie Angelo",
+    "last_name": "GARCIA",
+    "middle_name": "Ranillo",
+    "birthday": "1990-01-01",
+    "gender": 1,
+    "bio": "I am a professor",
+    "cellphone_number": "09603734196"
+}
+
+### get a full detail on a professor
+POST http://localhost:8080/info/professor
+Content-Type: application/json
+
+{
+    "user_id": 2
+}
+
+### get a full detail on the logged professor
+GET http://localhost:8080/info/professor
+Content-Type: application/json
+
+### get a full detail on the logged student
+GET http://localhost:8080/info/student
+Content-Type: application/json

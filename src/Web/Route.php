@@ -5,6 +5,7 @@ use App\Controller\AuthController;
 use App\Controller\AvailabilityController;
 use App\Controller\CourseController;
 use App\Controller\DepartmentController;
+use App\Controller\InfoController;
 use App\Controller\NotificationController;
 use App\Controller\SearchController;
 use App\Controller\SectionController;
@@ -64,7 +65,11 @@ $routes["POST"] = [
     "/search/professor/user" => [SearchController::class, "searchProfessorUser"],
 
     "/notification/list/unread" => [ NotificationController::class, "listUnread" ],
-    "/notification/list/all" => [ NotificationController::class, "listAll" ]
+    "/notification/list/all" => [ NotificationController::class, "listAll" ],
+
+    "/info/update/student" => [ InfoController::class, "updateStudent" ],
+    "/info/update/professor" => [ InfoController::class, "updateProfessor" ],
+    "/info/professor" => [ InfoController::class, "getProfessor" ]
 ];
 
 $routes["GET"] = [
@@ -83,7 +88,10 @@ $routes["GET"] = [
     "/availability/list"=> [ AvailabilityController::class, "getOwnList" ],
 
     "/notification/count/unread" => [ NotificationController::class, "countUnread"],
-    "/notification/mark-all-read" =>[ NotificationController::class, "markAllAsRead"]
+    "/notification/mark-all-read" =>[ NotificationController::class, "markAllAsRead"],
+
+    "/info/professor" => [ InfoController::class, "professor" ],
+    "/info/student" => [ InfoController::class, "student" ] 
 ];
 
 $routes["DELETE"] = [
