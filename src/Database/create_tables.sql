@@ -163,5 +163,6 @@ CREATE TABLE professor_info (
     middle_name VARCHAR(100),
     birthday DATE,
     bio TEXT,
-    gender INT CHECK (gender IN (1, 2, 3, 4))
+    gender INT CHECK (gender IN (1, 2, 3, 4)),
+    cellphone_number VARCHAR(11)
 );

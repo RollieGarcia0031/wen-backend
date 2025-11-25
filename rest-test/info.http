@@ -7,3 +7,17 @@ Content-Type: application/json
     "middle_name": "Ranillo",
     "birthday": "1990-01-01"
 }
+
+###
+POST http://localhost:8080/info/update/professor
+Content-Type: application/json
+
+{
+    "first_name": "Rollie Angelo",
+    "last_name": "GARCIA",
+    "middle_name": "Ranillo",
+    "birthday": "1990-01-01",
+    "gender": 1,
+    "bio": "I am a professor",
+    "cellphone_number": "09603734196"
+}

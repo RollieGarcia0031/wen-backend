@@ -67,7 +67,8 @@ $routes["POST"] = [
     "/notification/list/unread" => [ NotificationController::class, "listUnread" ],
     "/notification/list/all" => [ NotificationController::class, "listAll" ],
 
-    "/info/update/student" => [ InfoController::class, "updateStudent" ]
+    "/info/update/student" => [ InfoController::class, "updateStudent" ],
+    "/info/update/professor" => [ InfoController::class, "updateProfessor" ]
 ];
 
 $routes["GET"] = [
