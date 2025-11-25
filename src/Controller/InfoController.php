@@ -121,4 +121,29 @@ class InfoController extends Controller
             Response::sendError($error);
         }
     }
+
+    /**
+     * Get a full info on the logged student
+     * 
+     * No required fields
+     */
+    public function student(){
+        AuthMiddleware::requireAuth();
+        UserMiddleware::requireRole('student');
+
+        $user = Cookie::getUser();
+        $user_id = $user->id;
+
+        try {
+            $result = InfoService::getStudent($user_id);
+
+            $message = "Get Success";
+            Response::sendJson(200, true, $message, $result);
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        } catch (Exception $error) {
+            Response::sendError($error);
+        }
+
+    }
 }

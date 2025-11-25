@@ -90,7 +90,8 @@ $routes["GET"] = [
     "/notification/count/unread" => [ NotificationController::class, "countUnread"],
     "/notification/mark-all-read" =>[ NotificationController::class, "markAllAsRead"],
 
-    "/info/professor" => [ InfoController::class, "professor" ]
+    "/info/professor" => [ InfoController::class, "professor" ],
+    "/info/student" => [ InfoController::class, "student" ] 
 ];
 
 $routes["DELETE"] = [

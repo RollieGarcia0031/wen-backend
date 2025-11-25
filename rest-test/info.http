@@ -3,8 +3,8 @@ Content-Type: application/json
 
 {
     "first_name": "Rollie Angelo",
-    "last_name": "GARCIA",
-    "middle_name": "Ranillo",
+    "last_name": "Garcia",
+    "middle_name": "R",
     "birthday": "1990-01-01"
 }
 
@@ -32,4 +32,8 @@ Content-Type: application/json
 
 ### get a full detail on the logged professor
 GET http://localhost:8080/info/professor
+Content-Type: application/json
+
+### get a full detail on the logged student
+GET http://localhost:8080/info/student
 Content-Type: application/json

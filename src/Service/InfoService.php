@@ -196,4 +196,52 @@ class InfoService {
         }
         return $result;
     }
+
+    /**
+     * Get a full info of a target student
+     * 
+     * @param string $user_id - id of the target student
+     */
+    public static function getStudent($user_id): array
+    {
+        $conn = Database::get()->connect();
+        
+        $q = <<<SQL
+            SELECT
+                si.*,
+                u.name As user_name,
+                u.email,
+                JSONB_AGG(
+                    JSONB_BUILD_OBJECT(
+                        'section_code', s.section_code,
+                        'year_level', s.year_level,
+                        'course_code', c.course_code,
+                        'course_name', c.course_name
+                    )
+                ) AS sections
+            FROM student_info si
+            JOIN users u ON u.id = si.user_id
+            JOIN student_sections ss
+                ON ss.user_id = u.id
+            JOIN sections s
+                ON s.section_id = ss.section_id
+            JOIN courses c
+                ON c.course_id = s.course_id
+            WHERE si.user_id = :user_id
+            GROUP BY
+                si.user_id,
+                u.name,
+                u.email
+        SQL;
+
+        $stment = $conn->prepare($q);
+        $stment->execute(['user_id' => $user_id]);
+        $result = $stment->fetch();
+
+        if (isset($result['sections'])) {
+            $result['sections'] = json_decode($result['sections'], true);
+        }
+
+        return $result;
+    }
 }
