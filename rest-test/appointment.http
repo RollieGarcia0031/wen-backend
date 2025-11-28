@@ -12,7 +12,7 @@ POST http://localhost:8080/appointment/list
 Content-Type: application/json
 
 {
-    "status": "0",
+    "status": "-1",
     "cursor_id": 81,
     "cursor_date": "2025-11-17",
     "time_range": "all"

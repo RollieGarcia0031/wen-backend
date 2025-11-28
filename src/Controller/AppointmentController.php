@@ -78,6 +78,9 @@ class AppointmentController {
         $params = Request::getBody();
         $user   = Cookie::getUser();
 
+        if ($params["status"] == "-1")
+            $params["status"] = null;
+
         try {
             if ($user->role === 'student') {
                 $params['student_user_id'] = $user->id;
