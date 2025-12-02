@@ -152,7 +152,6 @@ class InfoService {
                 u.name As user_name,
                 u.email,
                 d.name AS department_name,
-                d.code AS department_code,
                 JSONB_AGG(
                     JSONB_BUILD_OBJECT(
                         'section_code', s.section_code,
@@ -160,18 +159,18 @@ class InfoService {
                         'course_code', c.course_code,
                         'course_name', c.course_name
                     )
-                ) AS sections
+                ) FILTER (WHERE s.section_id IS NOT NULL) AS sections
             FROM professor_info pi
             JOIN users u ON u.id = pi.user_id
-            JOIN professor_departments pd
+            LEFT JOIN professor_departments pd
                 ON pd.user_id = u.id
-            JOIN departments d
+            LEFT JOIN departments d
                 ON d.id = pd.department_id
-            JOIN professor_sections ps
+            LEFT JOIN professor_sections ps
                 ON ps.user_id = u.id
-            JOIN sections s
+            LEFT JOIN sections s
                 ON s.section_id = ps.section_id
-            JOIN courses c
+            LEFT JOIN courses c
                 ON c.course_id = s.course_id
             WHERE pi.user_id = :user_id
             GROUP BY
@@ -218,14 +217,14 @@ class InfoService {
                         'course_code', c.course_code,
                         'course_name', c.course_name
                     )
-                ) AS sections
+                ) FILTER (WHERE s.section_id IS NOT NULL) AS sections
             FROM student_info si
             JOIN users u ON u.id = si.user_id
-            JOIN student_sections ss
+            LEFT JOIN student_sections ss
                 ON ss.user_id = u.id
-            JOIN sections s
+            LEFT JOIN sections s
                 ON s.section_id = ss.section_id
-            JOIN courses c
+            LEFT JOIN courses c
                 ON c.course_id = s.course_id
             WHERE si.user_id = :user_id
             GROUP BY
