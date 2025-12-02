@@ -242,6 +242,9 @@ class InfoService {
             $result['sections'] = json_decode($result['sections'], true);
         }
 
+        if (!$result) {
+            throw new Exception("Student not found", 404);
+        }
         return $result;
     }
 }
