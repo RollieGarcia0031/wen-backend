@@ -19,6 +19,14 @@ Content-Type: application/json
     "time_range": "all"
 }
 
+### get appointment message
+POST http://localhost:8080/appointment/get/message
+Content-Type: application/json
+
+{
+    "id": "1"
+}
+
 ###
 POST http://localhost:8080/appointment/accept
 Content-Type: application/json

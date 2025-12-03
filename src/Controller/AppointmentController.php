@@ -370,4 +370,32 @@ class AppointmentController {
             Response::sendError($error);
         }
     }
+
+    /**
+     * Retrieves the message of an appointment
+     * 
+     * Required fields:
+     *  - id - primary id of the appointment
+     */
+    public function getMessage(){
+        AuthMiddleware::requireAuth();
+        RequestMiddleware::requireFields(["id"]);
+
+        $params = Request::getBody();
+        $user = Cookie::getUser();
+
+        $params['user_id'] = $user->id;
+        $role = $user->role;
+
+        try {
+            $message = AppointmentService::fetchAppointmentMessage($params, $role);
+
+            Response::sendJson(200, true, "Message retrieved", [ "message" => $message ]);
+
+        } catch (PDOException $error) {
+            Response::sendError($error);
+        } catch (Exception $error){
+            Response::sendError($error);
+        }
+    }
 }
