@@ -22,7 +22,8 @@ class AppointmentController {
      *
      * Required fields:
      *  - availability_id - primary key of availability
-     *  - message         - string message to be sent as "topic" or header
+     *  - header -        - the short message as description on the topic
+     *  - message         - the full message to be sent to the professor
      *  - target_date     - date to be assigned
      */
     public function send(){
@@ -30,6 +31,7 @@ class AppointmentController {
         UserMiddleware::requireRole('student');
         RequestMiddleware::requireFields([
             'availability_id',
+            'header',
             'message',
             'target_date'
         ]);

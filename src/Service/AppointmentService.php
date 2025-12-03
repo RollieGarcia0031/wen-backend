@@ -19,6 +19,7 @@ class AppointmentService{
      * @param array $params {
      *      @type int $availability_id
      *      @type string $messge
+     *      @type string $header
      *      @type string $target_date
      *      @type int $student_user_id
      * }
@@ -30,6 +31,7 @@ class AppointmentService{
         $q1 = <<<SQL
             INSERT INTO appointments (
                 availability_id,
+                header,
                 message,
                 target_date,
                 status,
@@ -38,6 +40,7 @@ class AppointmentService{
 
             VALUES(
                 :availability_id,
+                :header,
                 :message,
                 :target_date,
                 0,
@@ -157,7 +160,7 @@ class AppointmentService{
             SELECT
                 apt.id,
                 apt.status,
-                apt.message,
+                apt.header,
                 apt.target_date,
                 av.day_of_week,
                 av.start_time,

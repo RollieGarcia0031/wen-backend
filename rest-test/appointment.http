@@ -3,6 +3,7 @@ Content-Type: application/json
 
 {
     "availability_id": "2",
+    "header": "Meeting Request",
     "message": "Hillo",
     "target_date": "2025-11-17T10:00:00Z"
 }
@@ -13,8 +14,8 @@ Content-Type: application/json
 
 {
     "status": "-1",
-    "cursor_id": 81,
-    "cursor_date": "2025-11-17",
+    "cursor_id": 0,
+    "cursor_date": "0",
     "time_range": "all"
 }
 
