@@ -152,6 +152,7 @@ class InfoService {
                 u.name As user_name,
                 u.email,
                 d.name AS department_name,
+                d.code AS department_code,
                 JSONB_AGG(
                     JSONB_BUILD_OBJECT(
                         'section_code', s.section_code,
