@@ -19,6 +19,7 @@ class AppointmentService{
      * @param array $params {
      *      @type int $availability_id
      *      @type string $messge
+     *      @type string $header
      *      @type string $target_date
      *      @type int $student_user_id
      * }
@@ -30,6 +31,7 @@ class AppointmentService{
         $q1 = <<<SQL
             INSERT INTO appointments (
                 availability_id,
+                header,
                 message,
                 target_date,
                 status,
@@ -38,6 +40,7 @@ class AppointmentService{
 
             VALUES(
                 :availability_id,
+                :header,
                 :message,
                 :target_date,
                 0,
@@ -157,7 +160,7 @@ class AppointmentService{
             SELECT
                 apt.id,
                 apt.status,
-                apt.message,
+                apt.header,
                 apt.target_date,
                 av.day_of_week,
                 av.start_time,
@@ -1085,5 +1088,46 @@ class AppointmentService{
 
         $result = $stment->fetchAll();
         return $result;
+    }
+
+    /**
+     * Fetches the message of a specific appointment
+     * 
+     * @param array $params {
+     *     @type string user_id - id of sender/reciever
+     *     @type string id      - id of appointment
+     * }
+     * 
+     * @param string $user_role - role of the user (student/professor)
+     */
+    public static function fetchAppointmentMessage(array $params, string $role):array
+    {
+
+        $conn = Database::get()->connect();
+
+        $q = null;
+        if($role === 'student'){
+            $q = <<<SQL
+                SELECT message FROM appointments
+                WHERE
+                    id = :id
+                    AND student_user_id = :user_id
+            SQL;
+        } else if ($role === 'professor'){
+            $q = <<<SQL
+                SELECT apt.message FROM appointments apt
+                JOIN availability av
+                    ON av.id = apt.availability_id
+                WHERE
+                    apt.id = :id
+                    AND av.user_id = :user_id
+            SQL;
+        }
+
+        $stment = $conn->prepare($q);
+        $stment->execute($params);
+        $result = $stment->fetch();
+        
+        return $result ? $result : [];
     }
 }

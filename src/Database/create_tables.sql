@@ -47,6 +47,7 @@ CREATE TABLE appointments (
     id SERIAL PRIMARY KEY,
     availability_id INTEGER REFERENCES availability(id) ON DELETE CASCADE,
     status SMALLINT,
+    header VARCHAR(50),
     message TEXT,
     target_date DATE NOT NULL,
     visible_to_prof BOOLEAN DEFAULT TRUE,

@@ -57,6 +57,7 @@ $routes["POST"] = [
     "/appointment/accept"=> [ AppointmentController::class, "accept"     ],
     "/appointment/decline" => [ AppointmentController::class, "decline"  ],
     "/appointment/hide"  => [ AppointmentController::class, "hide"       ],
+    "/appointment/get/message" => [ AppointmentController::class, "getMessage"],
 
     "/appointment/current-day" => [ AppointmentController::class, "currentDay"],
     "/appointment/count"       => [ AppointmentController::class, "count"     ],
