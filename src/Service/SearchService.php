@@ -22,18 +22,20 @@ class SearchService {
         $q = <<<SQL
             SELECT 
                 u.name,
-                u.id
+                u.id,
+                d.name AS department_name
             FROM users u
             LEFT JOIN professor_info pi
                 ON pi.user_id = u.id
             LEFT JOIN professor_departments pd
                 ON pd.user_id = u.id
+            LEFT JOIN departments d 
+                ON d.id = pd.department_id
             WHERE 
                 u.name ~* :user_name
                 AND u.role = 'professor'
                 AND pi.user_id IS NOT NULL
                 AND pd.user_id IS NOT NULL
-            GROUP BY u.name, u.id
             ORDER BY u.name ASC;
 
         SQL; 
