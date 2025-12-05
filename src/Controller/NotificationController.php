@@ -109,7 +109,7 @@ class NotificationController {
             $message = "All notifications deleted successfully!";
             Response::sendJson(200, true, $message, null);
 
-        } catch (PDOExeption $error){
+        } catch (PDOException $error){
             Response::sendError($error);
         }
     }
