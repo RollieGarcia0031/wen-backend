@@ -9,6 +9,8 @@ class SearchService {
 
     /**
      * Search for a list of professor filtered by user name
+     * 
+     * Only professor with existing professor detail, and department will show up in search result
      *
      * @param array $params {
      *      @type string $user_name User name to be searched
@@ -22,9 +24,15 @@ class SearchService {
                 u.name,
                 u.id
             FROM users u
+            LEFT JOIN professor_info pi
+                ON pi.user_id = u.id
+            LEFT JOIN professor_departments pd
+                ON pd.user_id = u.id
             WHERE 
                 u.name ~* :user_name
                 AND u.role = 'professor'
+                AND pi.user_id IS NOT NULL
+                AND pd.user_id IS NOT NULL
             GROUP BY u.name, u.id
             ORDER BY u.name ASC;
 
