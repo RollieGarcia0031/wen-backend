@@ -243,7 +243,7 @@ class InfoService {
         }
 
         if (!$result) {
-            throw new Exception("Student not found", 404);
+            throw new Exception("You haven't filled up your profile", 404);
         }
         return $result;
     }
